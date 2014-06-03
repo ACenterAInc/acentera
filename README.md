@@ -4,6 +4,11 @@ Commercial product differ from this open source solution, visit us at http://www
 
 OpenSouce Cloud Platform / Platform As A Service  - Web Portal
 
+## HipChat
+
+Stick with us on HipChat :  https://www.hipchat.com/invite/118632/c4964afb5fdd2211c7399bd8f8e09908
+
+
 ## Features
 
     * i18N
