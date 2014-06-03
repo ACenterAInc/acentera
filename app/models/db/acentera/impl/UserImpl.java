@@ -95,13 +95,14 @@ public class UserImpl extends DAO {
         if (u == null) {
             //user does not exists lets create him..
 
-            Session s = (Session) HibernateSessionFactory.getSession();
+            /*Session s = (Session) HibernateSessionFactory.getSession();
             u = new User();
             u.setEmail(email);
             u.setType("invited");
             s.save(u);
 
-            return u;
+            return u;*/
+            return null;
         } else {
             if (u.getType() != null && u.getType().compareTo("invited") == 0) {
                 return null;
