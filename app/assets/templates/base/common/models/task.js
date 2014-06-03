@@ -1,0 +1,29 @@
+
+
+App.Task = DS.Model.extend({
+        name: DS.attr('string'),
+        type: DS.attr('string'),
+        refreshtype: DS.attr('string'),
+        percentage: DS.attr('number'),
+        action_status: DS.attr('string'),
+        complete_redirect_route: DS.attr('string'),
+        error_redirect_route: DS.attr('string'),
+        redirect_model: DS.attr()
+});
+
+
+
+App.TaskAdapter = CustomRESTAdapter.extend({
+     buildURL: function(record, suffix,z ) {
+               //not great.. console.error(App.Provider.params);
+               try {
+                   if (suffix == undefined) {
+                     return "api/project/" + App.Project.params.project_id + "/tasks";
+                   } else {
+                     return "api/project/" + App.Project.params.project_id + "/task/" + suffix;
+                   }
+               } catch (e) {
+                  console.error(e.stack);
+               }
+           }
+});

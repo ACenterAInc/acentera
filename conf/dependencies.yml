@@ -1,0 +1,11 @@
+require:
+  - play.module -> common
+  - play.module -> lombok 1.2.3
+  - org.projectlombok -> lombok 0.10.0
+
+repositories:
+  - play-modules :
+        type:        http
+        artifact:    "http://play-modules.herokuapp.com/zips/[module]-[revision].zip"
+        contains:
+                     - play.module -> *
