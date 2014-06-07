@@ -332,9 +332,15 @@ App.ProjectServerDestroyController = Ember.ObjectController.extend({
                                      var store = self.get('store');
 
                                         try {
-                                            var tmp = this.store.all('servers', { id: serverId });
-
-                                            tmp.deleteRecord();
+                                            var tmp = self.store.all('servers').get('content')
+                                            var len = tmp.length;
+                                            var theServer = null;
+                                            for (var i = 0; i < len && theServer == null; i++) {
+                                                if (serverId == tmp[i].get('id')) {
+                                                    theServer = tmp[i]
+                                                }
+                                            }
+                                            theServer.deleteRecord();
                                         } catch (eeE) {
                                         }
 
