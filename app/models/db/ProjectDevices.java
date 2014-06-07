@@ -46,7 +46,7 @@ public class ProjectDevices extends AutoIncrementId implements TagArrayBasePermi
         @Column(name = "id")
         @GeneratedValue(strategy = GenerationType.AUTO)
         private @Getter @Setter Long id;
-
+    
         @Column(name = "partner_id")
         private @Getter @Setter Long partner_id;
 

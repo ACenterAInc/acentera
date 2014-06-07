@@ -48,6 +48,7 @@ import net.sf.json.JSONObject;
 import org.hibernate.Session;
 import play.Logger;
 import utils.HibernateSessionFactory;
+import utils.Utils;
 
 import java.util.*;
 
@@ -336,6 +337,7 @@ public class ProjectsHelpers {
             Iterator<ProjectProviders> itrProviders = lstProviders.iterator();
 
 
+            Logger.debug("GOT PROVIDER : " + lstProviders);
 
             List<DropletImage> lstDropletImages = null;
             List<Region> lstRegions = null;
@@ -421,6 +423,8 @@ public class ProjectsHelpers {
                                     deviceInProjectMapping = pd;
                                 }
                             }
+
+
                             if (deviceInProjectMapping == null) {
                                 //Device does not exists...
                                 //Lets create a Generic GUID and also save the mapping...
@@ -446,7 +450,7 @@ public class ProjectsHelpers {
                                 */
                             }
 
-
+                            Logger.debug("deviceInProjectMapping");
                             if (deviceInProjectMapping != null) {
                                 JSONObject jsoDroplet = JSONObject.fromObject(ow.writeValueAsString(droplet));
 
@@ -466,7 +470,7 @@ public class ProjectsHelpers {
                                 ////jsoDroplet.put("acenteraid", deviceInProjectMapping.getDevice().getId());
                                 jsoDroplet.put("acenteraid", deviceInProjectMapping.getId());
 
-
+                                Logger.debug("deviceInProjectMapping acenteraid " + deviceInProjectMapping.getId());
                                 jsoDroplet.put("external_id", droplet.getId());
                                 jsoDroplet.put("id", deviceInProjectMapping.getId());
                                 jsoDroplet.put("type", deviceInProjectMapping.getType());
@@ -483,8 +487,10 @@ public class ProjectsHelpers {
 
                     //CHeck if all the api returned all the values... (what about api that we deleted??)
                     Iterator<ProjectDevices> itrDevices = deviceSet.iterator();
+                    Logger.debug("GOT ProjectDevices  ??? ");
                     while(itrDevices.hasNext()) {
                         ProjectDevices pd = itrDevices.next();
+                        Logger.debug("GOT ProjectDevices : " + pd);
                         String key = pd.getExternalId() + "_" + pd.getProviders().getId();
                         if (! (devicesToReturn.containsKey(key) ) ) {
                             //Device not found lets add
@@ -495,10 +501,14 @@ public class ProjectsHelpers {
                     }
 
                     //At this point deviceTOReturn contains all of the entries...
+
+                    Logger.debug("deviceTOReturn ProjectDevices  ??? ");
                     Iterator<Map.Entry<String, ProjectDevices>> itrResponse = devicesToReturn.entrySet().iterator();
                     while(itrResponse.hasNext()) {
                         Map.Entry<String, ProjectDevices> item = itrResponse.next();
-
+                        Logger.debug("deviceTOReturn ProjectDevices  : " + item.getValue());
+                        Logger.debug("deviceTOReturn ProjectDevices  Device : " + item.getValue().getDevice());
+                        Logger.debug("deviceTOReturn ProjectDevices  Device getDropletInfo : " + item.getValue().getDevice().getDropletInfo());
                         if (item.getValue().getDevice().getDropletInfo().has("id")) {
                             if (!(processedDevices.contains(item.getValue().getDevice().getId()))) {
                                 processedDevices.add(item.getValue().getDevice().getId());
@@ -507,7 +517,7 @@ public class ProjectsHelpers {
                         }
                     }
 
-
+                    Logger.debug("deviceInProjectMapping REGURNING OF : " + jsoServersArray);
                     res.put("servers", jsoServersArray);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1205,6 +1215,22 @@ public class ProjectsHelpers {
         JSONObject jsoTask = new JSONObject();
         jsoTask.put("task_id", task.getId());
         jsoTask.put("success", true);
+
+
+        Project p = ProjectImpl.getProject(projectId);
+        Device d = new Device();
+        d.setGUID(Utils.getUniqueGUID());
+        //d.setId(task.getExtId());
+
+        ProjectDevices pd = new ProjectDevices();
+        pd.setProject(p);
+        pd.setDevice(d);
+        pd.setPartner_id(SecurityController.getUser().getPartnerId());
+        pd.setExternalId(task.getExtId());
+        pd.setProviders(prov);
+
+        HibernateSessionFactory.getSession().save(d);
+        HibernateSessionFactory.getSession().save(pd);
 
         return jsoTask.toString();
     }

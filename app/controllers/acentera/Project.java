@@ -607,6 +607,8 @@ public class Project extends ACenterAController {
                 String r = ProjectsHelpers.getDropletEventStatusInfo(projectId, Integer.valueOf(d.getExtId()), jsonData.getLong("provider_id"));
 
 
+
+
                 JSONObject jsoStatus = new JSONObject();
 
 
