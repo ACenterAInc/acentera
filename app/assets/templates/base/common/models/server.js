@@ -12,7 +12,9 @@ App.Server = DS.Model.extend({
     type: DS.attr('string'),
     size: DS.attr(),
     region_name: DS.attr('string'),
-    region_slug: DS.attr('string')
+    region_slug: DS.attr('string'),
+    provider: DS.belongsTo('provider'),
+    provider_region: DS.attr('number')
     /*diskspacefreeratio: DS.attr('number'),
     cpuload: DS.attr('number'),
     ipaddress: DS.attr('string'),

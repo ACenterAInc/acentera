@@ -180,6 +180,25 @@ public class ProjectsHelpers {
                         jsoDropletImage.put("external_id", droplet.getId());
                         jsoDropletImage.put("type", projectDevice.getType());
                         jsoDropletImage.put("id", projectDevice.getId());
+                        jsoDropletImage.put("provider", prov.getId());
+
+                        Set<ProjectProvidersRegions> lstRegionsProvider = prov.getRegions();
+                        Iterator<ProjectProvidersRegions> itrRegionsProviders = lstRegionsProvider.iterator();
+                        ProjectProvidersRegions selectedRegion = null;
+                        while(itrRegionsProviders.hasNext() && selectedRegion == null) {
+                            ProjectProvidersRegions ppr = itrRegionsProviders.next();
+                            if (ppr.getExtId() != null) {
+                                if (ppr.getExtId().intValue() == droplet.getRegionId().intValue()) {
+                                    selectedRegion = ppr;
+                                }
+                            }
+                        }
+                        if (selectedRegion != null) {
+                            jsoDropletImage.put("provider_region", selectedRegion.getProjectRegions().getId());
+                        }
+
+
+                        //droplet.getRegionId()
 
 
                         //TODO: Can we edit ?
@@ -920,7 +939,7 @@ public class ProjectsHelpers {
                     }
 
                 } else {
-                    ProjectRegions pr = ProjectRegionsImpl.getOrCreateRegion(prov.getProject(), r.getSlug(), r.getName());
+                    ProjectRegions pr = ProjectRegionsImpl.getOrCreateRegion(prov.getProject(), r.getSlug(), r.getName(), r.getId());
                     prov.addRegion(pr);
                 }
             }

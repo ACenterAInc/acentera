@@ -55,14 +55,15 @@ public class ProjectRegionsImpl extends DAO {
         return g;
     }
     //Not supposed to be called but it was string before
-    public static ProjectRegions getOrCreateRegion(Project p, String slug, String name) {
+    public static ProjectRegions getOrCreateRegion(Project p, String slug, String name, Integer regionId) {
 
         Session session = (Session) HibernateSessionFactory.getSession();
         Criteria criteria = session.createCriteria(ProjectRegions.class);
         ProjectRegions g = (ProjectRegions) criteria.add(
                                     Restrictions.and(
                                             Restrictions.eq("project",p),
-                                            Restrictions.eq("slug", slug)
+                                            Restrictions.eq("slug", slug),
+                                            Restrictions.eq("extid", regionId)
                                     )
                                 ).uniqueResult();
         if ( g == null ) {

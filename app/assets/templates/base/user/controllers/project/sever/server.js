@@ -46,6 +46,10 @@ App.ProjectServerResizeController = Ember.ObjectController.extend({
         breadcrumbTitle: function() {
             return "Resize";
         }.observes('content').property('content'),
+
+        availableSize: function() {
+                   this.set('availableSize', this.get('provider').get('region_sizes')[this.get('provider_region')]);
+        }.observes('content.provider').property('content.provider'),
         actions: {
             selectSize: function(e) {
                  if (! jq("#size_" + e).hasClass("disable") ) {

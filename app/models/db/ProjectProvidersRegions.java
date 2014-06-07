@@ -65,7 +65,10 @@ public class ProjectProvidersRegions extends AutoIncrementId {
         return this.projectRegions.getSlug();
     }
 
-
+    @JsonProperty("ext_id")
+    public Integer getExtId() {
+        return this.projectRegions.getExtid();
+    }
 
     public boolean isEquals(MetaData obj) {
         ProjectProvidersRegions uObj = (ProjectProvidersRegions) obj;

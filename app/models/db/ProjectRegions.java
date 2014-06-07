@@ -55,6 +55,8 @@ public class ProjectRegions extends AutoIncrementId {
 
     @Expose public @Getter @Setter String slug;
 
+    @Expose public @Getter @Setter Integer extid;
+
 
 
     public boolean isEquals(MetaData obj) {
