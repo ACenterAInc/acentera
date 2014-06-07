@@ -33,7 +33,6 @@ App.ProjectRoute = Ember.Route.extend({
                             });
 
                        } catch (z) {
-                          console.error(z.stack);
                        }
 
                   }
@@ -66,9 +65,7 @@ App.ProjectIndexRoute = Ember.Route.extend({
             console.error(model);*/
        }
         /*model: function(param) {
-              console.error('tt1');
               var self = this;
-              console.error(param);
               //alert(param.project_id);
               var project = this.get('store').find('Project', App.Project.params.project_id);
               return project;
@@ -104,7 +101,6 @@ App.ProjectIndexController = Ember.ObjectController.extend({
                          var len = proj.length;
                          var prj = null
                          for (var i = 0; i < len && prj == null; i++) {
-                            console.error(proj[i].get('id'));
                             if (proj[i].get('id') == App.Project.params.project_id) {
                                 prj = i;
                             }
@@ -113,7 +109,6 @@ App.ProjectIndexController = Ember.ObjectController.extend({
                             proj[prj].reload();
                          }
                      } catch (zz) {
-                         console.error(zz.stack);
                      }
                  }
                  running--;
@@ -137,18 +132,14 @@ App.ProjectIndexController = Ember.ObjectController.extend({
                      var len = proj.length;
                      var prj = null
                      for (var i = 0; i < len && prj == null; i++) {
-                        console.error(proj[i].get('id'));
                         if (proj[i].get('id') == App.Project.params.project_id) {
                             prj = i;
                         }
                      }
-                     console.error('removed project of : ');
-                     console.error(proj[prj]);
                      if (proj[prj] != undefined) {
                         proj[prj].reload();
                      }
                  } catch (zz) {
-                     console.error(zz.stack);
                  }
 
                  AppController.transitionToRoute('main');
@@ -161,19 +152,15 @@ App.ProjectIndexController = Ember.ObjectController.extend({
                                  var len = proj.length;
                                  var prj = null
                                  for (var i = 0; i < len && prj == null; i++) {
-                                    console.error(proj[i].get('id'));
                                     if (proj[i].get('id') == App.Project.params.project_id) {
                                         prj = i;
                                     }
                                  }
-                                 console.error('removed project of : ');
-                                 console.error(proj[prj]);
                                  if (proj[prj] != undefined) {
                                     proj[prj].reload();
                                  }
                                  //proj.removeObject(proj[prj]);
                              } catch (zz) {
-                                 console.error(zz.stack);
                              }
 
                  AppController.transitionToRoute('main');
@@ -186,5 +173,4 @@ App.ProjectIndexController = Ember.ObjectController.extend({
 
 } catch (ze) {
 
-    console.error(ze.stack);
 }

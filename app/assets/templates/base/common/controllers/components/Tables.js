@@ -106,7 +106,6 @@ App.BaseTableView = Ember.View.extend({
                 running++;
                 this.initializeTable();
             } catch (ee) {
-                console.error(ee.stack);
             }
        },
        initializeTable: function() {
@@ -173,7 +172,6 @@ App.BaseTableView = Ember.View.extend({
                                                     tmpData.emberobject = theDataTmp[data];
                                                }
                                            } catch (ew) {
-                                            console.error(ew.stack);
                                            }
                                            dtTableData.push(tmpData);
                                        }
@@ -187,7 +185,6 @@ App.BaseTableView = Ember.View.extend({
                         }
                         resizeScreen();
                     } catch (ee) {
-                        console.error(ee.stack);
                     }
                 }
               }

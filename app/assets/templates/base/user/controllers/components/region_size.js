@@ -180,7 +180,6 @@ App.ResizeRegionAvailableSize = Ember.View.extend({
                     }
                 }
             } catch (e) {
-                  console.error(e.stack);
             }
 
             try {

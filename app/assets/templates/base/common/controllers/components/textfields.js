@@ -19,7 +19,6 @@ Ember.Handlebars.registerBoundHelper('dateFromNow', function(date) {
             var actionTime = moment(date + "" + tz + ":00", "YYYY-MM-DD HH:mm:ssZ");
             return  actionTime.fromNow();
         } catch (ee) {
-            console.error(ee.stack);
         }
         return date;
 });
@@ -46,7 +45,6 @@ App.getI18NValue = function( lookup ) {
        }
     } catch (z) {
        //TODO: Do something with this error
-       //console.error(z.stack);
     }
 
     if (val != undefined) {
@@ -216,7 +214,6 @@ App.EmptyDifferTextField = Ember.TextField.extend({
 
                  if (this.get('compare')!=this.get('value')) {
 
-                                //console.error('SAME');
                                 this.$().addClass("success").removeClass("error");
                                  this.$().attr('title',null);
                                  $("#" + this.$().attr('id')).tooltip("destroy");
@@ -229,7 +226,6 @@ App.EmptyDifferTextField = Ember.TextField.extend({
                                  }
                                  return true;
                  } else {
-                                //console.error('NOT SAME');
                                  this.$().addClass("error").removeClass("success");
                                  this.$().attr('title','The two fields "username" must not match.');
                                  this.$().attr('rel','');
@@ -304,7 +300,6 @@ App.NotEmptyDifferTextField = Ember.TextField.extend({
 
                  if (this.get('compare')!=this.get('value')) {
 
-                                //console.error('SAME');
                                 this.$().addClass("success").removeClass("error");
                                  this.$().attr('title',null);
                                  $("#" + this.$().attr('id')).tooltip("destroy");
@@ -317,7 +312,6 @@ App.NotEmptyDifferTextField = Ember.TextField.extend({
                                  }
                                  return true;
                  } else {
-                                //console.error('NOT SAME');
                                  this.$().addClass("error").removeClass("success");
                                  this.$().attr('title','The two fields "username" must not match.');
                                  this.$().attr('rel','');
@@ -631,7 +625,6 @@ App.EmptyTextField = Ember.TextField.extend({
 
                  if (this.get('compare')==this.get('value')) {
 
-                                //console.error('SAME');
                                 this.$().addClass("success").removeClass("error");
                                  this.$().attr('title',null);
                                  $("#" + this.$().attr('id')).tooltip("destroy");
@@ -644,7 +637,6 @@ App.EmptyTextField = Ember.TextField.extend({
                                  }
                                  return true;
                  } else {
-                                //console.error('NOT SAME');
                                  this.$().addClass("error").removeClass("success");
                                  this.$().attr('title','The two fields does not match.');
                                  this.$().attr('rel','');
@@ -1292,7 +1284,6 @@ App.ModalView = Ember.View.extend({
     },
     // modal dismissed by example clicked in X, make sure the modal view is destroyed
     _viewDidHide: function(self) {
-       //console.error('SET .... CLOSE....');
         if (!self.isDestroyed) {
             self.custom_destroy();
             self.destroy();
@@ -1337,8 +1328,6 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
   var ret = [];
   var style = [];
   var ctx = this;
-  //console.error('BINDSTYLE');
-   //console.error(options.data.view.customWidth);
   // Generate a unique id for this element. This will be added as a
   // data attribute to the element so it can be looked up when
   // the bound property changes.
@@ -1358,13 +1347,11 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
     var propertyUnit = attrs[attr+"-unit"] || attrs["unit"] || '';
 
     var value = Em.get(ctx, property);
-    //console.error('property SIS : ' + property);
     if (value == null) {
         //roperty SIS : view.customWidth
         //  options.data.view.customWidth
 
 
-        console.error(options);
         value = options.data.view.get(property);
 
 
@@ -1534,7 +1521,6 @@ App.I18nTextView = Ember.View.extend({
         }
       } catch (z) {
         //TODO: Do something with this error
-        //console.error(z.stack);
       }
 
       try {
@@ -1544,7 +1530,6 @@ App.I18nTextView = Ember.View.extend({
             val = capitalized;
           }
       } catch (z) {
-          //console.error(z.stack);
       }
 
       return val;
@@ -1601,8 +1586,6 @@ var handlebarsGet = Ember.Handlebars.get, normalizePath = Ember.Handlebars.norma
     var path = attrs[attr],
         normalized;
 
-    //console.error(attrKeys);
-    //console.error(path);
     Ember.assert(fmt("You must provide an expression as the value of bound attribute. You specified: %@=%@", [attr, path]), typeof path === 'string');
 
     normalized = normalizePath(ctx, path, options.data);
@@ -1630,7 +1613,6 @@ var handlebarsGet = Ember.Handlebars.get, normalizePath = Ember.Handlebars.norma
                 }
             } catch (z) {
                 //TODO: Do something with this error
-                //console.error(z.stack);
             }
           if (val != undefined) {
               value = val;
@@ -1646,18 +1628,12 @@ var handlebarsGet = Ember.Handlebars.get, normalizePath = Ember.Handlebars.norma
     observer = function observer() {
       var result = handlebarsGet(ctx, path, options);
 
-      //console.error('OBSERVER CALLED??');
-      ////console.error(options);
-      //console.error(path);
-      ////console.error(ctx);
       Ember.assert(fmt("Attributes must be numbers, strings or booleans, not %@", [result]),
                    result === null || result === undefined || typeof result === 'number' ||
                      typeof result === 'string' || typeof result === 'boolean');
 
 
       var elem = view.$("[data-bindattr-" + dataId + "='" + dataId + "']");
-       ////console.error("ELEM IS : " + elem);
-       ////console.error(elem);
       // If we aren't able to find the element, it means the element
       // to which we were bound has been removed from the view.
       // In that case, we can assume the template has been re-rendered
@@ -1674,8 +1650,6 @@ var handlebarsGet = Ember.Handlebars.get, normalizePath = Ember.Handlebars.norma
       Ember.View.applyAttributeBindings(elem, attr, result);
 
       try {
-            //console.error(elem);
-            //console.error(this);
             if (attr.substr(0,5) === 'data-') {
                 jq( elem.selector ).attr(attr, App.getI18NValue(path));
             }
@@ -1683,7 +1657,6 @@ var handlebarsGet = Ember.Handlebars.get, normalizePath = Ember.Handlebars.norma
                 jq( elem.selector ).attr(attr, App.getI18NValue(path));
             }
       } catch (ee) {
-            //console.error(ee.stack);
       }
 
     };
@@ -1710,21 +1683,17 @@ var handlebarsGet = Ember.Handlebars.get, normalizePath = Ember.Handlebars.norma
     if (attr === 'value') {
         ret.push(attr + '="' + value + '"');
     }
-    ////console.error(attr);
   }, this);
   // Add the unique identifier
   // NOTE: We use all lower-case since Firefox has problems with mixed case in SVG
   ret.push('data-bindattr-' + dataId + '="' + dataId + '"');
   } catch (zz) {
-    //console.error(zz.stack);
   }
-  //console.error("COMPLETED");
   return new Ember.Handlebars.SafeString(ret.join(' '));
 });
 
 
 } catch (z) {
-//console.error(z.stack);
 }
 
 

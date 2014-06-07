@@ -110,7 +110,6 @@ App.ProjectIamIndexController = Ember.ObjectController.extend({
                     this.get('roles').pushObject(this.get('content.roles')[i]);
                 }
             } catch (ee) {
-                console.error(ee.stack);
             }
         }.observes('content.roles.@each'),
 
@@ -143,7 +142,6 @@ App.ProjectIamIndexController = Ember.ObjectController.extend({
                             try {
                                 tag['name'] = Ember.View.views['new_tag'].value;
                             } catch (ee) {
-                                console.error(ee.stack);
                             }
 
                             //console.error(this.get('content.tags'));
@@ -154,7 +152,6 @@ App.ProjectIamIndexController = Ember.ObjectController.extend({
                     }
 
                 } catch (e) {
-                    console.error(e.stack);
                 }
             },
             removeLastRole: function() {
@@ -183,10 +180,8 @@ App.ProjectIamIndexController = Ember.ObjectController.extend({
                             try {
                                 role['name'] = this.get('new_role_value');
                             } catch (ee) {
-                                console.error(ee.stack);
                             }
 
-                            //console.error(this.get('content.tags'));
                             this.get('content.roles').pushObject(role);
                             //this.propertyDidChange("tags");
                             this.send('removeLastRole');
@@ -196,7 +191,6 @@ App.ProjectIamIndexController = Ember.ObjectController.extend({
                     }
 
                 } catch (e) {
-                    console.error(e.stack);
                 }
             },
             cancel: function() {
@@ -208,10 +202,7 @@ App.ProjectIamIndexController = Ember.ObjectController.extend({
 
                     //Restore from backup object
                     this.set('content.tags',this.get('backupTags').slice(0));
-                    console.error(this.get('content.tags'));
 
-                    console.error('backup ROLES are ');
-                    console.error(this.get('backupRoles'));
                     if (this.get('notCurrentUser')) {
                         this.set('content.roles',this.get('backupRoles').slice(0));
                     }
@@ -221,15 +212,12 @@ App.ProjectIamIndexController = Ember.ObjectController.extend({
                     resetValues(this, ['errorMsg', 'successMsg']);
             },
             update: function() {
-                     console.error('UPDATE is...');
                      if (this.get('content.isDirty') || this.get('tagChanged')) {
                          var self = this;
                          this.send('addMoreTags');
                          try {
-                                console.error("WILL ADD : ");
                                 this.set('content.tags', this.get('tags'));
                          } catch (e) {
-                             console.error(e.stack);
                          }
 
                             try {
@@ -246,25 +234,21 @@ App.ProjectIamIndexController = Ember.ObjectController.extend({
                                        }
                                     }
                                  }
-                                 console.error(formIsValid);
                                  if (formIsValid) {
                                      AppController.setStartLoadingWithDelay();
                                      this.get('content').save().then(function(e) {
                                          //On Delete, we do not return any content so it will go into Failure... since no object were returned...
                                          //OK GREAT
                                          //self.set('content', e);
-                                         console.error(e);
                                          try {
                                             self.set('backupTags', self.get('content.tags').slice(0));
                                          } catch (ee) {
-                                            console.error(ee.stack);
                                          }
                                          self.set('tagChanged', false);
 
                                          try {
                                              self.set('backupRoles', self.get('content.roles').slice(0));
                                          } catch (ee) {
-                                             console.error(ee.stack);
                                          }
                                          self.set('rolesChanged', false);
 
@@ -284,7 +268,6 @@ App.ProjectIamIndexController = Ember.ObjectController.extend({
                                     });
                                  }
                             } catch (z) {
-                                console.error(z.stack);
                             }
                      }
             },

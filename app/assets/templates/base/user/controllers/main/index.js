@@ -25,23 +25,17 @@ App.MainIndexController = Ember.ObjectController.extend({
     //projects: [],  //--removed somehow this breaks...
     pendingInvites: function() {
         var pendingProjects = [];
-        console.error('zz');
         try {
             var projects = this.get('projects');
 
             var projectLen = this.get('projects').length;
-            console.error(this.get('projects'));
-            console.error(this.get('projects').length);
             for (var i = 0; i < projectLen; i++) {
                 if ((projects[i].get('type') == 'invited') && (projects[i].get('invitetoken') != null)) {
                     pendingProjects.push(projects[i]);
                 }
             }
         } catch (ee) {
-            console.error(ee.stack);
         }
-        console.error('z33');
-        console.error(pendingProjects);
         return pendingProjects;
     }.observes('projects','projects.@each','projects.@each.invitetoken').property('projects.@each','projects.@each.invitetoken'),
     actions: {
@@ -78,7 +72,6 @@ App.MainIndexController = Ember.ObjectController.extend({
                                                    //m.send('close');
                                                 });
                                             } catch (e) {
-                                                    console.error(e.stack);
                                             }
                                      }
                                  }

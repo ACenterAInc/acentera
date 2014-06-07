@@ -31,7 +31,6 @@ App.ProjectProvidersController = Ember.ObjectController.extend({
                         jq("#" + provider).addClass("selborder");
                     }
                 } catch (e) {
-                    console.error(e.stack);
                 }
             },
             cancelNewProvider: function(e) {
@@ -89,7 +88,6 @@ App.ProjectProvidersController = Ember.ObjectController.extend({
                          self.set('errorMsg', App.getI18NValue('error_invalid_fields_values'));
                  }
                 } catch (ew) {
-                    console.error(ew.stack);
                 }
             }
         }

@@ -543,7 +543,7 @@ var fixLeftMenu = function() {
             $('#menu').affix({offset: {top: 0}}, 100).css({height: menuHeight});
         }
     } catch (e) {
-        //console.error(e.stack);
+        //console.log(e.stack);
         //setTimeout(fixLeftMenu(), 3000);
     }
 };
@@ -567,7 +567,7 @@ try {
      jq("[data-original-title]").tooltip();
   } catch (e) {
   }
-//console.error('resize screen');
+//console.log('resize screen');
    if (resizeInterval == null) {
         if (stop == undefined) {
                 resizeInterval = setInterval(function() {
@@ -1106,7 +1106,7 @@ function getParentModel(c, str) {
          }
          return false;
     } catch (e) {
-        //console.error(e.stack);
+        //console.log(e.stack);
         return false;
     }
 }
@@ -1150,7 +1150,7 @@ function getDisplayNameForStr(c, str, model,parent) {
         if (model == undefined) {
             return "Undefined";
         } else {
-            //console.error("RETURNING : " + model.get('name'));
+            //console.log("RETURNING : " + model.get('name'));
             return model.get('name');
         }
     }
@@ -1263,15 +1263,15 @@ var startPolling = function(desktop, dtid, token, email, id) {
 
                 try {
                   var dataMsg = jQuery.parseJSON(message.data);
-                  //console.error("AJAX ASYNC RECEIVED : " + dataMsg);
+                  //console.log("AJAX ASYNC RECEIVED : " + dataMsg);
                   try {
                     if( Object.prototype.toString.call( dataMsg.js ) === '[object Array]' ) {
-                       console.error("AJAX ASYNC IS AN ARRAY..");
+                      // console.log("AJAX ASYNC IS AN ARRAY..");
                        for (var i = 0; i < dataMsg.js.length; i++) {
                          var element = dataMsg.js[i];
                          try {
                             //console.log('eval : ' + element);
-                            console.error(element);
+                           // console.log(element);
                             eval(element);
                          } catch (ee) {
                             setTimeout(function() {
@@ -1478,7 +1478,7 @@ var sendPostMessage = function(msg, postMessage, asynchronous, callback, returnD
                err: null,
                then : function(f, d) {
                    try {
-                       console.error("GOT CALLED THEN");
+                      // console.log("GOT CALLED THEN");
                        if ((this.err == null) && (this.r == null)) {
                          if (this.maxtimeout--<= 0) {
                              return;
@@ -1493,14 +1493,14 @@ var sendPostMessage = function(msg, postMessage, asynchronous, callback, returnD
                          }
                          return;
                        }
-                       console.error('RECEIVED DATA.. LETS PROCESS');
+                      // console.log('RECEIVED DATA.. LETS PROCESS');
                        if (this.err != null) {
                           try {return d(this.err);} catch (ee) {}
                           return null;
                        }
                        return f(this.r);
                    } catch (zz) {
-                     console.error(zz.stack);
+                    // console.log(zz.stack);
                    }
                }
        }
@@ -1636,7 +1636,7 @@ var sendPostMessage = function(msg, postMessage, asynchronous, callback, returnD
           err: null,
           then : function(f, d) {
               try {
-                  console.error("GOT CALLED THEN");
+                 // console.log("GOT CALLED THEN");
                   if ((this.err == null) && (this.r == null)) {
                     if (this.maxtimeout--<= 0) {
                         return;
@@ -1651,7 +1651,7 @@ var sendPostMessage = function(msg, postMessage, asynchronous, callback, returnD
                     }
                     return;
                   }
-                  console.error('RECEIVED DATA.. LETS PROCESS');
+                 // console.log('RECEIVED DATA.. LETS PROCESS');
                   if (this.err != null) {
                      try {
                         return d(this.err);
@@ -1661,7 +1661,7 @@ var sendPostMessage = function(msg, postMessage, asynchronous, callback, returnD
                   }
                   return f(this.r);
               } catch (zz) {
-                console.error(zz.stack);
+               // console.log(zz.stack);
               }
           }
       }
@@ -1694,7 +1694,7 @@ var sendPostMessage = function(msg, postMessage, asynchronous, callback, returnD
 
                   });
               } else {
-                  console.error('INVALID OPERATION');
+                 // console.log('INVALID OPERATION');
               }
 
 
@@ -1876,7 +1876,7 @@ function resetValues(controller, array) {
 
             var v = Ember.View.views[entry];
             if ( v != null ) {
-                //console.error(v);
+                //console.log(v);
                 $("#" + entry).removeClass("success").removeClass("error");
             }
         } catch (e) {
@@ -1984,14 +1984,14 @@ function updateControllerOnlyAfterLoaded ( ctrl, key, obj, counter) {
 
     if (ctrl.get('loaded')) {
 
-        console.error("after loaded " + key);
-        console.error(key + " is ");
-        console.error(obj);
+       //// console.log("after loaded " + key);
+       // console.log(key + " is ");
+       // console.log(obj);
 
         ctrl.get('content').set(key,obj);
         ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') - 1 );
-        console.error("RUNNING-- LOADED A : " + running);
-        console.error("key and data : " + key + " and obj : " + obj);
+       // console.log("RUNNING-- LOADED A : " + running);
+       // console.log("key and data : " + key + " and obj : " + obj);
         running--;
     } else {
         if ( counter <= 0 ) {
@@ -2015,10 +2015,10 @@ function updateControllerOnlyWhenFulfilled( ctrl, key, obj) {
     }
     if (obj.isFulfilled) {
         running--;
-        console.error("RUNNING-- LOADED B : " + running);
-        console.error("only when " + key);
-        console.error(key + " is ");
-        console.error(obj.get('content'));
+       // console.log("RUNNING-- LOADED B : " + running);
+       // console.log("only when " + key);
+       // console.log(key + " is ");
+       // console.log(obj.get('content'));
         ctrl.get('content').set(key,obj.get('content'));
         Ember.run.next(function() {
                  ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') - 1 );
@@ -2032,14 +2032,14 @@ function updateControllerOnlyWhenFulfilled( ctrl, key, obj) {
 }
 
 function onlyAfterAllObjectLoaded(dataMsg, ctrl) {
-    //console.error('RELOAD?' + ctrl.get('cookieLoaded'));
+    //console.log('RELOAD?' + ctrl.get('cookieLoaded'));
     if (ctrl.get('cookieLoaded') < 0) {
 
         var allLoaded = true;
 
         /*for(var key in dataMsg) {
             try {
-               console.error(key);
+              // console.log(key);
                 if (key.endsWith("_acenteraobj")) {
                   //  Ember.run.next(function() {
                      var toFindObject = dataMsg[key];
@@ -2062,7 +2062,7 @@ function onlyAfterAllObjectLoaded(dataMsg, ctrl) {
          if (allLoaded) {
             for(var key in dataMsg) {
                         try {
-                               //console.error(key);
+                               //console.log(key);
                                if (key.endsWith("_acenteraobj")) {
                                   //do nothing
                                } else {
@@ -2075,19 +2075,19 @@ function onlyAfterAllObjectLoaded(dataMsg, ctrl) {
                                                 running++;
 
 
-                                            //    console.error("WILL SET OF " + key);
+                                            //   // console.log("WILL SET OF " + key);
 
                                                 ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') + 1 );
                                                 updateControllerOnlyAfterLoaded(ctrl, key, dataMsg[key], 0);
                                             }
                                         } catch (w) {
-                                            console.error(w.stack);
+                                           // console.log(w.stack);
                                         }
                                         //});
                                     }
                                }
                         } catch (ignore) {
-                            console.error(ignore.stack);
+                           // console.log(ignore.stack);
                         }
             }
          } else {
@@ -2125,7 +2125,7 @@ function updateControllerFromCookie(ctrl, controller) {
           dataMsg = jQuery.parseJSON(c);
        }
     } catch (e) {
-        console.error(e.stack);
+       // console.log(e.stack);
     }
     var store = controller.get('store');
 
@@ -2133,7 +2133,7 @@ function updateControllerFromCookie(ctrl, controller) {
     ctrl.set('cookieLoaded', -1 );
     for(var key in dataMsg) {
         try {
-               console.error(key);
+              // console.log(key);
                if (key.endsWith("_acenteraobj")) {
                   //  Ember.run.next(function() {
                      var toFindObject = dataMsg[key];
@@ -2144,7 +2144,7 @@ function updateControllerFromCookie(ctrl, controller) {
                      var s = controller.get('store');
 
                      running++;
-                     console.error("RUNNING++ updateController A : " + running);
+                    // console.log("RUNNING++ updateController A : " + running);
                      var f = s.find(theType, theId );
                      ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') + 1 );
                      updateControllerOnlyWhenFulfilled(ctrl, theKey, f);
@@ -2156,22 +2156,22 @@ function updateControllerFromCookie(ctrl, controller) {
 
                                 ctrl.get('content').set(key, dataMsg[key]);
                                 running++;
-                                console.error("RUNNING++ updateController B : " + running);
+                               // console.log("RUNNING++ updateController B : " + running);
                                 ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') + 1 );
                                 updateControllerOnlyAfterLoaded(ctrl, key, dataMsg[key], 0);
                             }
                         } catch (w) {
-                            console.error(w.stack);
+                           // console.log(w.stack);
                         }
                         //});
                     }*/
                }
         } catch (ignore) {
-            console.error(ignore.stack);
+           // console.log(ignore.stack);
         }
     }
 
-     console.error('hack');
+    // console.log('hack');
      Ember.run.later(function() {
         onlyAfterAllObjectLoaded(dataMsg, ctrl);
      }, 10);
@@ -2181,7 +2181,7 @@ function updateControllerFromCookie(ctrl, controller) {
 function updateCookie(model, key, val) {
 try {
     controller = AppController.get('currentController');
-    console.error(controller);
+   // console.log(controller);
 
     if (model == undefined) {
         return;
@@ -2199,7 +2199,7 @@ try {
         return true;
     }
 
-console.error("COOKIE LOADED : " + controller.get('cookieLoaded'));
+console.log("COOKIE LOADED : " + controller.get('cookieLoaded'));
     if (controller.get('cookieLoaded') >= 0) {
         return true;
     }
@@ -2216,7 +2216,7 @@ console.error("COOKIE LOADED : " + controller.get('cookieLoaded'));
           dataMsg = jQuery.parseJSON(c);
        }
     } catch (e) {
-        console.error(e.stack);
+       // console.log(e.stack);
     }
 
     //If wrong cookie...
@@ -2232,7 +2232,7 @@ console.error("COOKIE LOADED : " + controller.get('cookieLoaded'));
     }
 
     if (typeKey != null) {
-    console.error(dataMsg);
+   // console.log(dataMsg);
         dataMsg[key+"_acenteraobj"] = {
             id : val.get('id'),
             type : typeKey,
@@ -2245,11 +2245,11 @@ console.error("COOKIE LOADED : " + controller.get('cookieLoaded'));
     }
 
     //delete dataMsg[key];
-    console.error('CREATING COOKIE ' + cName);
-    console.error(dataMsg);
+   // console.log('CREATING COOKIE ' + cName);
+   // console.log(dataMsg);
     createCookie(cName, JSON.stringify( dataMsg ) );
  } catch (cookieError) {
-    console.error(cookieError.stack);
+   // console.log(cookieError.stack);
  }
 }
 
@@ -2418,23 +2418,23 @@ App.BaseRoute = Ember.Route.extend({
   markAsLoaded: function(c,m) {
     try {
         var self = this;
-        //console.error('markAsLoaded');
+        //console.log('markAsLoaded');
 
         try {
             if (self.get('tmpModelRunningCount') >= 1) {
                   running--;
-                  console.error("RUNNING-- tmpModelRunningCount : " + running);
+                 // console.log("RUNNING-- tmpModelRunningCount : " + running);
                   self.set('tmpModelRunningCount',0);
             }
         } catch (eee) {
-            console.error(eee.stack);
+           // console.log(eee.stack);
         }
 
         Ember.run.next(function() {
               if (running <= 0) {
                   Ember.run.next(function() {
                     Ember.run.next(function() {
-                        //console.error('will call mark as loaded1');
+                        //console.log('will call mark as loaded1');
                         self.markAsLoaded1(c,m);
                         });
                   });
@@ -2449,30 +2449,30 @@ App.BaseRoute = Ember.Route.extend({
               }
           });
       } catch (z) {
-        console.error(z.stack);
+       // console.log(z.stack);
       }
   },
   //Mark view ready if all items where loaded...
   markAsLoaded1: function(c,m) {
         try {
-                //console.error('markAsLoaded1');
+                //console.log('markAsLoaded1');
               var self = this;
               Ember.run.next(function() {
-                    //console.error('running is : ' + running );
+                    //console.log('running is : ' + running );
 
 
 
                     if (running <= 0) {
                         try {
                             running = 0;
-                            //console.error(self.controllerFor('application'));
+                            //console.log(self.controllerFor('application'));
 
                             try {
                                 self.controllerFor("application").set('loading',false);
-                                console.error("WILL MARK AS LOADED FOR " + c.get('constructor'));
+                               //// console.log("WILL MARK AS LOADED FOR " + c.get('constructor'));
                                 if (c.get('loaded') != undefined) {
                                    c.set('loaded', true);
-                                  // console.error("WILL MARK AS LOADED DONE FOR  " + c.get('constructor'));
+                                  //// console.log("WILL MARK AS LOADED DONE FOR  " + c.get('constructor'));
                                 }
                             } catch (eee) {
                             }
@@ -2489,7 +2489,7 @@ App.BaseRoute = Ember.Route.extend({
                                 }, 500);
                             }, 200);
                         } catch (e) {
-                            //console.error(e.stack);
+                            //console.log(e.stack);
                         }
                     } else {
                     setTimeout(function() {
@@ -2500,7 +2500,7 @@ App.BaseRoute = Ember.Route.extend({
                     }
                 });
         } catch (z) {
-            console.error(z.stack);
+           // console.log(z.stack);
         }
   },
   acenteraModel: function() {
@@ -2508,8 +2508,8 @@ App.BaseRoute = Ember.Route.extend({
          running = 0;
      }
      running++;
-     console.error("RUNNING++ B : " + running);
-     console.error("RUNNING MODEL.... AT : " + running);
+    // console.log("RUNNING++ B : " + running);
+    // console.log("RUNNING MODEL.... AT : " + running);
      this.set('tmpModelRunningCount', 1);
      if (AppController != null) {
          AppController.setStartLoading();
@@ -2521,7 +2521,7 @@ App.BaseRoute = Ember.Route.extend({
                 running = 0;
         }
         running++;
-        console.error("ROUTE CONTROLLER Z A+" + running);
+       // console.log("ROUTE CONTROLLER Z A+" + running);
         //if AppController is null make sure we set the variable
         if (AppController == null) {
             AppController=controller.get("controllers.application");
@@ -2569,8 +2569,8 @@ App.BaseRoute = Ember.Route.extend({
                 this.controllerFor('application').send('leftmenu', leftmenuTpl);
             }
 
-            //console.error(controller);
-            //console.error("TEST " + controller);
+            //console.log(controller);
+            //console.log("TEST " + controller);
 
             resetValues(this, ['errorMsg', 'successMsg']);
             controller.set('loaded', false);
@@ -2588,15 +2588,15 @@ App.BaseRoute = Ember.Route.extend({
                 this.controllerFor('application').send('setCurrentController', leftmenuCtrl);
             }
 
-            //console.error("LEFT MENUM MODEL IS");
+            //console.log("LEFT MENUM MODEL IS");
             var leftmenuModel = this.get('leftmenuModel');
-            //console.error(leftmenuModel);
+            //console.log(leftmenuModel);
             if (leftmenuModel != undefined) {
                 this.controllerFor('application').send('setLeftmenuModel', leftmenuModel);
             }
 
             var topbarModel = this.get('topbarModel');
-            //console.error(leftmenuModel);
+            //console.log(leftmenuModel);
             if (topbarModel != undefined) {
                 this.controllerFor('application').send('setTopbarModel', topbarModel);
             } else {
@@ -2605,17 +2605,17 @@ App.BaseRoute = Ember.Route.extend({
 
 
         } catch (e) {
-            console.error(e.stack);
+           // console.log(e.stack);
         }
 
       } catch (e) {
         //in case of any exception we reduce running...
-        console.error(e.stack);
+       // console.log(e.stack);
       }
       //make sure to reduce running since we have finished calling everything and view can render
 
       running--;
-      console.error("ROUTE CONTROLLER Z A-" + running);
+     // console.log("ROUTE CONTROLLER Z A-" + running);
       var s = this;
       Ember.run.later(function() {
             s.markAsLoaded(controller,model);
@@ -2628,7 +2628,7 @@ App.BaseRoute = Ember.Route.extend({
   setupPrivateController : function(controller,model) {
      //this._super(controller, model);
      running--;
-     console.error("SETUP PRIVATE CONTROLLER Z A-" + running);
+    // console.log("SETUP PRIVATE CONTROLLER Z A-" + running);
   },
   getNewRoute: function() {
     return true;
@@ -2672,7 +2672,7 @@ App.BaseView = Ember.View.extend({
         var self = this;
         //setTimeout(function() {
                 try {updateControllerFromCookie(self.get('controller'), self.get('controller'));} catch (eew) {
-                console.error(eew.stack);
+               //// console.log(eew.stack);
             }
         //}, 3000);
 
@@ -2734,13 +2734,13 @@ App.IfEqualComponent = Ember.Component.extend({
   //v: 'test',
   isEqual: function() {
     //this.set('vv', this._parentView);
-    //console.error(this._parentView);
-    //console.error(this._parentView.get('view'));
-    //console.error("PARAM 1 is : " + this.get('param1'));
-    //console.error(this.get('param2'));
-    //console.error("" + this.get('param1') == "" + this.get('param2'));
+    //console.log(this._parentView);
+    //console.log(this._parentView.get('view'));
+    //console.log("PARAM 1 is : " + this.get('param1'));
+    //console.log(this.get('param2'));
+    //console.log("" + this.get('param1') == "" + this.get('param2'));
     //this.set('v', this._parentView);
-    //console.error('v');
+    //console.log('v');
     return ("" + this.get('param1') == "" + this.get('param2'));
   }.property('view','size','type','param1', 'param2','v'),
   startWith: function() {
@@ -2800,10 +2800,10 @@ App.ApplicationRoute = Ember.Route.extend({
 
 
             running++;
-            console.error('SET RUNNING TO A1+ ' + running);
+           // console.log('SET RUNNING TO A1+ ' + running);
             model.account.then(function(e) {
                 controller.set('account', e.get('content')[0]);
-                console.error('SET RUNNING TO A1-' + running);
+               // console.log('SET RUNNING TO A1-' + running);
                 running--;
                 if (controller.get('account.id') == undefined) {
                     window.location.href=prefix + "logout";
@@ -2811,7 +2811,7 @@ App.ApplicationRoute = Ember.Route.extend({
             });
 
             /*//controller.set('projects', model.projects);
-            console.error('SET RUNNING TO A2+ ' + running);
+           // console.log('SET RUNNING TO A2+ ' + running);
             running++;
             model.projects.then(function(e) {
                     controller.set('projects', e.get('content'));
@@ -2843,7 +2843,7 @@ App.ApplicationRoute = Ember.Route.extend({
                        outlet: 'modal'
                      });
                  } catch (ee) {
-                     //console.error(ee.stack);
+                     //console.log(ee.stack);
                  }
            },
 
@@ -2911,7 +2911,7 @@ App.ApplicationController = Ember.Controller.extend({
               innerDelay = delay;
               if (running <= 0) {
                    running = 1;
-                   console.error("setStartLoading RESET TO " + running);
+                  // console.log("setStartLoading RESET TO " + running);
                 }
           } else {
               self.set('loading',true);
@@ -2947,7 +2947,7 @@ App.ApplicationController = Ember.Controller.extend({
                                       hidDiv.removeClass("hidden").addClass("visible");
                                       hidImg.removeClass("hidden").addClass("visible");
                                   } catch (e) {
-                                    //console.error(e.stack);
+                                    //console.log(e.stack);
                                   }
                               }
                           }
@@ -2988,7 +2988,7 @@ App.ApplicationController = Ember.Controller.extend({
                     }, maxUserWaitTime);
             }
        } catch (wee) {
-            console.error(wee.stack);
+           // console.log(wee.stack);
        }
     },
     setEndLoading: function() {
@@ -3009,7 +3009,7 @@ App.ApplicationController = Ember.Controller.extend({
                             }
                         }
 
-                        //console.error("HAS LOADED.. timeElapsed vs : " + minElapseLimit);
+                        //console.log("HAS LOADED.. timeElapsed vs : " + minElapseLimit);
                         if (timeElapsed >= minElapseLimit) {
                                 self.set('loading', false);
                                 try {
@@ -3030,22 +3030,22 @@ App.ApplicationController = Ember.Controller.extend({
                                       hidImg.addClass("hidden").removeClass("visible");
                                       self.set('startLoadingTS', undefined);
                                  } catch (e) {
-                                    console.error(e.stack);
+                                   // console.log(e.stack);
                                  }
 
                                  //alert('set to -5 ... ' + timeElapsed + " vs " + minElapseLimit);
                                  running = -5;
                                  Ember.run.once(self, function() {
                                     try {
-                                        console.error("HAS LOADED?? : " + AppController.get('hasLoaded'));
+                                       // console.log("HAS LOADED?? : " + AppController.get('hasLoaded'));
                                         if (  ! AppController.get('hasLoaded') ) {
                                                 AppController.set('hasLoaded', true);
                                                 self.set('startLoadingTS', 0);
-                                                console.error("WILL SET TO TRUE : " + AppController.get('hasLoaded'));
+                                               // console.log("WILL SET TO TRUE : " + AppController.get('hasLoaded'));
                                                 self.set('controllers.application.hasLoaded',true);
-                                                console.error("SET TO TRUE : " + AppController.get('hasLoaded'));
+                                               // console.log("SET TO TRUE : " + AppController.get('hasLoaded'));
                                                 self.set('hasLoaded',true);
-                                                console.error("SET TO TRUE : " + self.get('hasLoaded'));
+                                               // console.log("SET TO TRUE : " + self.get('hasLoaded'));
                                         }
 
                                         try {
@@ -3061,11 +3061,11 @@ App.ApplicationController = Ember.Controller.extend({
                                                 self.send("refreshBreadcrumb");
                                             }
                                         } catch (e) {
-                                            console.error(e.stack);
+                                           // console.log(e.stack);
                                         }
 
                                     } catch (ee) {
-                                    console.error(ee.stack);
+                                   // console.log(ee.stack);
                                     }
                                  });
                         } else {
@@ -3090,7 +3090,7 @@ App.ApplicationController = Ember.Controller.extend({
                     }
                 }
           } catch (err) {
-            console.err(err.stack);
+           // console.err(err.stack);
           }
       },
 
@@ -3139,7 +3139,7 @@ App.ApplicationController = Ember.Controller.extend({
                                 while ( ! tmpModel.breadcrumbEnabled ) {
 
                                     if (prevention-- <= 0) {
-                                        //console.error('too much breadcrumb level... something is not good');
+                                        //console.log('too much breadcrumb level... something is not good');
                                         break;
                                     }
                                     if ( ! tmpModel.useParentModel ) {
@@ -3168,7 +3168,7 @@ App.ApplicationController = Ember.Controller.extend({
                       old = { routename : "" };
                   }
 
-//console.error(myController.get('content'));
+//console.log(myController.get('content'));
                   z.name = getDisplayNameForStr(myController,tt[i].routeName, tt[i].get('content'), z.parent)
 
 
@@ -3187,7 +3187,7 @@ App.ApplicationController = Ember.Controller.extend({
                           }
                       }
                 } catch (e) {
-                    //console.error(e.stack);
+                    //console.log(e.stack);
                 }
                 lastController = myController;
 
@@ -3213,9 +3213,9 @@ App.ApplicationController = Ember.Controller.extend({
                     this.set('currentModel', br);
             },
         /* changeContext: function(e, v) {
-              //console.error('CHANGE CONTEXT' + this.get('currentPath'));
-              //console.error(e.get('id'));
-              //console.error(e);
+              //console.log('CHANGE CONTEXT' + this.get('currentPath'));
+              //console.log(e.get('id'));
+              //console.log(e);
               var latestPath = this.get('currentPath');
               if (v == undefined) {
                 //this.transitionToRoute("blank");
@@ -3268,7 +3268,7 @@ App.ApplicationController = Ember.Controller.extend({
                     //topMnu.rerender();
                 }
             } catch (e) {
-                console.error(e.stack);
+               // console.log(e.stack);
             }
          },
          logout: function() {
@@ -3295,7 +3295,7 @@ App.ApplicationController = Ember.Controller.extend({
                  }
                }
             } catch (ewww) {
-               //console.error(ewww.stack)
+               //console.log(ewww.stack)
             }
 
 
@@ -3338,12 +3338,12 @@ if (App.TestData == undefined) {
 App.ApplicationSerializer = DS.RESTSerializer.extend({
     extractSingle: function(store, type, payload, id, requestType) {
         var result;
-        console.error("EXTRACT SINGLE");
-        console.error(store);
-        console.error(type);
-        console.error(payload);
-        console.error(id);
-        console.error(requestType);
+       // console.log("EXTRACT SINGLE");
+       // console.log(store);
+       // console.log(type);
+       // console.log(payload);
+       // console.log(id);
+       // console.log(requestType);
 
         var model = type.typeKey;
 
@@ -3359,26 +3359,26 @@ App.ApplicationSerializer = DS.RESTSerializer.extend({
             if (relationship.kind === 'hasMany') {
 
                 embedKey = key;
-                console.error(embedKey);
-                console.error(result);
+               // console.log(embedKey);
+               // console.log(result);
                 ////alert(embedKey);
-                  console.error('tttaaa');
-                  console.error(result);
+                 // console.log('tttaaa');
+                 // console.log(result);
 
                 try {
-                    console.error(result[key]);
+                   // console.log(result[key]);
                     for(var index in result) {
                         var attr = result[index];
-                        console.error(attr);
+                       // console.log(attr);
                         if (attr[key] != undefined) {
-                            console.error(attr[key]);
+                           // console.log(attr[key]);
                             var tempObj = attr[key];
                             if (result[key] == undefined) {
                                 result[key] = tempObj;
                             }
                             attr[key] = [];
                             for (var i = 0; i < tempObj.length; i++) {
-                                console.error(tempObj[i]);
+                               // console.log(tempObj[i]);
                                 attr[key].push(tempObj[i].id);
                             }
                         }
@@ -3411,7 +3411,7 @@ App.set("i18n", Ember.Object.create({}));
 
 function updateModel(object) {
     var s = AppController.get('store');
-    console.error(s);
+   // console.log(s);
     try {
         for(var index in object) {
             var obj = object[index];
@@ -3426,7 +3426,7 @@ function updateModel(object) {
         }
 
     } catch (ex){
-        console.error(ex.stack);
+       // console.log(ex.stack);
     }
 }
 
@@ -3443,7 +3443,7 @@ try {
             var m = acenteramodels;
             for(var v in m) {
                 try {
-                   // console.error(m[v]);
+                   //// console.log(m[v]);
                     if (m[v] != null) {
                         var l = m[v];
                         if (l != undefined) {
@@ -3453,7 +3453,7 @@ try {
                         }
                     }
                 } catch (e) {
-                    console.error(e.stack);
+                   // console.log(e.stack);
                 }
             }
             maxItemRetry--;
@@ -3463,7 +3463,7 @@ try {
     var hasCtrlItem = true;
     var maxCtrlItemRetry = 230;
     while(hasCtrlItem && maxCtrlItemRetry >= 0) {
-        console.error(acenteracontrollers.length);
+       // console.log(acenteracontrollers.length);
         var ctrl = acenteracontrollers;
         hasCtrlItem=true;
         for(var v in ctrl) {
@@ -3479,13 +3479,13 @@ try {
 
                 }
             } catch (e) {
-                console.error(e.stack);
+               // console.log(e.stack);
             }
         }
         maxCtrlItemRetry--;
     }
 
-//console.error(acenteramodels);
+//console.log(acenteramodels);
 
 
     loadingEmber=false;
@@ -3495,7 +3495,7 @@ try {
         App.advanceReadiness();
 
   }catch(zzzz) {
-        console.error(zzzz.stack);
+       // console.log(zzzz.stack);
   }
 
   setTimeout(function() {
@@ -3521,7 +3521,7 @@ App.MapRoutes = function(routes) {
 
 
 } catch (acenteraerror) {
-    console.error(acenteraerror.stack);
+   // console.log(acenteraerror.stack);
 }
 
 

@@ -38,7 +38,6 @@ App.ServerAdapter = CustomRESTAdapter.extend({
                 return "api/project/" + App.Project.params.project_id + "/server/" + suffix;
               }
           } catch (e) {
-             console.error(e.stack);
           }
       }
 });

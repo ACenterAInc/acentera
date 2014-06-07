@@ -196,26 +196,7 @@ public class Auth extends Controller {
 
     public static Result logout() {
 
-        session().remove(SecurityController.AUTH_TOKEN);
-        session().remove(SecurityController.DESKTOP_TOKEN);
-        response().discardCookie(SecurityController.AUTH_TOKEN);
-        response().discardCookie(SecurityController.DESKTOP_TOKEN);
-
-
-
-        //TODO: Send a message to other play web servers ?
-
-        WebSession websession = null;
-        websession = SecurityController.getWebSession();
-
-        if (websession != null) {
-            websession.removeAllDesktop();
-            websession.removeSession();
-        }
-
-        SecurityController.getSubject().logout();
-
-
+        SecurityController.logout(ctx());
         return redirect("/");
     }
 
@@ -399,9 +380,6 @@ captcha*/
         UserImpl.saveOrUpdate(theUser);
 
         PluginManager.notifyEvent(PluginEvent.WEBUSER_USER_CREATED, theUser);
-
-
-        HibernateSessionFactory.getSession().getTransaction().commit();
 
         WebUser wu = new WebUser(theUser.getEmail(), theUser.getPassword(), new UsernamePasswordToken(theUser.getEmail(), theUser.getPassword()));
         if (wu.authenticate()) {

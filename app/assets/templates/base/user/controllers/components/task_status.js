@@ -210,7 +210,6 @@ App.TaskStatusView = Ember.View.extend({
        } catch (err) {
            console.error(err.stack);
        }
-       console.error('received asyncResponse End');
     }
   }
 });

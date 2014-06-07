@@ -10,7 +10,6 @@ App.Sshkey = DS.Model.extend({
 
 App.SshkeyAdapter = CustomRESTAdapter.extend({
      buildURL: function(record, suffix,z ) {
-          //not great.. console.error(App.Provider.params);
           try {
               if (suffix == undefined) {
                 return "api/project/" + App.Project.params.project_id + "/sshkeys";
@@ -18,7 +17,6 @@ App.SshkeyAdapter = CustomRESTAdapter.extend({
                 return "api/project/" + App.Project.params.project_id + "/sshkey/" + suffix;
               }
           } catch (e) {
-             console.error(e.stack);
           }
       }
 });

@@ -73,7 +73,6 @@ App.ProjectSshkeysController = Ember.ObjectController.extend({
                          self.set('errorMsg', App.getI18NValue('error_invalid_fields_values'));
                  }
                 } catch (ew) {
-                    console.error(ew.stack);
                 }
             }
         }

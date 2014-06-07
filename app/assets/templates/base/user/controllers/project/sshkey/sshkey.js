@@ -28,7 +28,6 @@ App.ProjectSshkeyIndexController = Ember.ObjectController.extend({
         needs: ["project"],
         content: null,
         breadcrumbTitle: function() {
-            console.error('SSH KEY INDEX');
             return this.get('content').get('name');
         }.property('content.name'),
         successMsg: null,

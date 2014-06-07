@@ -48,7 +48,6 @@ App.ProjectQuotaIndexController = Ember.ObjectController.extend({
                          this.get('content').save().then(function(e) {
                              //On Delete, we do not return any content so it will go into Failure... since no object were returned...
                              //OK GREAT
-                             console.error(e);
                              //self.set('tags', e.get('content.tags'));
 
                              //Refresh of the Projects table...

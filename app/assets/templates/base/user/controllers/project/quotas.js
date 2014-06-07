@@ -27,7 +27,6 @@ App.ProjectQuotasController = Ember.ObjectController.extend({
                         jq("#" + provider).addClass("selborder");
                     }
                 } catch (e) {
-                    console.error(e.stack);
                 }
             },
             cancel: function(e) {
@@ -53,13 +52,10 @@ App.ProjectQuotasController = Ember.ObjectController.extend({
 
 
                             AppController.setStartLoadingWithDelay();
-                            console.error('CALLING SAVE');
-                            console.error(q);
                             q.save().then(function(e) {
                                  q.deleteRecord();
                                  //Object will automatically update the browser... lets just close
 
-                                 console.error('GOT SUCCESS');
                                  self.get('controllers.project.content').reload().then(function (e) {
                                         Ember.run.next(self, function() {
                                           running--;
@@ -68,8 +64,6 @@ App.ProjectQuotasController = Ember.ObjectController.extend({
                                  self.send('cancel');
                                  self.transitionToRoute('project.quotas');
                             }, function(response) {
-                                console.error('FAILURE ?');
-                                console.error(response);
                                //if failure
                                //server responded with {"error":"some custom error message"}
                                //alert('ttttFFFFAAAAPPPPP');
@@ -88,7 +82,6 @@ App.ProjectQuotasController = Ember.ObjectController.extend({
                          self.set('errorMsg', App.getI18NValue('error_invalid_fields_values'));
                  }
                 } catch (ew) {
-                    console.error(ew.stack);
                 }
             }
         }

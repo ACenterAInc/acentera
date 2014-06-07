@@ -3,8 +3,6 @@ App.ProjectProviderIndexRoute = Ember.Route.extend({
        setupPrivateController: function(controller, model) {
             //alert('t1');
             try {
-                console.error('t1');
-                console.error(model);
                 if (model.get('tags') == undefined) {
                            model.set('tags',[]);
                 }
@@ -13,7 +11,6 @@ App.ProjectProviderIndexRoute = Ember.Route.extend({
                 resetValues(this, ['errorMsg', 'successMsg']);
                 controller.set('content', model);
             } catch (e) {
-                console.error(e.stack);
             }
        },
        actions: {
@@ -86,10 +83,8 @@ App.ProjectProviderIndexController = Ember.ObjectController.extend({
                                 try {
                                     tag['name'] = Ember.View.views['new_tag'].value;
                                 } catch (ee) {
-                                    console.error(ee.stack);
                                 }
 
-                                //console.error(this.get('content.tags'));
                                 this.get('content.tags').pushObject(tag);
                                 //this.propertyDidChange("tags");
                                 this.send('removeLastTag');
@@ -115,11 +110,8 @@ App.ProjectProviderIndexController = Ember.ObjectController.extend({
                          var self = this;
                          this.send('addMoreTags');
                          try {
-                                console.error("WILL ADD : ");
-                                console.error(this.get('tags'));
                                 this.set('content.tags', this.get('tags'));
                          } catch (e) {
-                             console.error(e.stack);
                          }
                          AppController.setStartLoadingWithDelay();
 
@@ -130,7 +122,6 @@ App.ProjectProviderIndexController = Ember.ObjectController.extend({
                              try {
                                 self.set('backupTags', self.get('content.tags').slice(0));
                              } catch (ee) {
-                                console.error(ee.stack);
                              }
                              self.set('tagChanged', false);
 

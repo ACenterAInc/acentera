@@ -36,7 +36,6 @@ App.ProjectIamsController = Ember.ObjectController.extend({
 
                         var q = this.get('store').createRecord('ProjectInvite',{});
                         q.set('email', this.get('invite_email'));
-                        console.error(q);
                         AppController.setStartLoadingWithDelay();
                         q.save().then(function(e) {
                              q.deleteRecord();
@@ -68,7 +67,6 @@ App.ProjectIamsController = Ember.ObjectController.extend({
                      self.set('errorMsg', App.getI18NValue('error_invalid_fields_values'));
              }
             } catch (ew) {
-                console.error(ew.stack);
             }
         }
     }

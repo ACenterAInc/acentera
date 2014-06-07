@@ -39,7 +39,9 @@ import utils.Utils;
 
 
 @Entity
-@Table(name="PARTNER")
+@Table(name="PARTNER", uniqueConstraints =
+    @UniqueConstraint(name = "idx_unique_partner", columnNames={"name"})
+)
 public class Partner  extends AutoIncrementId implements Serializable {
 
     /**
@@ -91,9 +93,6 @@ public class Partner  extends AutoIncrementId implements Serializable {
 
     @Column(name = "demo_task_id")
     private int demo_task_id;
-
-    @Column(name = "scale_or_resize")
-    private long scale_or_resize;
 
     @Column(name = "SUBSCRIPTION_TYPE")
     private int subscriptionType;
@@ -194,10 +193,6 @@ public class Partner  extends AutoIncrementId implements Serializable {
     }
     public long getCloudId() {
         return this.cloudid;
-    }
-
-    public long getOperationInProgress() {
-        return this.scale_or_resize;
     }
 
 

@@ -45,6 +45,8 @@ public class Application extends Controller {
         return controllers.Assets.at(path, file);
     }
 
+
+    @With(AnonymousSecurityController.class)
     public static Result index() {
 
 
@@ -55,10 +57,17 @@ public class Application extends Controller {
                 Subject s = SecurityController.getSubject();
 
                 Session ss = SecurityController.getSession();
-                if (ss == null) {
+
+                Logger.debug("Principal is : " + s.getPrincipal());
+
+                if (ss == null || s.getPrincipal() == null) {
                     throw new ExpiredSessionException("Expired");
                 }
+
+                Logger.debug("AuthtneicateD ? " + s.isAuthenticated());
             } catch (Exception error) {
+                //In case we have other exceptions
+                error.printStackTrace();
                 SecurityController.logout(ctx());
                 return redirect("/");
             }
@@ -79,22 +88,27 @@ public class Application extends Controller {
         response().setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         response().setHeader("EXPIRES", "Sat, 16-Mar-2000 01:11:11 GMT");
 
+        try {
+            Subject s = SecurityController.getSubject();
+
+            Session ss = SecurityController.getSession();
+
+            Logger.debug("With Security Principal is : " + s.getPrincipal());
+            if (ss == null || s.getPrincipal() == null) {
+                throw new ExpiredSessionException("Expired");
+            }
+            Logger.debug("AuthtneicateD ? " + s.isAuthenticated());
+        } catch (Exception error) {
+            //In case we have other exceptions
+            error.printStackTrace();
+            SecurityController.logout(ctx());
+            return redirect("/");
+        }
+
         if ((t != null) && (t.length > 0)) {
             String referer = t[0];
             response().setHeader("REDIRECT", "");
 
-
-            try {
-                Subject s = SecurityController.getSubject();
-
-                Session ss = SecurityController.getSession();
-                if (ss == null) {
-                    throw new ExpiredSessionException("Expired");
-                }
-            } catch (Exception error) {
-                SecurityController.logout(ctx());
-                return redirect("/");
-            }
 
             return ok(index.render("ACenterA Cloud", 1, play.Play.application().configuration().getString("application.env")));
 

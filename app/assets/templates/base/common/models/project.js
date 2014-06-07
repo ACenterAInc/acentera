@@ -18,11 +18,9 @@ App.Project = DS.Model.extend({
 /*
 App.ProjectSerializer = DS.RESTSerializer.extend({
   normalizePayload: function(type, payload) {
-    console.error(payload);
     var tempProviders = payload.project.providers;
     payload.project.providers = [];
 
-    console.error(tempProviders);
     tempProviders.forEach(function(provider) {
       payload.project.providers.push(provider.id);
     });
@@ -43,17 +41,13 @@ App.ProjectInvite = DS.Model.extend({
 
 App.ProjectInviteAdapter = CustomRESTAdapter.extend({
      buildURL: function(record, suffix,z ) {
-          //not great.. console.error(App.Provider.params);
           try {
-          console.error("GOT Z ");
-          console.error(z);
               if (suffix == undefined) {
                 return "api/project/" + App.User.params.project_id + "/invites";
               } else {
                 return "api/project/" + App.User.params.project_id + "/invite/" + suffix;
               }
           } catch (e) {
-             console.error(e.stack);
           }
       }
 });

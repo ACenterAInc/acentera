@@ -8,7 +8,6 @@ App.Tag = DS.Model.extend({
 
 App.TagAdapter = CustomRESTAdapter.extend({
      buildURL: function(record, suffix,z ) {
-          //not great.. console.error(App.Provider.params);
           return null;
       }
 });

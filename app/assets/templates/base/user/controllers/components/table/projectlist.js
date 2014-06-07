@@ -5,7 +5,6 @@ App.ProjectListTable = App.SimpleTable.extend({
     clickRoute: null,
     clickOn: function (e ) {
         /*if (this.get('clickRoute') != undefined) {
-                console.error(e);
                 AppController.transitionToRoute(this.get('clickRoute'), e);
         }*/
     },

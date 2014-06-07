@@ -9,7 +9,6 @@ App.Quota = DS.Model.extend({
 
 App.QuotaAdapter = CustomRESTAdapter.extend({
      buildURL: function(record, suffix,z ) {
-          //not great.. console.error(App.Provider.params);
           try {
               if (suffix == undefined) {
                 return "api/project/" + App.Project.params.project_id + "/quotas";
@@ -17,7 +16,6 @@ App.QuotaAdapter = CustomRESTAdapter.extend({
                 return "api/project/" + App.Project.params.project_id + "/quota/" + suffix;
               }
           } catch (e) {
-             console.error(e.stack);
           }
       }
 });

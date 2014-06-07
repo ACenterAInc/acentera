@@ -85,7 +85,6 @@ App.ProjectServerCreateController = Ember.ObjectController.extend({
 
 
             } catch (e) {
-                console.error(e.stack);
             }
 
         }.observes('selected_provider'),
@@ -103,7 +102,6 @@ App.ProjectServerCreateController = Ember.ObjectController.extend({
                         }
                     }
                 } catch (e) {
-                    console.error(e.stack);
                 }
 
                 d.set('selected', true);
@@ -126,18 +124,10 @@ App.ProjectServerCreateController = Ember.ObjectController.extend({
                 this.set('errorMsg', null);
                 this.set('selected_region', r);
                 this.set('slug', r.get('slug'));
-                console.error('REGION SIZE');
                 try {
-                console.error(this.get('selected_provider'));
-                console.error(this.get('selected_provider').get('region_sizes'));
-                console.error(r.get('id'));
-                console.error(this.get('selected_provider').get('region_sizes')[r.get('id')]);
 
-                    console.error('REGION SIZE');
                     this.set('regionsSizeAvailable', this.get('selected_provider').get('region_sizes')[r.get('id')]);
-                    console.error(this.get('regionsSizeAvailable'));
                 } catch (e ) {
-                    console.error(e.stack);
                 }
 
             },
@@ -157,7 +147,6 @@ App.ProjectServerCreateController = Ember.ObjectController.extend({
                 var selectedDistro  = null;
                 //Lets validate all data input..
                 var distros = this.get('distros');
-                console.error('ab');
                 if  ( distros != undefined && distros.length != undefined) {
                     var selectedDistro = null;
                     var len = distros.length;

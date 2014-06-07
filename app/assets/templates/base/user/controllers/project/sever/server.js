@@ -114,7 +114,6 @@ App.ProjectServerResizeController = Ember.ObjectController.extend({
                              self.set("errorMsg", App.getI18NValue("project.error_destroying_server"));
                         }
                         }catch (ee) {
-                         console.error(ee.stack);
                         }
 
                         running--;
@@ -181,7 +180,6 @@ App.ProjectServerRebootController = Ember.ObjectController.extend({
                                  self.set("errorMsg", App.getI18NValue("project.error_destroying_server"));
                             }
                             }catch (ee) {
-                             console.error(ee.stack);
                             }
 
                             running--;
@@ -237,7 +235,6 @@ App.ProjectServerRebootController = Ember.ObjectController.extend({
                               self.set("errorMsg", App.getI18NValue("project.error_destroying_server"));
                          }
                          }catch (ee) {
-                          console.error(ee.stack);
                          }
 
                          running--;
@@ -292,7 +289,6 @@ App.ProjectServerRebootController = Ember.ObjectController.extend({
                                    self.set("errorMsg", App.getI18NValue("project.error_destroying_server"));
                               }
                               }catch (ee) {
-                               console.error(ee.stack);
                               }
 
                               running--;
@@ -361,7 +357,6 @@ App.ProjectServerDestroyController = Ember.ObjectController.extend({
                                 self.set("errorMsg", App.getI18NValue("project.error_destroying_server"));
                            }
                            }catch (ee) {
-                            console.error(ee.stack);
                            }
 
                            running--;

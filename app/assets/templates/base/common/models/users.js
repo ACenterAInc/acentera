@@ -31,7 +31,6 @@ App.User = DS.Model.extend({
 
 App.UserAdapter = CustomRESTAdapter.extend({
      buildURL: function(record, suffix,z ) {
-          //not great.. console.error(App.Provider.params);
           try {
 
               if (suffix == undefined) {
@@ -40,7 +39,6 @@ App.UserAdapter = CustomRESTAdapter.extend({
                 return "api/project/" + App.Project.params.project_id + "/user/" + suffix;
               }
           } catch (e) {
-             console.error(e.stack);
           }
       }
 });

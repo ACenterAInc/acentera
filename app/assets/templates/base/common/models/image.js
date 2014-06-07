@@ -32,7 +32,6 @@ App.ImageAdapter = CustomRESTAdapter.extend({
                 return "api/project/" + App.Project.params.project_id + "/key/" + App.Image.params.provider_id+ "/image/" + suffix;
               }
           } catch (e) {
-             console.error(e.stack);
           }
       }
 });

@@ -25,15 +25,18 @@ SOFTWARE.
 package controllers.acentera;
 
 import models.db.User;
+import models.db.acentera.impl.UserImpl;
 import models.web.AppObj;
 import models.web.AppObj$;
 import models.web.DesktopObject;
 import models.web.WebSession;
 import net.sf.json.JSONObject;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.session.ExpiredSessionException;
 import org.apache.shiro.subject.Subject;
 import play.Logger;
+import play.api.libs.Crypto;
 import play.cache.Cache;
 import play.i18n.Messages;
 import play.libs.F;
@@ -43,6 +46,10 @@ import play.mvc.Result;
 import play.mvc.SimpleResult;
 import utils.DatabaseManager;
 import utils.HibernateSessionFactory;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.MessageDigest;
 
 public class AnonymousSecurityController extends Action.Simple {
 
@@ -114,8 +121,6 @@ public class AnonymousSecurityController extends Action.Simple {
     }
 
     public static play.libs.F.Promise<play.mvc.SimpleResult>  logout(final play.mvc.Http.Context ctx) {
-        //return play.libs.F.Promise.pure((SimpleResult) controllers.Auth.logout());
-
         try {
             ctx.session().remove(SecurityController.AUTH_TOKEN);
             ctx.session().remove(SecurityController.DESKTOP_TOKEN);
@@ -123,7 +128,6 @@ public class AnonymousSecurityController extends Action.Simple {
             ctx.response().discardCookie(SecurityController.DESKTOP_TOKEN);
 
         }catch (Exception ee) {
-            ee.printStackTrace();
         }
 
         try {
@@ -135,13 +139,11 @@ public class AnonymousSecurityController extends Action.Simple {
                 websession.removeSession();
             }
         } catch (Exception ee){
-            ee.printStackTrace();
         }
 
         try {
             SecurityController.getSubject().logout();
         } catch (Exception ee) {
-            ee.printStackTrace();;
         }
 
 
@@ -177,7 +179,96 @@ public class AnonymousSecurityController extends Action.Simple {
 
     public F.Promise<SimpleResult> call(final Http.Context ctx) throws Throwable {
         try {
-            getSubject();
+
+
+
+            Subject s = getSubject();
+
+
+            User user= null;
+
+            //Get the Session
+            //HibernateSessionFactory.getSession();
+
+            String cacheValue = getStringCacheValue(ctx, AUTH_TOKEN);
+            String email = getEmailFromSession(ctx);
+            if (cacheValue != null) {
+                if (cacheValue.compareTo(email) == 0) {
+                    ctx.args.put("email", email);
+                    user = UserImpl.getUserByEmail(email);
+                } else {
+
+                    //Stay logged in if hit another server (or in dev by using token secret...)
+                    user = UserImpl.getUserByEmail(email);
+                    if (user == null) {
+                        return NotAuthorized();
+                    } else {
+                        String k = Crypto.sign(user.getEmail() + "-" + user.getSalt() + "-" + user.getPassword());
+                        Logger.debug("the crypto sign was : " + k);
+                        Http.Cookie c = ctx.request().cookie("tokensecret");
+                        String custom = "";
+                        if (c != null) {
+                            custom = c.value();
+                        }
+                        if (k.compareTo(custom) == 0) {
+                            //Its all good
+                            if (custom.compareTo("") != 0) {
+                            }
+                        } else {
+                        }
+                    }
+                }
+            } else {
+                //Stay logged in if hit another server (or in dev by using token secret...)
+                user = UserImpl.getUserByEmail(email);
+                if (user == null) {
+                } else {
+                    String k = Crypto.sign(user.getEmail() + "-" + user.getSalt() + "-" + user.getPassword());
+                    Logger.debug("the crypto sign was : " + k);
+                    if (k.compareTo(ctx._requestHeader().session().get("tokensecret").get()) == 0) {
+                        //Its all good
+                    } else {
+                    }
+                }
+            }
+
+            Logger.debug("GOT USER : " + user);
+            if (user != null) {
+                //set the subject principals...
+
+
+                String passphrase = play.Play.application().configuration().getString("privatekey");
+                MessageDigest digest = MessageDigest.getInstance("SHA");
+                digest.update(passphrase.getBytes());
+                SecretKeySpec key = new SecretKeySpec(digest.digest(), 0, 16, "AES");
+
+                Cipher aes = Cipher.getInstance("AES/ECB/PKCS5Padding");
+                aes.init(Cipher.DECRYPT_MODE, key);
+                String pw = null;
+                try {
+                    pw = new String(aes.doFinal(((byte[]) Cache.get(user.getEmail() + "_pass"))));
+                } catch (Exception ee) {
+                    if (play.Play.isDev()) {
+                        pw = play.Play.application().configuration().getString("dev_default_user_password");
+                    }
+                }
+
+                //Because we are stateless we must login each time...
+                //TODO: If we impersonnate user (from an admin portal) to simulate we are someone else..
+                //we should override the login / user here..
+                UsernamePasswordToken tk = new UsernamePasswordToken(user.getEmail(), pw);
+                Subject currentUser = null;
+                try {
+                    currentUser = getSubject();
+                    tk.setRememberMe(true);
+                    currentUser.login(tk);
+                } catch (org.apache.shiro.session.UnknownSessionException usession) {
+                    currentUser = new Subject.Builder().buildSubject();
+                    currentUser.login(tk);
+                } catch (Exception ee) {
+                }
+            }
+
             return processRequest(ctx);
         } catch (ExpiredSessionException e) {
 

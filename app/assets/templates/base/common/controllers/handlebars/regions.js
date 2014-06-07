@@ -2,7 +2,6 @@ window.getCountryNiceName = function(z) {
     if ( z == undefined ) {
         return null;
     }
-    console.error(z);
 
     try { z = z.replaceAll("nyc","New York ");} catch (e) {}
     try { z = z.replaceAll("sfo", "San Francisco ");} catch (e) {}
@@ -14,8 +13,6 @@ window.getCountryNiceName = function(z) {
 Handlebars.registerHelper('regionName', function(val, options) {
 
       try {
-         console.error('regionName');
-         console.error(val);
           var name = val.split(".")[0];
           var param = val.split(".")[1];
 
@@ -27,22 +24,16 @@ Handlebars.registerHelper('regionName', function(val, options) {
                 v = options.data.keywords[name].get(param);
              }
           } else {
-              console.error(options);
               v = options.data.view.controller.get(name);
           }
-          console.error(options);
-          console.error(v);
 
 
           //options.data.keywords.name = getCountryNiceName(v);
 
-          //console.error('country is : ' + getCountryNiceName(v));
           //return options.fn(options.data.keywords);
           return getCountryNiceName(v);
       } catch (e) {
 
-          ////console.error('not found? err');
-          console.error(e.stack);
           return options.inverse();
           //return options.fn(options.data.keywords.controller);
       }
@@ -66,7 +57,6 @@ Handlebars.registerHelper('regionHasItem', function(id, val, options) {
             }*/
             return options.inverse();
         } catch (e) {
-            ////console.error('not found? err');
             //console.log(e.stack);
             return options.inverse();
             //return options.fn(options.data.keywords.controller);
@@ -81,11 +71,7 @@ Handlebars.registerHelper('regionAvailable', function(array, val, options) {
             var content = options.data.view.content;
 
             if (content != undefined) {
-                console.error(content);
-                console.error(val);
-                console.error(options);
                 var v = options.contexts[0].get(val);
-                console.error(v);
                 options.data.keywords.name = getCountryNiceName(content);
 
 
@@ -102,7 +88,6 @@ Handlebars.registerHelper('regionAvailable', function(array, val, options) {
             }
             return options.inverse();
         } catch (e) {
-            console.error('not found? err');
             console.log(e.stack);
             return options.inverse();
             //return options.fn(options.data.keywords.controller);
@@ -136,7 +121,6 @@ Handlebars.registerHelper('regionAvailableSize', function(array, val, options) {
 
                  //return options.inverse();
              } catch (e) {
-                 ////console.error('not found? err');
                  //console.log(e.stack);
                  return options.inverse();
                  //return options.fn(options.data.keywords.controller);

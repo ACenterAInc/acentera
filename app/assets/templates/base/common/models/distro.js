@@ -15,7 +15,6 @@ App.DistroAdapter = CustomRESTAdapter.extend({
           try {
               return null;
           } catch (e) {
-             console.error(e.stack);
           }
       }
 });
