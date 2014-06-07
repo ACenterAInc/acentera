@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 # ACenterA PaaS Community Edition
+=======
+# ACenterA PaaS Community Edition (Core)
+
+If you wish to use this "Play Framework Module", please follow the instruction from : [acentera-web](https://github.com/ACenterAInc/acentera-web)
+>>>>>>> 2bbf1007527451b190888520b2c7c2c01c86ec8a
 
 Commercial product differ from this open source solution, visit us at http://www.acentera.com/
 
@@ -33,6 +39,7 @@ The i18N Support works as
 
 see https://github.com/ACenterAInc/acentera-web
 
+<<<<<<< HEAD
 ### Compile / publish play-emberjs first
     
 ```bash
@@ -48,6 +55,8 @@ see https://github.com/ACenterAInc/acentera-web
     play idea
 ```
 
+=======
+>>>>>>> 2bbf1007527451b190888520b2c7c2c01c86ec8a
 ### Memcache
 
 For sessions, you should use memcached and configure the conf/application.conf
@@ -63,6 +72,7 @@ Create yourself a recaptcha public and private key at https://www.google.com/rec
 Insert the key and secret into conf/application.conf at the appropriate location.
 
 
+<<<<<<< HEAD
 ### Run the Portal
 
 ```bash
@@ -77,6 +87,8 @@ Insert the key and secret into conf/application.conf at the appropriate location
 ## Usage
 
 
+=======
+>>>>>>> 2bbf1007527451b190888520b2c7c2c01c86ec8a
 ### EmberJS
 
 The EmberJS using play-ember, thanks for that plugin, takes the various *.handlebars files and *.js from the following folders in that order
