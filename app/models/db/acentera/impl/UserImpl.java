@@ -192,8 +192,9 @@ public class UserImpl extends DAO {
                 rs.close();
                 userProjects.close();
 
-                PreparedStatement tagRoles = c.prepareStatement("select project_user_roles.project_id, PROJECT_TAGS.name from PROJECT_USER_ROLES INNER JOIN PROJECT_TAGS on (PROJECT_TAGS.id=PROJECT_USER_ROLES.project_tags_id) where user_id=? and PROJECT_TAGS.disable_date is null and PROJECT_USER_ROLES.disable_date is NULL");
+                PreparedStatement tagRoles = c.prepareStatement("select PU.project_id, PROJECT_TAGS.name from PROJECT_USER_ROLES INNER JOIN PROJECT_USER PU ON (PU.id=PROJECT_USER_ROLES.project_user_id and PU.user_id=PROJECT_USER_ROLES.user_id) inner join PROJECT_TAGS on (PROJECT_TAGS.id=PROJECT_USER_ROLES.project_tags_id) where PU.user_id=? and PROJECT_USER_ROLES.user_id=? and PROJECT_TAGS.disable_date is null and PROJECT_USER_ROLES.disable_date is NULL and PU.disable_date IS NULL");
                 tagRoles.setLong(1, user.getId());
+                tagRoles.setLong(2, user.getId());
                 rs = tagRoles.executeQuery();
                 HashMap<Long, Set<String>> hmProjectRolesMapping = new HashMap<Long, Set<String>>();
 

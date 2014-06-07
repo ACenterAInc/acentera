@@ -83,7 +83,7 @@ App.ProjectQuotaIndexController = Ember.ObjectController.extend({
                          //Refresh of the Projects table...
                          self.get('controllers.project.content').reload().then(function (e) {
                                   Ember.run.next(self, function() {
-                                    self.transitionToRoute('project.providers');
+                                    self.transitionToRoute('project.quotas');
                                     running--;
                                   });
                          });

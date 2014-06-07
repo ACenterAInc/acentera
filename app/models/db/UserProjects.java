@@ -132,9 +132,12 @@ public class UserProjects extends MetaData {
     @Expose private @Getter @Setter Set<ProjectUserRoles> allRoles;
 
 
+
+
     public void addRole(ProjectUserRoles role) {
         Set<ProjectUserRoles> s = this.getAllRoles();
         role.setUserProjects(this);
+
 
         /* Prevention.*/
         if (this.getUser() != null && role.getUser() ==null) {

@@ -45,6 +45,7 @@ public class ProjectUserTags extends AutoIncrementId {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Expose @Getter @Setter Long id;
 
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIdentityReference(alwaysAsId = true)
     @JoinColumn(name="project_user_id")

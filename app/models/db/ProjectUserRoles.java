@@ -80,16 +80,6 @@ public class ProjectUserRoles extends AutoIncrementId {
     public @Getter @Setter User user;
 */
 
-
-/*
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIdentityReference(alwaysAsId = true)
-    @JoinColumn(name = "project_id")
-    @JsonIgnore
-    public @Getter @Setter Project project;
-*/
-
-
     @JsonProperty("name")
     public String getName() {
         return this.projectTags.getName();

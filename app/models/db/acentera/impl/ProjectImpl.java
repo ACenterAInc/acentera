@@ -574,7 +574,7 @@ public class ProjectImpl extends DAO {
             upr.setProjectTags(ProjectTagsImpl.getOrCreateTags(p, RoleConstants.PRJOECT_ADMIN, TagConstants.ROLE));
 
 
-            p.addUserProjectRole(upr);
+            //p.addUserProjectRole(upr);
             upr.setUser(u);
 
             Logger.debug("Will create user...");
@@ -750,27 +750,30 @@ public class ProjectImpl extends DAO {
     public static String updateProjectUser(Long projectId, Long userId, User u, JSONObject userData) {
         Session s = (Session) HibernateSessionFactory.getSession();
 
-        UserProjects userProject = getUserProject(projectId, u);
+        Logger.debug("UpdatePrjoectUser.... start");
+        UserProjects userProject = getUserProject(projectId, userId);
 
-        //TODO: Check that the end-user have proper role to execute the delete operation on this object...
-        User userToUpdate = userProject.getProject().getUserById(userId);
-        final Set<ProjectUserTags> tags = userProject.getTags();
+        User userToUpdate = userProject.getUser();
+
+
 
         //final Set<ProjectTags> tags = userToUpdate.getTags(projectId);
-
+        Logger.debug("UpdatePrjoectUser.... userToUpdate " + userToUpdate);
         if (userToUpdate!= null) {
+            Logger.debug("UpdatePrjoectUser.... userToUpdate GOOD " + userData);
             boolean updated = false;
             if (userData.containsKey("tags")) {
+                final Set<ProjectUserTags> tags = userProject.getTags();
                 JSONArray listOfTags = userData.getJSONArray("tags");
 
                 Set<ProjectUserTags> newTags = new HashSet<ProjectUserTags>();
 
-                for(ProjectUserTags tag:tags) {
+                for (ProjectUserTags tag : tags) {
                     tag.disable();
                 }
 
                 int len = listOfTags.size();
-                for (int i = 0; i < len ; i++) {
+                for (int i = 0; i < len; i++) {
                     JSONObject jsoData = listOfTags.getJSONObject(i);
                     String data = jsoData.getString("name");
 
@@ -793,27 +796,89 @@ public class ProjectImpl extends DAO {
                     newTags.add(projectUserTag);
                 }
 
-                if (userData.containsKey("roles")) {
+                //Set the new Tags
+                updated = true;
+                //not usre why we have to do this.. the other setTag should of worked
+                for (ProjectUserTags tag : tags) {
+                    if (tag.isDisabled()) {
+                        s.update(tag);
+                    }
+                }
+                userProject.setTags(tags);
+                s.saveOrUpdate(userToUpdate);
 
+                //Since we disabled all data now.. lets return the object.
+                userProject.setTags(newTags);
+            }
+
+            Logger.debug("USER DATA ROLES");
+            if (userData.containsKey("roles")) {
+                Logger.debug("USER DATA ROLES EXISTED");
+                final Set<ProjectUserRoles> roles = userProject.getAllRoles();
+                JSONArray lsitOfRoles = userData.getJSONArray("roles");
+
+                Set<ProjectUserRoles> newRoles = new HashSet<ProjectUserRoles>();
+
+                Logger.debug("ALL ROLES IS : " + roles);
+                for (ProjectUserRoles role : roles) {
+                    Logger.debug("DISABLING ROLE OF " + role);
+                    role.disable();
+                }
+
+                int len = lsitOfRoles.size();
+                for (int i = 0; i < len; i++) {
+                    JSONObject jsoData = lsitOfRoles.getJSONObject(i);
+                    String data = jsoData.getString("name");
+
+                    List<ProjectUserRoles> foundItem = select(roles, having(on(ProjectUserRoles.class).getName(), equalTo(data)));
+
+                    ProjectUserRoles projectUserRole = null;
+                    if (foundItem.size() == 1) {
+                        //We found it..
+                        projectUserRole = foundItem.get(0);
+                    } else {
+                        //This tag is not in this object yet.
+                        projectUserRole = new ProjectUserRoles();
+                        projectUserRole.setUser(userToUpdate);
+                    }
+                    projectUserRole.setProjectTags(ProjectTagsImpl.getOrCreateTags(userProject.getProject(), data, TagConstants.ROLE));
+                    projectUserRole.enable();
+
+                    roles.add(projectUserRole);
+                    s.saveOrUpdate(projectUserRole);
+                    newRoles.add(projectUserRole);
                 }
 
                 //Set the new Tags
                 updated = true;
-                userProject.setTags(tags);
+                for (ProjectUserRoles role : roles) {
+                    Logger.debug("VALIDATE IF ROLE : " + role + " is disabled : " + role.isDisabled());
+                    if (role.isDisabled()) {
+                        Logger.debug("SAVE OR UPDATE IF ROLE : " + role + " is disabled : " + role.isDisabled());
+                        s.saveOrUpdate(role);
+                    }
+                }
 
+                userProject.setAllRoles(roles);
 
-
+                //Save all disabled roles...
+                Logger.debug("SAVING ALLROLES");
+                s.saveOrUpdate(userToUpdate);
 
                 //Since we disabled all data now.. lets return the object.
-                userProject.setTags(newTags);
-
-                //Do not return the provider object as someone will potentially call "save on the object"
-
-                //TODO: This shouldn't call ProjectsHelpers
+                Logger.debug("USER PROJECT SET NEW ROLES OF : " + newRoles);
+                userProject.setAllRoles(newRoles);
             }
 
 
-            s.saveOrUpdate(userToUpdate);
+
+            if (updated) {
+                s.update(userToUpdate);
+            }
+
+            //Do not return the provider object as someone will potentially call "save on the object"
+
+            //TODO: This shouldn't call ProjectsHelpers
 
             return ProjectsHelpers.getInstance().getUserWithRolesAsJson(userProject, u);
         }

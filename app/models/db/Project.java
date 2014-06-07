@@ -156,12 +156,13 @@ public class Project extends AutoIncrementId {
 
 
 
-
+/*
     @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     @Where(clause = "disable_date is null")
     @JoinColumn(name="project_id", nullable=false)
     @JsonIgnore
     public @Setter @Getter Set<ProjectUserRoles> usersRoles = new HashSet<ProjectUserRoles>();
+    */
 
     @Transient
     @JsonIgnore
@@ -245,23 +246,6 @@ public class Project extends AutoIncrementId {
 
         return true;
     }
-
-    public boolean addUserProjectRole(ProjectUserRoles upr) {
-        //Make sure we set the project to the quota...
-
-        Set<ProjectUserRoles> tmpRoles = getUsersRoles();
-
-
-        if (tmpRoles.contains(tmpRoles)) {
-            return false;
-        }
-
-        tmpRoles.add(upr);
-        //setQuotas(tmpQuotas);
-
-        return true;
-    }
-
 
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
