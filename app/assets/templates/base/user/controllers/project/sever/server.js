@@ -332,7 +332,7 @@ App.ProjectServerDestroyController = Ember.ObjectController.extend({
                                      var store = self.get('store');
 
                                         try {
-                                            var tmp = self.store.all('servers').get('content')
+                                            var tmp = store.all('servers').get('content')
                                             var len = tmp.length;
                                             var theServer = null;
                                             for (var i = 0; i < len && theServer == null; i++) {
@@ -342,6 +342,7 @@ App.ProjectServerDestroyController = Ember.ObjectController.extend({
                                             }
                                             theServer.deleteRecord();
                                         } catch (eeE) {
+                                            console.error(eeE.stack);
                                         }
 
                                      store.find('task', data.task_id ).then(function(task) {
