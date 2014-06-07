@@ -1139,6 +1139,27 @@ public class ProjectsHelpers {
         task.setExtId(res.getEventId());
         ProjectImpl.update(task);
 
+
+        Project p = ProjectImpl.getProject(projectId);
+        Device device = new Device();
+        device.setGUID(Utils.getUniqueGUID());
+        //d.setId(task.getExtId());
+
+        ProjectDevices pd = new ProjectDevices();
+        pd.setProject(p);
+        pd.setDevice(device);
+        pd.setPartner_id(SecurityController.getUser().getPartnerId());
+
+        pd.setExternalId(String.valueOf(res.getId()));
+
+        pd.setProviders(prov);
+
+
+        Logger.debug("SAVIGN DEVICE");
+        HibernateSessionFactory.getSession().saveOrUpdate(device);
+        Logger.debug("SAVIGN PROJECT DEVICE");
+        HibernateSessionFactory.getSession().saveOrUpdate(pd);
+
         return task;
 
     }
@@ -1235,21 +1256,6 @@ public class ProjectsHelpers {
         jsoTask.put("task_id", task.getId());
         jsoTask.put("success", true);
 
-
-        Project p = ProjectImpl.getProject(projectId);
-        Device d = new Device();
-        d.setGUID(Utils.getUniqueGUID());
-        //d.setId(task.getExtId());
-
-        ProjectDevices pd = new ProjectDevices();
-        pd.setProject(p);
-        pd.setDevice(d);
-        pd.setPartner_id(SecurityController.getUser().getPartnerId());
-        pd.setExternalId(task.getExtId());
-        pd.setProviders(prov);
-
-        HibernateSessionFactory.getSession().save(d);
-        HibernateSessionFactory.getSession().save(pd);
 
         return jsoTask.toString();
     }

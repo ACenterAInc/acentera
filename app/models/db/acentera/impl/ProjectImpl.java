@@ -501,16 +501,25 @@ public class ProjectImpl extends DAO {
         )).uniqueResult();
 
 
+
         //TODO: Check that the end-user have proper role to execute this operation...
         List<ProjectProviders> ll = select(userProject.getProject().getProviders(), having(on(ProjectProviders.class).getId(), equalTo(providerId)));
         if (ll.size() == 1) {
-            //Ok great we have it.. lets deactivate it..
-            ll.get(0).disable();
-            s.saveOrUpdate(ll.get(0));
-            return true;
-        }
+            //Ok great we have it.. lets deactivate it.. only if no devices is assinged...
+            ProjectProviders prov = ll.get(0);
 
-        //p.getProviders();
+            List<ProjectDevices> activeDevices = (List<ProjectDevices>) criteria.add(Restrictions.and(
+                    Restrictions.eq("providers", prov ),
+                    Restrictions.eq("project.id", projectId)
+            )).list();
+
+            //ONly if no devices...
+            if (activeDevices == null || activeDevices.size()<=0) {
+                prov.disable();
+                s.saveOrUpdate(prov);
+                return true;
+            }
+        }
 
         return false;
     }

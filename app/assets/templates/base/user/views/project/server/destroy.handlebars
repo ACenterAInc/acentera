@@ -18,6 +18,16 @@
 
 {{#else-equal param1="archive" param2=content.status}}
 
+    {{#if errorMsg}}
+        <div class="col-lg-2">
+        </div>
+        <div class="alert alert-danger col-lg-8">
+            <button type="button" {{action clear controller 'errorMsg'}} class="close">×</button>
+            <strong> {{i18n "error_alert_prefix"}}&nbsp;&nbsp;</strong>{{errorMsg}}
+        </div>
+    {{else}}
+        <div class="alert">&nbsp;</div>
+    {{/if}}
 
 
     <div class="col-lg-3">

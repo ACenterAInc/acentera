@@ -171,7 +171,7 @@ App.ProjectProviderIndexController = Ember.ObjectController.extend({
                                 //self.set('errorMsg', App.getI18NValue('error_deleting_model_to_backend'));
                        } else {
                             //otherwise non 200 code = errors..
-                            self.set('errorMsg', App.getI18NValue('error_deleting_model_to_backend'));
+                            self.set('errorMsg', App.getI18NValue('You_still_have_assigned_servers_to_this_cloud_api_key'));
                        }
                        running--;
 

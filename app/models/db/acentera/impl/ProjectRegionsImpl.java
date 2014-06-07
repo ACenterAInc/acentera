@@ -71,6 +71,7 @@ public class ProjectRegionsImpl extends DAO {
             g.setProject(p);
             g.setSlug(slug);
             g.setName(name);
+            g.setExtid(regionId);
             session.save(g);
         }
         return g;

@@ -325,11 +325,18 @@ App.ProjectServerDestroyController = Ember.ObjectController.extend({
                 AppController.setStartLoadingWithDelay();
 
                 resetValues(this, ['password']);
-
+                var serverId = this.get('content.id');
                 sendPostMessage("project/" + App.Project.params.project_id + "/server/" + this.get('content.id') + "/destroy",JSON.stringify(d), false).then(function(data) {
                           try {
                                if (data.success) {
                                      var store = self.get('store');
+
+                                        try {
+                                            var tmp = this.store.all('servers', { id: serverId });
+
+                                            tmp.deleteRecord();
+                                        } catch (eeE) {
+                                        }
 
                                      store.find('task', data.task_id ).then(function(task) {
 
