@@ -1005,7 +1005,10 @@ public class ProjectsHelpers {
 
         d.setName(jsonData.getString("name"));
         d.setImageId(jsonData.getInt("image_id"));
-        d.setRegionId(jsonData.getInt("region_id"));
+
+
+
+
         d.setSizeId(jsonData.getInt("size_id"));
 
 
@@ -1038,6 +1041,20 @@ public class ProjectsHelpers {
         task.setProvider(prov);
         task.setProjects(prov.getProject());
         ProjectImpl.save(task);
+
+
+        ProjectRegions pr = ProjectRegionsImpl.getProjectRegionById(projectId, jsonData.getLong("region_id"));
+        List<Region> lstRegions = apiClient.getAvailableRegions();
+        Iterator<Region> itrRegion = lstRegions.iterator();
+        Integer regionId = null;
+        while(itrRegion.hasNext() && regionId == null) {
+            Region r = itrRegion.next();
+            if (r.getSlug().compareToIgnoreCase(pr.getSlug()) == 0) {
+                regionId = r.getId();
+            }
+        }
+        d.setRegionId(regionId);
+
 
         if (jsonData.has("sshkeys_id")) {
 
