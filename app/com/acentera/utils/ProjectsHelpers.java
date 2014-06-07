@@ -41,6 +41,7 @@ import models.db.*;
 import models.db.acentera.constants.PermisionTagConstants;
 import models.db.acentera.constants.PermissionActionConstats;
 import models.db.acentera.constants.TagConstants;
+import models.db.acentera.exceptions.DAOException;
 import models.db.acentera.impl.*;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -1413,5 +1414,26 @@ public class ProjectsHelpers {
         }
 
         return null;
+    }
+
+    public boolean deleteProjectId(Long projectId) throws DAOException {
+
+        SecurityController.checkIsAdmin(projectId);
+        boolean bRes = false;
+
+        Project p = ProjectImpl.getProject(projectId);
+
+        if (p.getDevices() != null && p.getDevices().size() > 0) {
+            return bRes;
+        }
+
+        if (p.getProviders() != null && p.getProviders().size() > 0) {
+            return bRes;
+        }
+
+        p.disable();
+        ProjectImpl.update((MetaData) p);
+
+        return true;
     }
 }

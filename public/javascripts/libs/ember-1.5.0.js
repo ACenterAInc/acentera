@@ -35619,6 +35619,42 @@ var defaultActionHandlers = {
     }
 
     Ember.Logger.error('Error while loading route: ' + (error && error.stack));
+    /* ACENTERA / THEACE ADDED */
+
+    //if (isProdMode) {
+        try {
+
+            if (App.Project.params.project_id != undefined) {
+
+
+                if (readCookie("error_project") == null) {
+                    createCookie("error_project", 0);
+                }
+
+                if (readCookie("error_project") == 1) {
+                    createCookie("error_project", 2);
+
+
+                    setTimeout(function() {
+                        window.location=prefix;
+                    }, 100);
+                } else {
+                    if (readCookie("error_project") != 2) {
+                        createCookie("error_project", 1);
+
+                        setTimeout(function() {
+                            window.location.href=prefix + "project/" + App.Project.params.project_id;
+                        }, 100);
+                    }
+                }
+            } else {
+                window.location.href=prefix;
+            }
+        } catch (ee) {
+            window.location.href=prefix;
+        }
+    //}
+
   },
 
   loading: function(transition, originRoute) {

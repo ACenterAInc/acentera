@@ -84,7 +84,7 @@ public class DatabaseConnection {
                         url = line;
                         mustCreateH2Func = true;
                     } else {
-                        url = line;//"jdbc:mysql://localhost/" + "app_info";
+                        url = line;//"jdbc:mysql://be01/" + "app_info";
                     }
 
                 } else if ( line.contains("db." + DBName + ".driver=")) {

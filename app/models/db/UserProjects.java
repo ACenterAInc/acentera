@@ -69,6 +69,7 @@ public class UserProjects extends MetaData {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="project_id")
+    @Where(clause="disable_date is null")
     @Access(AccessType.PROPERTY)
     @JsonIdentityReference(alwaysAsId = true)
     @JsonProperty("projects")
@@ -78,7 +79,15 @@ public class UserProjects extends MetaData {
 
     @JsonIgnore
     public Long getProjectId() {
-        return this.getProject().getId();
+        try {
+            if (this.getProject() != null) {
+                return this.getProject().getId();
+            } else {
+                return null;
+            }
+        } catch (Exception ee) {
+            return null;
+        }
     }
 
 

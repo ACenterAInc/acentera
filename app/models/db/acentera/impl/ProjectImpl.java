@@ -284,6 +284,24 @@ public class ProjectImpl extends DAO {
         return null;
     }
 
+    public static Project getProject(Long projectId) {
+        Session s = (Session) HibernateSessionFactory.getSession();
+        Criteria criteria = s.createCriteria(UserProjects.class);
+
+        List<UserProjects> lst = (List<UserProjects>) criteria.add(Restrictions.and(
+                        Restrictions.eq("project.id", projectId),
+                        Restrictions.eq("user", SecurityController.getUser())
+                )
+        ).list();
+
+
+        if (lst.size() == 1) {
+            return lst.get(0).getProject();
+        }
+
+        return null;
+    }
+
     public static List<ProjectUserTags> getUserProjectTags(UserProjects up) {
         Session s = (Session) HibernateSessionFactory.getSession();
         Criteria criteria = s.createCriteria(ProjectUserTags.class).createAlias("projectTags", "tags");
@@ -575,7 +593,7 @@ public class ProjectImpl extends DAO {
             s.saveOrUpdate(upr);
         } catch (Exception ee) {
             ee.printStackTrace();;
-            System.exit(0);
+            //System.exit(0);
         } finally {
         }
 

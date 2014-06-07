@@ -31,6 +31,7 @@ import models.web.DesktopObject;
 import models.web.WebSession;
 import net.sf.json.JSONObject;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.ExpiredSessionException;
 import org.apache.shiro.subject.Subject;
 import play.Logger;
 import play.cache.Cache;
@@ -112,28 +113,83 @@ public class AnonymousSecurityController extends Action.Simple {
         return F.Promise.pure((SimpleResult) FailedMessage("UNAUTHORIZED"));
     }
 
+    public static play.libs.F.Promise<play.mvc.SimpleResult>  logout(final play.mvc.Http.Context ctx) {
+        //return play.libs.F.Promise.pure((SimpleResult) controllers.Auth.logout());
 
-    public static Subject getSubject() {
+        try {
+            ctx.session().remove(SecurityController.AUTH_TOKEN);
+            ctx.session().remove(SecurityController.DESKTOP_TOKEN);
+            ctx.response().discardCookie(SecurityController.AUTH_TOKEN);
+            ctx.response().discardCookie(SecurityController.DESKTOP_TOKEN);
+
+        }catch (Exception ee) {
+            ee.printStackTrace();
+        }
+
+        try {
+            WebSession websession = null;
+            websession = SecurityController.getWebSession();
+
+            if (websession != null) {
+                websession.removeAllDesktop();
+                websession.removeSession();
+            }
+        } catch (Exception ee){
+            ee.printStackTrace();
+        }
+
+        try {
+            SecurityController.getSubject().logout();
+        } catch (Exception ee) {
+            ee.printStackTrace();;
+        }
+
+
+        return play.libs.F.Promise.pure((SimpleResult) redirect("/"));
+    }
+
+    public static Subject getSubject() throws org.apache.shiro.session.ExpiredSessionException {
         try {
             Subject s = SecurityUtils.getSubject();
             if (s.getSession() == null) {
                 s = new Subject.Builder().buildSubject();
             }
+            Logger.debug("SUBJECT SHIRO SESSIONID IS : " + s.getSession().getId());
             return s;
         } catch (org.apache.shiro.session.UnknownSessionException e) {
-            Subject s = new Subject.Builder().buildSubject();
-            return s;
+            /*Subject s = new Subject.Builder().buildSubject();
+            if (s.getSession(true) == null) {
+                s = new Subject.Builder().buildSubject();
+            }
+            return s;*/
+            //Logger.debug("SHIRO SESSION IS NOW EXPIRED");
+            throw new org.apache.shiro.session.ExpiredSessionException("");
+        } catch (org.apache.shiro.session.ExpiredSessionException ee) {
+            Logger.debug("SHIRO SESSION IS NOW EXPIRED");
+            throw ee;
         } catch (Exception e) {
 
         }
-        Subject s = new Subject.Builder().buildSubject();
-        return s;
-        //return null;
+        //Subject s = new Subject.Builder().buildSubject();
+        //return s;
+        return null;
     };
 
     public F.Promise<SimpleResult> call(final Http.Context ctx) throws Throwable {
         try {
+            getSubject();
             return processRequest(ctx);
+        } catch (ExpiredSessionException e) {
+
+            //Rollback any changes
+            try {
+                DatabaseManager.getInstance().rollback();
+            } catch (Exception ew) {
+
+            }
+            HibernateSessionFactory.rollback();
+
+            redirect("/login");
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -179,10 +235,15 @@ public class AnonymousSecurityController extends Action.Simple {
     }
 
     public static String getEmail() {
+
         try {
             return (String) Http.Context.current().args.get("email");
         } catch (Exception ee) {
-            return (String)((User)getSubject().getPrincipal()).getEmail();
+            try {
+                return (String)((User)getSubject().getPrincipal()).getEmail();
+            } catch (Exception expired) {
+                return "";
+            }
         }
     }
 
@@ -191,7 +252,11 @@ public class AnonymousSecurityController extends Action.Simple {
         try {
             return (User) Http.Context.current().args.get("user");
         } catch (Exception ee) {
-            return (User) getSubject().getSession().getAttribute("user");
+            try {
+                return (User) getSubject().getSession().getAttribute("user");
+            } catch (Exception expired) {
+                return null;
+            }
         }
     }
 
@@ -203,7 +268,11 @@ public class AnonymousSecurityController extends Action.Simple {
         try {
             return (DesktopObject) Http.Context.current().args.get("desktop");
         } catch (Exception ee) {
-            return (DesktopObject) getSubject().getSession().getAttribute("desktop");
+            try {
+                return (DesktopObject) getSubject().getSession().getAttribute("desktop");
+            } catch (Exception expired) {
+                return null;
+            }
         }
     }
 

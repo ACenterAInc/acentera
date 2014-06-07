@@ -31,6 +31,8 @@ import models.web.*;
 import net.sf.json.JSONObject;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.session.ExpiredSessionException;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import play.Logger;
 import play.api.libs.Crypto;
@@ -47,6 +49,7 @@ import utils.security.TagSingleBasePermission;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.Iterator;
 
@@ -56,6 +59,7 @@ public class SecurityController extends AnonymousSecurityController {
     public static final String AUTH_TOKEN = "token";
     public static final String AUTHSECRET_TOKEN = "token";
     public static final String DESKTOP_TOKEN = "dtid";
+    private Files session;
 
     String uuid(play.mvc.Http.Context ctx) {
         Logger.debug("UUID is : " + ctx._requestHeader().session());
@@ -114,6 +118,8 @@ public class SecurityController extends AnonymousSecurityController {
         return internalServerError().as("application/json");
     }
 
+
+
     public play.libs.F.Promise<play.mvc.SimpleResult>  NotAuthorized() {
         //return play.libs.F.Promise.pure((SimpleResult) controllers.Auth.logout());
         return play.libs.F.Promise.pure((SimpleResult) FailedMessage("UNAUTHORIZED"));
@@ -125,8 +131,11 @@ public class SecurityController extends AnonymousSecurityController {
         Logger.debug(" [ SecurityController ] Got Path : " + ctx.request().path());
         try {
 
+
+
+
             //Get the Session
-            HibernateSessionFactory.getSession();
+            //HibernateSessionFactory.getSession();
 
             boolean isAuthorized = false;
             String cacheValue = getStringCacheValue(ctx, AUTH_TOKEN);
@@ -189,7 +198,6 @@ public class SecurityController extends AnonymousSecurityController {
 
 
 
-                Subject currentUser = getSubject();
 
                 String passphrase = play.Play.application().configuration().getString("privatekey");
                 MessageDigest digest = MessageDigest.getInstance("SHA");
@@ -200,7 +208,7 @@ public class SecurityController extends AnonymousSecurityController {
                 aes.init(Cipher.DECRYPT_MODE, key);
                 String pw = null;
                 try {
-                    pw = new String(aes.doFinal(((byte[])Cache.get(user.getEmail() + "_pass"))));
+                    pw = new String(aes.doFinal(((byte[]) Cache.get(user.getEmail() + "_pass"))));
                 } catch (Exception ee) {
                     if (play.Play.isDev()) {
                         pw = play.Play.application().configuration().getString("dev_default_user_password");
@@ -211,17 +219,19 @@ public class SecurityController extends AnonymousSecurityController {
                 //TODO: If we impersonnate user (from an admin portal) to simulate we are someone else..
                 //we should override the login / user here..
                 UsernamePasswordToken tk = new UsernamePasswordToken(user.getEmail(), pw);
+                Subject currentUser = null;
                 try {
+                    currentUser = getSubject();
                     tk.setRememberMe(true);
                     currentUser.login(tk);
-                } catch ( org.apache.shiro.session.UnknownSessionException usession ) {
+                } catch (org.apache.shiro.session.UnknownSessionException usession) {
                     currentUser = new Subject.Builder().buildSubject();
                     currentUser.login(tk);
                 } catch (Exception ee) {
                 }
 
 
-                if (! currentUser.isAuthenticated()) {
+                if (!currentUser.isAuthenticated()) {
 
                     ctx.session().remove(SecurityController.AUTH_TOKEN);
                     ctx.session().remove(SecurityController.DESKTOP_TOKEN);
@@ -242,7 +252,12 @@ public class SecurityController extends AnonymousSecurityController {
                     }*/
                 }
 
-                currentUser.getSession().setAttribute("user", user);
+                Session ss = getSession();
+                /*if (ss == null) {
+                    throw new ExpiredSessionException("Expired");
+                }*/
+                getSession().setAttribute("user", user);
+
 
                 String token = uuid(ctx);
                 Option<WebSession> currSession = AppObj$.MODULE$.getSession(token);
@@ -288,7 +303,7 @@ public class SecurityController extends AnonymousSecurityController {
 
 
                     if (desktop == null) {
-                        if (! ( ctx.request().path().compareTo("/create") == 0)) {
+                        if (!(ctx.request().path().compareTo("/create") == 0)) {
 
                             //temporary hacks... no desktop... it is still fine......
 
@@ -309,11 +324,11 @@ public class SecurityController extends AnonymousSecurityController {
                     if (desktop != null) {
                         //we got /create so its ok.. to have no desktoips...
                         //we should modify /create to use something else than securitycontroller
-                        currentUser.getSession().setAttribute("dtid", desktop.getId());
-                        currentUser.getSession().setAttribute("desktop", desktop);
+                        getSession().setAttribute("dtid", desktop.getId());
+                        getSession().setAttribute("desktop", desktop);
                     }
                     WebSession webSession = currSession.get();
-                    currentUser.getSession().setAttribute("websession", webSession);
+                    getSession().setAttribute("websession", webSession);
 
                     Logger.debug("DESKTOP IOS : " + desktop);
                     if (desktop != null) {
@@ -335,6 +350,31 @@ public class SecurityController extends AnonymousSecurityController {
             // }
 
             return NotAuthorized();
+        } catch (org.apache.shiro.session.UnknownSessionException e) {
+            //Rollback any changes
+            try {
+                DatabaseManager.getInstance().rollback();
+            } catch (Exception ew) {
+
+            }
+            HibernateSessionFactory.rollback();
+
+
+
+            return logout(ctx);
+        } catch (ExpiredSessionException e) {
+
+            //Rollback any changes
+            try {
+                DatabaseManager.getInstance().rollback();
+            } catch (Exception ew) {
+
+            }
+            HibernateSessionFactory.rollback();
+
+
+
+            return logout(ctx);
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -392,35 +432,38 @@ public class SecurityController extends AnonymousSecurityController {
             try {
                 return (DesktopObject) SecurityController.getSubject().getSession().getAttribute("desktop");
             } catch (Exception eee) {
+                    try {
+                        eee.printStackTrace();
+                        String dtid = (String) SecurityController.getSubject().getSession().getAttribute("dtid");
 
-                eee.printStackTrace();
-                String dtid = (String) SecurityController.getSubject().getSession().getAttribute("dtid");
+                        if (dtid == null || (dtid != null && dtid.trim().compareTo("") == 0)) {
+                            dtid = (String) Http.Context.current().args.get("dtid");
+                        }
+                        Logger.debug("DESKTOP ID IS : " + dtid);
+                        DesktopObject desktop = AppObj$.MODULE$.getDesktop(dtid);
+                        Logger.debug("desktop is now.. : " + desktop);
+                        if (desktop == null) {
+                            //We didnt know this session on this web server lets add it..
+                            String token = (String) Http.Context.current().args.get("token");
+                            Option<WebSession> currSession = AppObj$.MODULE$.getSession(token);
+                            String tmpDesktopId = currSession.get().addDesktopStaticId(dtid);
+                            Logger.debug("DESKTOP ID IS : " + tmpDesktopId);
+                            //String tmpDesktopId = currSession.get().addDesktopStaticId(dtid);
+                            if (tmpDesktopId == null) {
+                                //Assume failure duplicate in guid...
+                                Logger.debug("GOT DUPLICATE ID IOS ???? ");
+                                desktop = new DesktopObject("", null);
+                            } else {
+                                desktop = AppObj$.MODULE$.getDesktop(tmpDesktopId);
+                            }
+                            Logger.debug("GOT DESKTOP : " + desktop);
 
-                if (dtid == null || ( dtid != null && dtid.trim().compareTo("") == 0)) {
-                    dtid = (String)Http.Context.current().args.get("dtid");
-                }
-                Logger.debug("DESKTOP ID IS : " + dtid);
-                DesktopObject desktop = AppObj$.MODULE$.getDesktop(dtid);
-                Logger.debug("desktop is now.. : " + desktop);
-                if (desktop == null) {
-                    //We didnt know this session on this web server lets add it..
-                    String token  = (String)Http.Context.current().args.get("token");
-                    Option<WebSession> currSession = AppObj$.MODULE$.getSession(token);
-                    String tmpDesktopId = currSession.get().addDesktopStaticId(dtid);
-                    Logger.debug("DESKTOP ID IS : " +tmpDesktopId);
-                    //String tmpDesktopId = currSession.get().addDesktopStaticId(dtid);
-                    if (tmpDesktopId == null) {
-                        //Assume failure duplicate in guid...
-                        Logger.debug("GOT DUPLICATE ID IOS ???? ");
-                        desktop = new DesktopObject("", null);
-                    } else {
-                        desktop = AppObj$.MODULE$.getDesktop(tmpDesktopId);
+                        }
+
+                        return desktop;
+                    } catch (Exception expired) {
+                            return null;
                     }
-                    Logger.debug("GOT DESKTOP : " + desktop);
-
-                }
-
-                return desktop;
             }
         }
     }
@@ -474,21 +517,26 @@ public class SecurityController extends AnonymousSecurityController {
 
     public static boolean isSingleTagPermitted(Long id, TagSingleBasePermission obj) {
 
+
         String tagPrefix = "project:" + id + "tags:";
         boolean isPermitted = false;
 
-        Subject subject = getSubject();
-        if (subject.isAuthenticated()) {
-            //always allow project admin..
-            if (subject.isPermitted("project:" + id + ":admin")) {
-                isPermitted = true;
-            }
+        try {
+            Subject subject = getSubject();
+            if (subject.isAuthenticated()) {
+                //always allow project admin..
+                if (subject.isPermitted("project:" + id + ":admin")) {
+                    isPermitted = true;
+                }
 
 
-            if (! isPermitted ) {
-                String tag = obj.getTag();
-                isPermitted = subject.isPermitted(tagPrefix + tag);
+                if (!isPermitted) {
+                    String tag = obj.getTag();
+                    isPermitted = subject.isPermitted(tagPrefix + tag);
+                }
             }
+        } catch (Exception expired) {
+
         }
 
         return isPermitted;
@@ -500,16 +548,20 @@ public class SecurityController extends AnonymousSecurityController {
     }
 
     public static boolean canViewProject(Long id) {
-        Subject subject = getSubject();
-        if (subject.isAuthenticated()) {
-            if (getSubject().isPermitted("project:" + id + ":admin")) {
-                //we are admin
-                return true;
+        try {
+            Subject subject = getSubject();
+            if (subject.isAuthenticated()) {
+                if (getSubject().isPermitted("project:" + id + ":admin")) {
+                    //we are admin
+                    return true;
+                }
+                Logger.debug("WILL CHECK IF IS PERMIGGED OF : " + "project:" + id + ":view");
+                if (subject.isPermitted("project:" + id + ":view")) {
+                    return true;
+                }
             }
-            Logger.debug("WILL CHECK IF IS PERMIGGED OF : " + "project:" + id + ":view");
-            if (subject.isPermitted("project:" + id + ":view")) {
-                return true;
-            }
+        } catch (Exception expired) {
+
         }
         return false;
     }
@@ -530,9 +582,13 @@ public class SecurityController extends AnonymousSecurityController {
     }
 
     public static void checkPermission(Project p) {
-        if ( ! (getSubject().isPermitted("project:" + p.getId() + ":admin")) ) {
-            //Not admin? wem ust be able to view this..
-            getSubject().checkPermission("project:" + p.getId() + ":view");
+        try {
+            if (!(getSubject().isPermitted("project:" + p.getId() + ":admin"))) {
+                //Not admin? wem ust be able to view this..
+                getSubject().checkPermission("project:" + p.getId() + ":view");
+            }
+        } catch (Exception expired) {
+            throw new org.apache.shiro.authz.AuthorizationException("");
         }
 
     }
@@ -540,15 +596,19 @@ public class SecurityController extends AnonymousSecurityController {
 
     public static boolean isPermitted(Project p, String model_name) {
 
-        if (getSubject().isPermitted("project:" + p.getId() + ":admin")) {
-            //admin is fine..
-            return true;
-        }
+            try {
+                if (getSubject().isPermitted("project:" + p.getId() + ":admin")) {
+                    //admin is fine..
+                    return true;
+                }
 
-        if (getSubject().isPermitted("project:" + p.getId() + ":" + model_name + ":view")) {
-            return true;
-        }
+                if (getSubject().isPermitted("project:" + p.getId() + ":" + model_name + ":view")) {
+                    return true;
+                }
 
+            } catch (Exception ee) {
+                throw new org.apache.shiro.authz.AuthorizationException("Expired");
+            }
         return false;
     }
 
@@ -656,5 +716,9 @@ public class SecurityController extends AnonymousSecurityController {
 
     public static boolean isPermitted(Long projectId, String type, Long id, String action) {
         return getSubject().isPermitted("project:" + projectId + ":" + type + ":" + action);
+    }
+
+    public static Session getSession() {
+        return getSubject().getSession(true);
     }
 }

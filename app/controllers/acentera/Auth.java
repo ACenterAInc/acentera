@@ -27,6 +27,8 @@ package controllers.acentera;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.plugin.MailerAPI;
 import com.typesafe.plugin.MailerPlugin;
+import lombok.Getter;
+import lombok.Setter;
 import models.db.Partner;
 import models.db.User;
 import models.db.UserForgotKeys;
@@ -70,10 +72,10 @@ public class Auth extends Controller {
     public static class Login {
         @Constraints.Required
         @Constraints.Email
-        public String email;
+        public @Getter @Setter String email;
 
         @Constraints.Required
-        public String password;
+        public @Getter @Setter String password;
     }
 
 
@@ -230,19 +232,19 @@ captcha*/
 
         @Constraints.Required
         @Constraints.Email
-        public String jsonemail;
+        public @Getter @Setter String jsonemail;
 
         @Constraints.Required
-        public String password;
+        public @Getter @Setter String password;
 
         @Constraints.Required
-        public String confirm;
+        public @Getter @Setter String confirm;
 
         @Constraints.Required
-        public String challenge;
+        public @Getter @Setter String challenge;
 
         @Constraints.Required
-        public String captcha;
+        public @Getter @Setter String captcha;
     }
 
 
@@ -260,11 +262,12 @@ captcha*/
                 jsonObject.put("message", "");
                 return  ok(jsonObject.toString()).as("application/json");
             } else {
-
+                Logger.debug("Create Account Started Validation");
                 Form<createAccountForm> createAccountFrm = Form.form(createAccountForm.class).bindFromRequest();
                 boolean error = false;
                 String address = request().remoteAddress();
 
+                Logger.debug("Create Account Started hasErrors " + createAccountFrm.hasErrors());
                 if (createAccountFrm.hasErrors()) {
                     error = true;
                     jsonObject.put("success", false);
@@ -273,6 +276,9 @@ captcha*/
                 }
 
                 createAccountForm createAccount = createAccountFrm.get();
+
+
+                Logger.debug("Create Account validate Captcha");
 
                 ReCaptchaImpl reCaptcha = new ReCaptchaImpl();
 
@@ -287,10 +293,12 @@ captcha*/
                 String errmsg = null;
 
                 if (reCaptchaResponse.isValid() == false) {
+                    Logger.debug("Create Account invalid Captcha");
                     error = true;
                     errcode = Errors.INVALID_CAPTCHA_RESPONSE;
                 } else {
 
+                    Logger.debug("Create Account invalid Password Compare");
                     if (createAccount.password.compareTo(createAccount.confirm) != 0) {
                         error = true;
                         errcode = Errors.INVALID_PASSWORD_CONFIRMATION;
@@ -299,7 +307,8 @@ captcha*/
                 }
 
                 if (error) {
-                    jsonObject.put("success", true);
+                    Logger.debug("Create Account GOT ERROR");
+                    jsonObject.put("success", false);
                     jsonObject.put("code", errcode);
                     jsonObject.put("message", Messages.get(errmsg));
                     return ok(jsonObject.toString()).as("application/json");
@@ -311,10 +320,13 @@ captcha*/
                 }
             }
         } catch (Exception ew) {
+            Logger.debug("Create Account GOT EXCEPTION ");
+            ew.printStackTrace();
+
             HibernateSessionFactory.rollback();
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("success", false);
-            jsonObject.put("message", "");
+            jsonObject.put("message", "We apologize, new subscription is currently disabled. Please try later.");
             return ok(jsonObject.toString()).as("application/json");
         } finally {
             HibernateSessionFactory.closeSession();
@@ -388,6 +400,9 @@ captcha*/
 
         PluginManager.notifyEvent(PluginEvent.WEBUSER_USER_CREATED, theUser);
 
+
+        HibernateSessionFactory.getSession().getTransaction().commit();
+
         WebUser wu = new WebUser(theUser.getEmail(), theUser.getPassword(), new UsernamePasswordToken(theUser.getEmail(), theUser.getPassword()));
         if (wu.authenticate()) {
             return wu;
@@ -408,16 +423,16 @@ confirm:demo1
 
          */
         @Constraints.Required
-        public String token;
+        public @Getter @Setter String token;
 
         @Constraints.Required
-        public String new_token;
+        public @Getter @Setter String new_token;
 
         @Constraints.Required
-        public String password;
+        public @Getter @Setter String password;
 
         @Constraints.Required
-        public String confirm;
+        public @Getter @Setter String confirm;
 
     }
 
@@ -470,7 +485,7 @@ confirm:demo1
     public static class RecoverToken {
 
         @Constraints.Required
-        public String token;
+        public @Getter @Setter String token;
     }
 
     public static Result recoverByEmail() throws Exception {
@@ -497,7 +512,7 @@ confirm:demo1
 
         @Constraints.Required
         @Constraints.Email
-        public String email;
+        public @Getter @Setter String email;
     }
 
     public static Result recover() throws Exception {

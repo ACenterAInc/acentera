@@ -28,9 +28,11 @@ import com.myjeeva.digitalocean.pojo.DropletImage;
 import com.typesafe.plugin.MailerAPI;
 import com.typesafe.plugin.MailerPlugin;
 import models.db.*;
+import models.db.acentera.exceptions.DAOException;
 import models.db.acentera.impl.ProjectImpl;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.shiro.authz.annotation.RequiresUser;
 import org.hibernate.Session;
 import play.Logger;
 import play.i18n.Messages;
@@ -56,6 +58,22 @@ public class Project extends ACenterAController {
                         ProjectImpl.getProjectInfo(projectId, getUser()), getUser()
                 )
         );
+    }
+
+
+    @With(UserPasswordRequire.class)
+    public static Result deleteProject(Long projectId) throws DAOException {
+        //only admin
+        SecurityController.checkIsAdmin(projectId);
+        //Make sure we can execute this action
+
+        boolean bRes = ProjectsHelpers.getInstance().deleteProjectId(projectId);
+
+        if (bRes) {
+            return OkEmptyJsonResult();
+        } else {
+            return FailedMessage("DELETE_FAILED");
+        }
     }
 
     public static Result getProjects() {

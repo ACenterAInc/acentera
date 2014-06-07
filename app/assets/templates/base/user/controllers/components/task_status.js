@@ -4,6 +4,7 @@ App.TaskStatusView = Ember.View.extend({
   templateName: 'components/task_status',
   task_id: null,
   ctrl: null,
+  ready_counter: 0,
   complete_redirect_route:null,
   error_redirect_route: null,
   redirect_model: null,
@@ -40,7 +41,7 @@ App.TaskStatusView = Ember.View.extend({
             reloadByPolling=false;
         }*/
 
-
+        this.set('ready_counter', 0);
         try {
             var prct = this.get('ctrl').get('content.percentage');
             if (prct >= this.get('ctrl').get('current_percentage')) {
@@ -64,21 +65,25 @@ App.TaskStatusView = Ember.View.extend({
     try {
         if (this.get('ctrl').get('content').get('percentage') == 100) {
 
-            try {this.get('ctrl').send('taskCompleted');} catch (ee) {}
+            //if (this.get('ready_counter') >= 3) {
+                try {this.get('ctrl').send('taskCompleted');} catch (ee) {}
 
-            if (this.get('complete_redirect_route') != undefined) {
+                if (this.get('complete_redirect_route') != undefined) {
 
-                var m = this.get('redirect_model');
-                if ( m != undefined ) {
-                    m.reload();
-                } else {
-                    m = this.get('ctrl').get('controllers.project.content');
-                    m.reload();
+                    var m = this.get('redirect_model');
+                    if ( m != undefined ) {
+                        m.reload();
+                    } else {
+                        m = this.get('ctrl').get('controllers.project.content');
+                        m.reload();
+                    }
+
+                    this.get('ctrl').transitionToRoute(this.get('complete_redirect_route'), m);
                 }
-
-                this.get('ctrl').transitionToRoute(this.get('complete_redirect_route'), m);
-            }
-            return true;
+                return true;
+            //} else {
+            //    this.set('ready_counter', (this.get('ready_counter') + 1) );
+            //}
         }
 
         if (this.get('ctrl').get('content').get('action_status') == 'error') {

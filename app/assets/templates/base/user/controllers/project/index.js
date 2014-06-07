@@ -16,6 +16,7 @@ App.ProjectRoute = Ember.Route.extend({
             controller.set('controllers.application.selectedProject', model);
             controller.set('project', model);
             this.set('leftmenuModel', model);
+            running--;
        },
        actions: {
                 changeContext: function(e, v) {
@@ -99,7 +100,7 @@ App.ProjectIndexController = Ember.ObjectController.extend({
                     self.get('content').reload();
 
                     try {
-                         var proj = self.get('controllers.application.projects');
+                         var proj = self.get('store').all('projects').get('content');
                          var len = proj.length;
                          var prj = null
                          for (var i = 0; i < len && prj == null; i++) {
@@ -108,8 +109,9 @@ App.ProjectIndexController = Ember.ObjectController.extend({
                                 prj = i;
                             }
                          }
-                         proj[prj].reload();
-                         //set('invitetoken', null);
+                         if (proj[prj] != undefined) {
+                            proj[prj].reload();
+                         }
                      } catch (zz) {
                          console.error(zz.stack);
                      }
@@ -129,12 +131,9 @@ App.ProjectIndexController = Ember.ObjectController.extend({
             running++;
 
             sendPostMessage("project/" + App.Project.params.project_id + "/invite/"+this.get('invitetoken'),JSON.stringify(d), true).then(function(data) {
-                 /*var p =self.get('controllers.application.projectsObject');
-                 console.error(p);
-                 p.reload();*/
 
                 try {
-                     var proj = self.get('controllers.application.projects');
+                     var proj = self.get('store').all('projects').get('content')
                      var len = proj.length;
                      var prj = null
                      for (var i = 0; i < len && prj == null; i++) {
@@ -145,8 +144,9 @@ App.ProjectIndexController = Ember.ObjectController.extend({
                      }
                      console.error('removed project of : ');
                      console.error(proj[prj]);
-                     proj[prj].reload();
-                     //proj.removeObject(proj[prj]);
+                     if (proj[prj] != undefined) {
+                        proj[prj].reload();
+                     }
                  } catch (zz) {
                      console.error(zz.stack);
                  }
@@ -157,7 +157,7 @@ App.ProjectIndexController = Ember.ObjectController.extend({
 
 
                              try {
-                                 var proj = self.get('controllers.application.projects');
+                                 var proj = self.get('store').all('projects').get('content');
                                  var len = proj.length;
                                  var prj = null
                                  for (var i = 0; i < len && prj == null; i++) {
@@ -168,7 +168,9 @@ App.ProjectIndexController = Ember.ObjectController.extend({
                                  }
                                  console.error('removed project of : ');
                                  console.error(proj[prj]);
-                                 proj[prj].reload();
+                                 if (proj[prj] != undefined) {
+                                    proj[prj].reload();
+                                 }
                                  //proj.removeObject(proj[prj]);
                              } catch (zz) {
                                  console.error(zz.stack);

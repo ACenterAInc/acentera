@@ -13,7 +13,7 @@
 
 
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")"/>
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")"/>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.ico")"/>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -54,8 +54,11 @@
                         }
                     }
 
+
                     @if(mode == "prod") {
                         var isProdMode = true;
+                        this.console = {error: function() {}, log: function() {}};
+
                     } else {
                         var isProdMode = false;
                     }

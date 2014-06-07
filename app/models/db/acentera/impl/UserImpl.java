@@ -161,10 +161,10 @@ public class UserImpl extends DAO {
     public static Set<String> getUserPermissions(User user) throws SQLException {
         //s.add("user:demo@acentera.com:write");
         try {
-            //Logger.debug("DESKTOP USER : " + SecurityController.getDesktop().getUser().getId());
+            try {Logger.debug("SECURITY USER : " + SecurityController.getUser().getId());} catch (Exception zz) {}
             Logger.debug("VS USER : " + user.getId());
 
-            if (SecurityController.getUser().getId().longValue() == user.getId().longValue()) {
+            //if (SecurityController.getUser().getId().longValue() == user.getId().longValue()) {
                 //Ok the current desktop have access (ie if we impersonate a user... a specific desktop later on)
                 Set<String> Perms = new HashSet<String>();
                 //Lets use custom query not hibernate for This one, its easier and more performant
@@ -263,9 +263,9 @@ public class UserImpl extends DAO {
 
                 return Perms;
 
-            } else {
-                return new HashSet<String>();
-            }
+            //} else {
+//                return new HashSet<String>();
+  //          }
         } catch (Exception ee) {
             ee.printStackTrace();;
         }

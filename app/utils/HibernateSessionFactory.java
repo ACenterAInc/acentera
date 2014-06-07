@@ -32,8 +32,8 @@ import org.springframework.beans.annotation.AnnotationBeanUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
+//import org.springframework.jdbc.datasource.DriverManagerDataSource;
+//import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import play.Logger;
 import play.api.Play;
 import plugins.PluginEvent;
@@ -45,7 +45,9 @@ import javax.persistence.Entity;
 import javax.sql.DataSource;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Properties;
+import java.util.Set;
 
 /*
  * Author:Siddhartha
@@ -86,26 +88,6 @@ public class HibernateSessionFactory implements Lifecycle {
         buildSessionFactory();
     }
 
-    public static DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        /*        <property name="driverClassName" value="${db.default.driver}" />
-        <property name="url" value="${db.default.url}" />
-        <property name="username" value="${db.default.user}" />
-        <property name="password" value="${db.default.password}" />*/
-        dataSource.setDriverClassName(play.Play.application().configuration().getString("db.default.driver"));
-        dataSource.setUrl(play.Play.application().configuration().getString("db.default.url"));
-        dataSource.setUsername(play.Play.application().configuration().getString("db.default.user"));
-        dataSource.setPassword(play.Play.application().configuration().getString("db.default.password"));
-        return dataSource;
-    }
-
-
-    private static Properties hibProperties() {
-        Properties properties = new Properties();
-        properties.put(PROPERTY_NAME_HIBERNATE_DIALECT, "org.hibernate.dialect.MySQLDialect");
-        properties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL, true);
-        return properties;
-    }
 
     private  static void buildSessionFactory() {
 
@@ -260,35 +242,66 @@ public class HibernateSessionFactory implements Lifecycle {
         Session session = (Session) threadLocal.get();
 
         if (session == null || !session.isOpen() || !session.isConnected()) {
+
+
+            if (session != null && (!session.isOpen() || !session.isConnected())) {
+                try {
+                    throw new Exception("CLOISNG HIBERNATE");
+                }catch(Exception ee){
+                    Logger.debug("HIBERNATE SESSION WAS NOT OPEN BUT IS NOT NULL ?????");
+                    ee.printStackTrace();
+                    ;
+                }
+            }
+
             if (sessionFactory == null) {
+
+                try {
+                    throw new Exception("ee");
+                } catch (Exception ee) {
+                    Logger.debug("HIBERNATE sessionFactory WAS : " +session);
+                    ee.printStackTrace();;
+                }
+
                 rebuildSessionFactory();
             }
 
             session = null;
             while (session == null) {
-                session = null;
+                    session = null;
                     try {
                         session = sessionFactory.getCurrentSession();
                     } catch (HibernateException ex) {
                         try {
                             session = sessionFactory.openSession();
                         } catch (Exception ee)  {
+                            ee.printStackTrace();
                             session = null;
                         }
                     }
 
-                try {
+                /*try {
                     if ((session != null) && (((session.getTransaction().isActive() && session.isDirty()) || (!session.isOpen())))) {
-                        session = null;
+                        //session = null;
+                        session = sessionFactory.openSession();
                     }
                 } catch (Exception e) {
                     //no active session... we should check if active trasnaction
                     e.printStackTrace();
-                }
+                }*/
             }
 
 
             if (session == null ) {
+
+                try {
+                    throw new Exception("ee");
+                } catch (Exception ee) {
+                    Logger.debug("HIBERNATE SESSION IS NULLL???");
+                    ee.printStackTrace();;
+                }
+
+
             } else {
                 try {
                     if (! session.getTransaction().isActive() ) {
@@ -302,6 +315,22 @@ public class HibernateSessionFactory implements Lifecycle {
 
         if (session == null ) {
             Logger.error("Session was null");
+
+            try {
+                throw new Exception("ee");
+            } catch (Exception ee) {
+                Logger.debug("HIBERNATE SESSION IS NULLL 111???");
+                ee.printStackTrace();;
+            }
+        }
+
+        if (session != null && (!session.isOpen() || !session.isConnected())) {
+            try {
+                throw new Exception("ee");
+            } catch (Exception ee) {
+                Logger.debug("HIBERNATE SESSION IS NOT OPEN ???");
+                ee.printStackTrace();;
+            }
         }
         return session;
     }
@@ -350,7 +379,9 @@ public class HibernateSessionFactory implements Lifecycle {
      *  @throws HibernateException
      */
     public static void rollback() throws HibernateException {
-        Session session = getSession();
+
+
+        Session session = (Session) threadLocal.get();
         try {
             if (session != null) {
                 if (session.isOpen()) {
@@ -358,6 +389,14 @@ public class HibernateSessionFactory implements Lifecycle {
                         if (!session.getTransaction().wasCommitted()) {
                             if (session.getTransaction().isActive()) {
                                 if (!session.getTransaction().wasRolledBack()) {
+
+                                    try {
+                                        throw new Exception("ROLLBACK");
+                                    } catch (Exception ee) {
+                                        Logger.debug("HIBERNATE SESSION ROLLBACK??");
+                                        ee.printStackTrace();;
+                                    }
+
                                     session.getTransaction().rollback();
                                 }
                             }
@@ -368,6 +407,7 @@ public class HibernateSessionFactory implements Lifecycle {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        closeSession();
     }
     /**
      *  Close the single hibernate session instance.
@@ -377,12 +417,15 @@ public class HibernateSessionFactory implements Lifecycle {
     public static void closeSession() throws HibernateException {
         Session session = (Session) threadLocal.get();
 
-        Logger.debug("Hibernate - closeSession Called");
-
         threadLocal.set(null);
 
         if (session != null) {
-
+            try {
+                throw new Exception("CLOISNG HIBERNATE");
+            } catch (Exception ee) {
+                Logger.debug("HIBERNATE SESSION CLOSE ??");
+                ee.printStackTrace();;
+            }
             try {
                 if (session != null) {
                     if (session.isOpen()) {

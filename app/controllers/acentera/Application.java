@@ -25,6 +25,9 @@ SOFTWARE.
 package controllers.acentera;
 
 import controllers.AssetsBuilder;
+import org.apache.shiro.session.ExpiredSessionException;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
 import play.api.mvc.AnyContent;
 import play.api.mvc.Action;
 import play.mvc.*;
@@ -44,13 +47,23 @@ public class Application extends Controller {
 
     public static Result index() {
 
+
         if (request().cookie(SecurityController.AUTH_TOKEN) != null) {
-            Logger.debug("APPLICATION RETURN INDEX");
-            if (play.Play.isDev()) {
-                return ok(index.render("ACenterA Cloud", 1, "dev"));
-            } else {
-                return ok(index.render("ACenterA Cloud", 1, "prod"));
+            Logger.debug("APPLICATION RETURN INDEX -> " + play.Play.application().configuration().getString("application.env"));
+            //Still need to have a subject
+            try {
+                Subject s = SecurityController.getSubject();
+
+                Session ss = SecurityController.getSession();
+                if (ss == null) {
+                    throw new ExpiredSessionException("Expired");
+                }
+            } catch (Exception error) {
+                SecurityController.logout(ctx());
+                return redirect("/");
             }
+
+            return ok(index.render("ACenterA Cloud", 1, play.Play.application().configuration().getString("application.env")));
         } else {
             return ok(login.render("login", ""));
         }
@@ -69,11 +82,22 @@ public class Application extends Controller {
         if ((t != null) && (t.length > 0)) {
             String referer = t[0];
             response().setHeader("REDIRECT", "");
-            if (play.Play.isDev()) {
-                return ok(index.render("ACenterA Cloud", 1, "dev"));
-            } else {
-                return ok(index.render("ACenterA Cloud", 1, "prod"));
+
+
+            try {
+                Subject s = SecurityController.getSubject();
+
+                Session ss = SecurityController.getSession();
+                if (ss == null) {
+                    throw new ExpiredSessionException("Expired");
+                }
+            } catch (Exception error) {
+                SecurityController.logout(ctx());
+                return redirect("/");
             }
+
+            return ok(index.render("ACenterA Cloud", 1, play.Play.application().configuration().getString("application.env")));
+
         } else {
             response().setHeader("REDIRECT", "");
             return redirect("/#" + request().path());

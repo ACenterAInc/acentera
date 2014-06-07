@@ -23,7 +23,10 @@ SOFTWARE.
 */
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.*;
+import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.util.Factory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import play.Application;
@@ -83,9 +86,13 @@ class ShiroConfig {
 
         SampleRealm sampleRealm = new SampleRealm();
         sampleRealm.ini();
-        DefaultSecurityManager securityManager = new DefaultSecurityManager();
+        Factory<SecurityManager> factory = new IniSecurityManagerFactory("classpath:shiro.ini");
+        DefaultSecurityManager securityManager = (DefaultSecurityManager)factory.getInstance();
 
-        securityManager.setRealm(sampleRealm);
+        //DefaultSecurityManager securityManager = new DefaultSecurityManager();
+
+
+        //securityManager.setRealm(sampleRealm);
         /*try {
             PropertyUtils.getNestedProperty(securityManager, "-1");
         } catch (IllegalAccessException e) {
@@ -98,8 +105,9 @@ class ShiroConfig {
 
         // Turn off session storage for better "stateless" management.
                 // https://shiro.apache.org/session-management.html#SessionManagement-StatelessApplications%2528Sessionless%2529
-                DefaultSubjectDAO subjectDAO = (DefaultSubjectDAO) securityManager.getSubjectDAO();
+        DefaultSubjectDAO subjectDAO = (DefaultSubjectDAO) securityManager.getSubjectDAO();
         DefaultSessionStorageEvaluator sessionStorageEvaluator = (DefaultSessionStorageEvaluator) subjectDAO.getSessionStorageEvaluator();
+
         sessionStorageEvaluator.setSessionStorageEnabled(false);
 
 

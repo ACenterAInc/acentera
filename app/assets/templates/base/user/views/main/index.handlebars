@@ -29,8 +29,10 @@
 
     </div>
 {{/if}}
+
 {{#else-equal param1=projects.length param2=0}}
     <div class="mediumtopmargin">
+
         {{projectlist-table dataBinding="projects" type="accepted" isLoaded=view.loaded tableId="project_table" template_name="components/table/projectlist" clickRoute="project.index"}}
     </div>
 

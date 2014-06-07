@@ -22,11 +22,13 @@ GET      /destroy/                            controllers.acentera.CometJavaServ
 GET      /destroy                             controllers.acentera.CometJavaServlet.destroy(desktopId: String = "")
 
 
+
 #API / Model Access
 GET      /api/account                                       controllers.acentera.Account.getAccount()
 PUT      /api/account                                       controllers.acentera.Account.updateAccount()
 
 GET      /api/project/:project_id                           controllers.acentera.Project.getProjectById(project_id : Long)
+DELETE   /api/project/:project_id                           controllers.acentera.Project.deleteProject(project_id : Long)
 GET      /api/projects                                      controllers.acentera.Project.getProjects()
 POST     /api/projects                                      controllers.acentera.Project.createProjects()
 POST     /api/project/:project_id/providers                 controllers.acentera.Project.addNewCloudProvider(project_id: Long)

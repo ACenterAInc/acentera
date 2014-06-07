@@ -129,11 +129,15 @@ case class WebUser(email: String, cred: String, shiroToken : UsernamePasswordTok
     try {
       try {
         token.setRememberMe(true);
+        Logger.debug("TRYING TO CONNECT TO : " + email + " with cred :" + cred);
         currentUser.login(token)
       } catch {
-        case us : org.apache.shiro.session.UnknownSessionException => {
+        case err : Exception => {
+          err.printStackTrace();
           currentUser = new Subject.Builder().buildSubject();
+          currentUser.login(token);
         }
+
       }
 
       Logger.debug("SHIRO AUTHENTICATE IS :  " + currentUser);

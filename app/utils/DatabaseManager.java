@@ -123,8 +123,9 @@ public class DatabaseManager {
     public synchronized  void rollback() {
 
         if (threadConnection.get() != null) {
+            Connection tmpConnection = null;
             try {
-                Connection tmpConnection = threadConnection.get();
+                tmpConnection  = threadConnection.get();
                 try {
                     tmpConnection.rollback();
                 } catch (Exception ignore) {
@@ -136,9 +137,13 @@ public class DatabaseManager {
                 } catch (Exception ee) {
                     ee.printStackTrace();
                 }
-                tmpConnection.close();
-            } catch (SQLException e) {
+
             } finally {
+                try {
+                    tmpConnection.close();
+                } catch (Exception ee) {
+
+                }
             }
         }
         HibernateSessionFactory.closeSession();
@@ -146,6 +151,8 @@ public class DatabaseManager {
     }
 
     public synchronized  void closeIfConnectionOpen() {
+
+        HibernateSessionFactory.closeSession();
 
         if (threadConnection.get() != null) {
             try {
@@ -166,7 +173,7 @@ public class DatabaseManager {
             } finally {
             }
         }
-        HibernateSessionFactory.closeSession();
+
         threadConnection.set(null);
 
         //Obsolete, this used to be some problem that got fixed after few configuration changes

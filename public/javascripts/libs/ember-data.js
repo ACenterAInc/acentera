@@ -9459,7 +9459,21 @@ DS.RESTAdapter = DS.Adapter.extend({
   deleteRecord: function(store, type, record) {
     var id = get(record, 'id');
 
-    return this.ajax(this.buildURL(type.typeKey, id), "DELETE");
+
+    //THEACE ADDED
+    var hash = { data: null };
+    try {
+        if (type.params.password != undefined) {
+            var data = { password: type.params.password };
+            hash.data = data;
+            delete type.params.password;
+        }
+    } catch (ee) {
+        //console.error(ee.stack);
+    }
+
+    //THEACE ADDED END
+    return this.ajax(this.buildURL(type.typeKey, id), "DELETE", hash);
   },
 
   /**
@@ -9634,9 +9648,13 @@ DS.RESTAdapter = DS.Adapter.extend({
       };
 
       hash.error = function(jqXHR, textStatus, errorThrown) {
-        //ACENTERA / THEACE ADDED
+        //Its ok.. it is returning a 200 with an error msg.. instead..
+        /*//ACENTERA / THEACE ADDED
         if (isProdMode) {
             window.location=prefix;
+        }*/
+        if (readCookie("token") == null ) {
+            window.location=prefix + "logout";
         }
         Ember.run(null, reject, adapter.ajaxError(jqXHR));
       };

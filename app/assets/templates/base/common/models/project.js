@@ -45,6 +45,8 @@ App.ProjectInviteAdapter = CustomRESTAdapter.extend({
      buildURL: function(record, suffix,z ) {
           //not great.. console.error(App.Provider.params);
           try {
+          console.error("GOT Z ");
+          console.error(z);
               if (suffix == undefined) {
                 return "api/project/" + App.User.params.project_id + "/invites";
               } else {

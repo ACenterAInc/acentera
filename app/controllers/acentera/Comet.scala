@@ -48,7 +48,7 @@ import play.api.libs.json.JsString
 import play.api.libs.json.JsNumber
 import play.api.libs.json.JsObject
 import models.web.{AppObj, DesktopObject}
-import utils.AsyncJob
+import utils.{DatabaseManager, HibernateSessionFactory, AsyncJob}
 import net.sf.json.JSONObject
 import controllers.Authentication
 
@@ -63,12 +63,52 @@ object Comet extends Controller with Authentication {
     JsObject(Seq("result" -> JsArray(jsObs)))
   }
 
+  def notGoodgetMessages(desktopId: String, lastMessageId: Int)  = Action.async { implicit request => {
+
+    val desktop = currentDesktop;
+
+    val futureData = scala.concurrent.Future {
+      val promiseOfMessages = waitForNewMessages(desktop, lastMessageId)
+    }
+    val timeoutFuture = play.api.libs.concurrent.Promise.timeout("NoData", 60.second)
+    Future.firstCompletedOf(Seq(futureData, timeoutFuture)).map {
+      case messages: List[Message] => {
+        Ok(messagesToJson(messages)).withHeaders("Access-Control-Allow-Origin" -> "*")
+      }
+      case i: Int => Ok("Got result: " + i)
+      case c => {
+        Logger.debug("In timeout Future... Timed out..");
+
+        val i = desktop.inSequenceDesktopTimeout();
+        var currTs = desktop.getLastUsedTimestamp()
+        Logger.debug("In timeout Future case c... Timed out.. 1 currt s : " + currTs);
+        val a = Message(i,"", System.currentTimeMillis()/1000)
+
+        Logger.debug("In timeout Future case c... Timed out.. 2 : last id : " + i);
+
+        //send an empty message to reset polling
+        try {
+          Ok(messagesToJson(List(a))).withHeaders("Access-Control-Allow-Origin" -> "*")
+        } catch {
+          case e: Exception => {
+            Logger.debug("In exception ee")
+            Ok("")
+          }
+        }
+      }
+    }
+    }
+  }
+
   def getMessages(desktopId: String, lastMessageId: Int) = IsAuthenticated { (user, desktop) => implicit request => {
 
     val desktop = currentDesktop(request, desktopId)
 
     //val execManager: ExecutionManager = ExecutionManager.getInstance
     //execManager.setTreadDesktop(desktop);
+
+    //touch the session keep alive
+    SecurityController.getSession().touch();
 
     val promiseOfMessages = waitForNewMessages(desktop, lastMessageId)
 
@@ -80,6 +120,7 @@ object Comet extends Controller with Authentication {
     Async {
       Future.firstCompletedOf(Seq(messagesFuture, timeoutFuture)).map {
         case messages: List[Message] => {
+          DatabaseManager.getInstance().closeIfConnectionOpen();
           Ok(messagesToJson(messages)).withHeaders("Access-Control-Allow-Origin" -> "*")
         }
         case c => {
@@ -94,10 +135,12 @@ object Comet extends Controller with Authentication {
 
           //send an empty message to reset polling
           try {
+            DatabaseManager.getInstance().closeIfConnectionOpen();
             Ok(messagesToJson(List(a))).withHeaders("Access-Control-Allow-Origin" -> "*")
           } catch {
             case e: Exception => {
               Logger.debug("In exception ee")
+              DatabaseManager.getInstance().closeIfConnectionOpen();
               Ok("")
             }
           }

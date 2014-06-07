@@ -7,11 +7,11 @@ App.get("i18n").reopen({
             first_name: "Prenom",
             last_name: "Nom de famille",
             project: {
-                    admin_must_enable_select_provider: "Pour utiliser ce project, vous devez selectionner un services de cloud et lui configurer un set de clef API."
+                    admin_must_enable: "Pour utiliser ce project, vous devez selectionner un services de cloud et lui configurer un set de clef API."
             }
     },
     en : {
-
+            invalid_password: "Password is invalid.",
             leftmenu: {
                 project_list: "Project List"
             },
@@ -60,7 +60,7 @@ App.get("i18n").reopen({
                 create_tooltip: "Create a new Project",
                 create_first_tooltip: "Create your first Project",
                 displayname_input_placeholder: "Enter a descriptive name here",
-                admin_must_enable_select_provider: "In order to enable this project, you must select a provider and add proper API / Key.",
+                admin_must_enable: "In order to enable this project, you must either add a Managed Subscription, or add an API / Key using the Cloud Providers section.",
                 create_name_tooltip: "This name will be shown for creation of new servers.",
                 create_tag_tooltip: "This tag is used to do mapping with user / groups.",
                 admin_project_must_configure: "Your administrator must configure the API Key on this Project.",

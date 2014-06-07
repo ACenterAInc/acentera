@@ -2,7 +2,18 @@ App.MainRoute = Ember.Route.extend({
        leftmenuTemplate: 'main/leftmenu',
        topbarTemplate: 'single',
        setupPrivateController: function(controller, model) {
-
+            running++;
+            model.projects.then(function(e) {
+                  controller.set('projects', e.get('content'));//.get('content'));
+                  running--;
+            });
+       },
+       model: function(params) {
+        var store = this.get('store');
+        var multimodel = {
+                projects: store.findAll('projects')
+        }
+        return multimodel;
        }
 });
 
@@ -11,19 +22,28 @@ App.MainIndexController = Ember.ObjectController.extend({
     breadcrumbUseParentModel: true,
     breadcrumbTitle: "Projects",
     breadcrumbVisible: true,
-    projects: Ember.computed.alias('controllers.application.projects'),
+    //projects: [],  //--removed somehow this breaks...
     pendingInvites: function() {
         var pendingProjects = [];
-        var projects = this.get('projects');
+        console.error('zz');
+        try {
+            var projects = this.get('projects');
 
-        var projectLen = projects.length;
-        for (var i = 0; i < projectLen; i++) {
-            if ((projects[i].get('type') == 'invited') && (projects[i].get('invitetoken') != null)) {
-                pendingProjects.push(projects[i]);
+            var projectLen = this.get('projects').length;
+            console.error(this.get('projects'));
+            console.error(this.get('projects').length);
+            for (var i = 0; i < projectLen; i++) {
+                if ((projects[i].get('type') == 'invited') && (projects[i].get('invitetoken') != null)) {
+                    pendingProjects.push(projects[i]);
+                }
             }
+        } catch (ee) {
+            console.error(ee.stack);
         }
+        console.error('z33');
+        console.error(pendingProjects);
         return pendingProjects;
-    }.property('projects.@each','projects.@each.invitetoken'),
+    }.observes('projects','projects.@each','projects.@each.invitetoken').property('projects.@each','projects.@each.invitetoken'),
     actions: {
         createNewProject: function() {
                var self = this;

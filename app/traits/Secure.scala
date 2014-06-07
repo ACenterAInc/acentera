@@ -224,6 +224,24 @@ trait Authentication {
   }
 
 
+  /*
+  def IsAsyncAuthenticated(f: ( User, DesktopObject) => Request[AnyContent] => Result ) = Security.Authenticated(isAuthenticated,onUnauthorized) { username =>
+    Action.async (implicit request => {
+      try {
+        f(user,currentDesktop)(request)
+      } catch {
+        case e : Exception => {
+          e.printStackTrace();
+          FailedMessage("EXCEPTION_OCCURED")
+        }
+      } finally {
+        Logger.trace(this + "  isAuthenticated commit")
+      }
+    })
+  }*/
+
+
+
   def currentDesktop(implicit request: RequestHeader, dtid: String = "") : DesktopObject = {
     var myDtid = dtid;
     if (dtid == "") {
