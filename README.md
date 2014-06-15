@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-# ACenterA PaaS Community Edition
-=======
 # ACenterA PaaS Community Edition (Core)
 
 If you wish to use this "Play Framework Module", please follow the instruction from : [acentera-web](https://github.com/ACenterAInc/acentera-web)
->>>>>>> 2bbf1007527451b190888520b2c7c2c01c86ec8a
 
 Commercial product differ from this open source solution, visit us at http://www.acentera.com/
 
@@ -12,7 +8,7 @@ OpenSouce Cloud Platform / Platform As A Service  - Web Portal
 
 ## HipChat
 
-Stick with us on HipChat :  https://www.hipchat.com/invite/118632/c4964afb5fdd2211c7399bd8f8e09908
+Stick with us on HipChat :  https://www.hipchat.com/gj2n23n8e
 
 
 ## Features
@@ -39,24 +35,7 @@ The i18N Support works as
 
 see https://github.com/ACenterAInc/acentera-web
 
-<<<<<<< HEAD
-### Compile / publish play-emberjs first
-    
-```bash
-    cd modules/play-emberjs;
-    play publish-local
-```
 
-### Play Compile / idea
-
-```bash
-    play compile
-
-    play idea
-```
-
-=======
->>>>>>> 2bbf1007527451b190888520b2c7c2c01c86ec8a
 ### Memcache
 
 For sessions, you should use memcached and configure the conf/application.conf
@@ -72,23 +51,7 @@ Create yourself a recaptcha public and private key at https://www.google.com/rec
 Insert the key and secret into conf/application.conf at the appropriate location.
 
 
-<<<<<<< HEAD
-### Run the Portal
 
-```bash
-    play run
-```
-
-### Browse / Register to your own Portal
-
-    http://localhost:9000/
-    
-
-## Usage
-
-
-=======
->>>>>>> 2bbf1007527451b190888520b2c7c2c01c86ec8a
 ### EmberJS
 
 The EmberJS using play-ember, thanks for that plugin, takes the various *.handlebars files and *.js from the following folders in that order
