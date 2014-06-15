@@ -46,6 +46,7 @@ public class ProjectDevicesTags extends AutoIncrementId {
     @Expose @Getter @Setter Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Where(clause = "disable_date is null")
     @JsonIdentityReference(alwaysAsId = true)
     @JoinColumn(name="project_device_id")
     @JsonIgnore

@@ -15,6 +15,7 @@ App.get("i18n").reopen({
             leftmenu: {
                 project_list: "Project List"
             },
+            warning_alert_prefix: "Warning !",
             error_invalid_fields_values: "Various fields contains invalid values.",
             must_select_value: "You must select a value",
             numeric_non_decimal_greater_or_equal_zero: "Must be an integer greater or equal to 0",

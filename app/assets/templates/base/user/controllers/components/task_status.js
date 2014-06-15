@@ -8,6 +8,7 @@ App.TaskStatusView = Ember.View.extend({
   complete_redirect_route:null,
   error_redirect_route: null,
   redirect_model: null,
+  redirect_url: null,
   redirect_model_id: null,
   redirect_model_type: null,
   didInsertElement: function() {
@@ -32,6 +33,7 @@ App.TaskStatusView = Ember.View.extend({
         try {this.set('redirect_model_type', ctrl.get('content').get('redirect_model_type'));} catch(w) {}
         try {this.set('redirect_model_id', ctrl.get('content').get('redirect_model_id'));} catch(w) {}
         try {this.set('redirect_model', ctrl.get('content').get('redirect_model'));} catch(w) {}
+        try {this.set('redirect_url', ctrl.get('content').get('redirect_url'));} catch(w) {}
 
         try {ctrl.get('content').rollback();} catch (w) {}
 
@@ -65,7 +67,11 @@ App.TaskStatusView = Ember.View.extend({
     try {
         if (this.get('ctrl').get('content').get('percentage') == 100) {
 
-            //if (this.get('ready_counter') >= 3) {
+            if (this.get('ready_counter') == undefined) {
+                this.set('ready_counter', 0);
+            }
+
+            if (this.get('ready_counter') >= 3) {
                 try {this.get('ctrl').send('taskCompleted');} catch (ee) {}
 
                 if (this.get('complete_redirect_route') != undefined) {
@@ -78,18 +84,29 @@ App.TaskStatusView = Ember.View.extend({
                         m.reload();
                     }
 
+                    console.error("TEST A ");
+                    console.error("TEST A " + this.get('redirect_url')) ;
+                    //console.error(readCookie("prev_task_url"));
+//todo.. lasturl
                     this.get('ctrl').transitionToRoute(this.get('complete_redirect_route'), m);
+                } else {
+                    //use prev url
+                    console.error("TEST A1 " + this.get('redirect_url')) ;
+
+                    window.location.href = "#" + this.get('redirect_url');
                 }
                 return true;
-            //} else {
-            //    this.set('ready_counter', (this.get('ready_counter') + 1) );
-            //}
+            } else {
+                this.set('ready_counter', (this.get('ready_counter') + 1) );
+            }
         }
 
         if (this.get('ctrl').get('content').get('action_status') == 'error') {
             try {this.get('ctrl').send('taskError');} catch (ee) {}
 
             if (this.get('error_redirect_route') != undefined) {
+
+
                 var m = this.get('redirect_model');
                 if ( m != undefined ) {
                     m.reload();
@@ -97,7 +114,22 @@ App.TaskStatusView = Ember.View.extend({
                     m = this.get('ctrl').get('controllers.project.content');
                     m.reload();
                 }
-                this.get('ctrl').transitionToRoute(this.get('error_redirect_route'), m);
+
+                this.get('ctrl').set('showErrorGoBackButton', true);
+                this.get('ctrl').set('error_route', this.get('error_redirect_route'));
+
+
+
+
+
+                //this.get('ctrl').set('error_model', m);
+
+
+
+
+
+
+                //this.get('ctrl').transitionToRoute(this.get('error_redirect_route'), m);
             } else {
                 if (this.get('complete_redirect_route') != undefined) {
 
@@ -139,8 +171,16 @@ App.TaskStatusView = Ember.View.extend({
             this.get('ctrl').get('content').reload();
 
             var prct = this.get('ctrl').get('content.percentage');
-            if (prct >= this.get('ctrl').get('current_percentage')) {
-                this.get('ctrl').set('current_percentage', prct);
+            if (prct >= 80 ) {
+                if (this.get('ready_counter') >= 3 ) {
+                    if (prct >= this.get('ctrl').get('current_percentage')) {
+                        this.get('ctrl').set('current_percentage', prct);
+                    }
+                }
+            } else {
+                if (prct >= this.get('ctrl').get('current_percentage')) {
+                    this.get('ctrl').set('current_percentage', prct);
+                }
             }
 
             try {this.get('ctrl').send('taskReloaded');} catch (ee) {}
@@ -166,6 +206,9 @@ App.TaskStatusView = Ember.View.extend({
     }
   },
   actions: {
+    taskErrorGoBackClick: function() {
+        //alert('aa');
+    },
     asyncResponse: function(e,custom_data) {
        try {
 

@@ -25,10 +25,7 @@ SOFTWARE.
 package models.db.acentera.impl;
 
 
-import models.db.DO_REGIONS;
-import models.db.ProjectProviders;
-import models.db.ProjectProvidersRegions;
-import models.db.ProjectRegions;
+import models.db.*;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
@@ -43,6 +40,17 @@ public class ProjectProvidersImpl extends DAO {
 
     public ProjectProvidersImpl() {
         super();
+    }
+
+
+    public static ProjectProviders getProviderById(Long id) {
+
+        Session session = (Session) HibernateSessionFactory.getSession();
+        Criteria criteria = session.createCriteria(ProjectProviders.class);
+        return (ProjectProviders) criteria.add(Restrictions.and(
+                        Restrictions.eq("id", id)
+                )
+        ).uniqueResult();
     }
 
     //Not supposed to be called but it was string before

@@ -1185,14 +1185,34 @@ App.ModalDialogComponent = Ember.Component.extend({
 
 
 App.ModalController = Ember.ObjectController.extend({
-    model: null
-
+    model: null,
+    ctrl: null
 });
 
 App.ModalView = Ember.View.extend({
     templateName: "modal",
     errMsg: "",
-    classNameBindings: ['lessTop:topMinus35:normal','lessTopLeft:topLeftMinus35:normal'],
+    ctrl: null,
+
+    classNameBindings: ['lessTop:topMinus35:normal','lessTopLeft:topLeftMinus35:normal', 'lessTopHigher:lessTopHigh:normal'],
+        /*//
+        var data = "";
+
+        if (this.get('lessTopHigher')) {
+            data += "lessTopHigh";
+        }
+
+        if (this.get('lessTop')) {
+                data += "topMinus35";
+        }
+
+        if (this.get('lessTopLeft')) {
+                data += "topLeftMinus35";
+        }
+        if (data == "") {
+            data = "normal";
+        }
+    }.observes('lessTop', 'lessTopHigher').property(),*/
     error: false,
     model : null,
     title: function() {
@@ -1214,13 +1234,16 @@ App.ModalView = Ember.View.extend({
                  this.controller.get('model.lessTop');
         }
         return true;
-    }.property(),
+    }.observes('model').property('model'),
     lessTopLeft: function() {
             if (this.controller.get('model.lessTopLeft') != undefined) {
                      this.controller.get('model.lessTopLeft');
             }
             return true;
-    }.property(),
+    }.observes('model').property('model'),
+    lessTopHigher: function() {
+            return (this.controller.get('model.lessTopHigher') == true);
+    }.observes('model').property('model'),
     content: "",
     controller: null,
     extra: "",

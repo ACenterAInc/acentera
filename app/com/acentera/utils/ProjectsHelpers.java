@@ -1067,7 +1067,7 @@ public class ProjectsHelpers {
         ProjectTasks task = new ProjectTasks();
         task.setName("Create Server");
         task.setType("server");
-        task.setProvider(prov);
+        task.setProviderId(prov.getId());
         task.setProjects(prov.getProject());
         ProjectImpl.save(task);
 
@@ -1206,7 +1206,7 @@ public class ProjectsHelpers {
         jsoTask.put("task", val);
 
 
-        ProjectProviders prov = task.getProvider();
+        ProjectProviders prov = ProjectProvidersImpl.getProviderById(task.getProviderId());
         DigitalOcean apiClient = new DigitalOceanClient(prov.getApikey(), prov.getSecretkey());
 
         Response l = apiClient.getEventProgress(Integer.valueOf(task.getExtId()));
@@ -1234,7 +1234,7 @@ public class ProjectsHelpers {
         ProjectTasks task = new ProjectTasks();
         task.setName("Shutdown Server");
         task.setType("server");
-        task.setProvider(prov);
+        task.setProviderId(prov.getId());
         task.setProjects(prov.getProject());
         ProjectImpl.save(task);
 
@@ -1271,7 +1271,7 @@ public class ProjectsHelpers {
         ProjectTasks task = new ProjectTasks();
         task.setName("Shutdown Server");
         task.setType("server");
-        task.setProvider(prov);
+        task.setProviderId(prov.getId());
         task.setProjects(prov.getProject());
         ProjectImpl.save(task);
 
@@ -1306,7 +1306,7 @@ public class ProjectsHelpers {
         ProjectTasks task = new ProjectTasks();
         task.setName("Restart Server");
         task.setType("server");
-        task.setProvider(prov);
+        task.setProviderId(prov.getId());
         task.setProjects(prov.getProject());
         ProjectImpl.save(task);
 
@@ -1342,7 +1342,7 @@ public class ProjectsHelpers {
         ProjectTasks task = new ProjectTasks();
         task.setName("Resize Server");
         task.setType("server");
-        task.setProvider(prov);
+        task.setProviderId(prov.getId());
         task.setProjects(prov.getProject());
         ProjectImpl.save(task);
 
@@ -1380,7 +1380,7 @@ public class ProjectsHelpers {
         ProjectTasks task = new ProjectTasks();
         task.setName("Destroy Server");
         task.setType("server");
-        task.setProvider(prov);
+        task.setProviderId(prov.getId());
         task.setProjects(prov.getProject());
         ProjectImpl.save(task);
 

@@ -15,6 +15,10 @@ Website: http://www.onokumus.com
     padding:0
 }
 
+.lessTopHigh .modal-dialog {
+    top: 0px;
+}
+
 .whitetext {
     color:white;
     padding-top:8px;

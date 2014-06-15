@@ -38,6 +38,7 @@ import java.util.*;
 
 @Entity
 @Table(name="PROJECT_DEVICE")
+@Where(clause = "disable_date is null")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProjectDevices extends AutoIncrementId implements TagArrayBasePermission {
         private static final long serialVersionUID = 1L;

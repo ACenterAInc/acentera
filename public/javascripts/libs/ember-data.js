@@ -3015,7 +3015,7 @@ DS.Store = Ember.Object.extend({
   */
   modelFor: function(key) {
     var factory;
-
+    //console.error(key);
 
     if (typeof key === 'string') {
       var normalizedKey = this.container.normalize('model:' + key);

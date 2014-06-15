@@ -86,7 +86,11 @@ public abstract class AnonymousController extends Controller {
     public static Result FailedMessage(String msg, Exception e) { return SecurityController.FailedMessage(msg);}
 
     public static JSONObject getPostBodyAsJson(String key) {
-        return JSONObject.fromObject(request().body().asJson().get(key).toString());
+        try {
+            return JSONObject.fromObject(request().body().asJson().get(key).toString());
+        } catch (Exception eee) {
+            return new JSONObject();
+        }
     }
     public static JSONObject getPostBodyAsJson() {
         try {
@@ -109,7 +113,10 @@ public abstract class AnonymousController extends Controller {
                 }
             }
         }
-        return null;
+
+
+
+        return new JSONObject();
     }
 
     public static boolean confirmUserPassword(User u, String password) throws Exception {

@@ -35635,23 +35635,25 @@ var defaultActionHandlers = {
                     createCookie("error_project", 2);
 
 
-                    setTimeout(function() {
+                    /*setTimeout(function() {
                         window.location=prefix;
                     }, 100);
+                    */
                 } else {
                     if (readCookie("error_project") != 2) {
                         createCookie("error_project", 1);
 
-                        setTimeout(function() {
+                        /*setTimeout(function() {
                             window.location.href=prefix + "project/" + App.Project.params.project_id;
                         }, 100);
+                        */
                     }
                 }
             } else {
-                window.location.href=prefix;
+                //window.location.href=prefix;
             }
         } catch (ee) {
-            window.location.href=prefix;
+            //window.location.href=prefix;
         }
     //}
 

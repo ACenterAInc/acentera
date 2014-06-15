@@ -8,7 +8,8 @@ App.Task = DS.Model.extend({
         action_status: DS.attr('string'),
         complete_redirect_route: DS.attr('string'),
         error_redirect_route: DS.attr('string'),
-        redirect_model: DS.attr()
+        redirect_model: DS.attr(),
+        redirect_url: DS.attr()
 });
 
 

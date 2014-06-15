@@ -421,8 +421,8 @@ public class Utils {
         }
 
         models.ssh.KeyPair k = new models.ssh.KeyPair();
-        k.setPrivateKey(puboutput.toString());
-        k.setPublicKey(output.toString());
+        k.setPrivateKey(output.toString());
+        k.setPublicKey(puboutput.toString());
         return k;
     }
 

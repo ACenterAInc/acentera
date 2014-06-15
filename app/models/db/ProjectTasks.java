@@ -80,10 +80,11 @@ public class ProjectTasks extends AutoIncrementId {
         this.extId = String.valueOf(id);
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "project_provider_id")
-    @JsonIgnore
-    @Expose public @Getter @Setter ProjectProviders provider;
+    //ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    //JoinColumn(name = "project_provider_id")
+    //JsonIgnore
+    @Column(name= "project_provider_id", nullable = true)
+    public @Getter @Setter Long providerId;
 
 
     @OneToOne( fetch = FetchType.LAZY )

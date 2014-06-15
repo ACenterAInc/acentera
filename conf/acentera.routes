@@ -66,6 +66,7 @@ PUT      /api/project/:project_id/sshkey/:sshkey_id                             
 POST     /api/project/:project_id/servers/create                                            controllers.acentera.Project.createProjectServer(project_id: Long)
 GET      /api/project/:project_id/task/:task_id                                             controllers.acentera.Project.getProjectTaskStatus(project_id: Long, task_id: Long)
 
+
 #Server stop start resize..
 POST     /api/project/:project_id/server/:server_id/shutdown                                                  controllers.acentera.Server.shutdownServer(project_id: Long, server_id: Long)
 POST     /api/project/:project_id/server/:server_id/poweron                                                   controllers.acentera.Server.poweronServer(project_id: Long, server_id: Long)
