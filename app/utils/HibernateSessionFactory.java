@@ -421,12 +421,6 @@ public class HibernateSessionFactory implements Lifecycle {
 
         if (session != null) {
             try {
-                throw new Exception("CLOISNG HIBERNATE");
-            } catch (Exception ee) {
-                Logger.debug("HIBERNATE SESSION CLOSE ??");
-                ee.printStackTrace();;
-            }
-            try {
                 if (session != null) {
                     if (session.isOpen()) {
                         if (session.getTransaction() != null) {
@@ -448,9 +442,7 @@ public class HibernateSessionFactory implements Lifecycle {
                 }
 
             } catch (HibernateException he) {
-                he.printStackTrace();
             } catch (Exception ee) {
-                ee.printStackTrace();
             }
             try {
                 if (session.isOpen()) {

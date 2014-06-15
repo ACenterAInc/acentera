@@ -18,7 +18,7 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala).enablePlugins(Pl
 )
 //dependsOn(emberjs)
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.11.1"
 
 libraryDependencies ++= Seq(
   javaJdbc,
@@ -27,8 +27,10 @@ libraryDependencies ++= Seq(
   javaWs,
   "org.jasypt" % "jasypt" % "1.7",
   "org.apache.shiro" % "shiro-core" % "1.2.0",
+  "org.apache.commons" % "commons-email" % "1.3.2",
   "com.google.code.maven-play-plugin.net.tanesha.recaptcha4j" % "recaptcha4j" % "0.0.8",
   "net.sf.json-lib" % "json-lib" % "2.4" classifier "jdk15",
+  "org.json" % "json" % "20140107",
   //Require 0.0.8 due to HTTPS Requirement Google Change... added lib directly
   //"net.tanesha.recaptcha4j" % "recaptcha4j" % "0.0.7",
   //cant download due to jdk15.. "net.sf.json-lib" % "json-lib" % "2.4",

@@ -41,9 +41,9 @@ public class Application extends Controller {
 
     private static AssetsBuilder delegate = new AssetsBuilder();
 
-    public static Action<AnyContent> asset(String path, String file) {
-        return controllers.Assets.at(path, file);
-    }
+    //public static Action<AnyContent> asset(String path, String file) {
+    //     return controllers.Assets.at(path, file);
+    //}
 
 
     @With(AnonymousSecurityController.class)

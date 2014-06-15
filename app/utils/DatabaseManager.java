@@ -131,12 +131,6 @@ public class DatabaseManager {
                 } catch (Exception ignore) {
 
                 }
-                Logger.debug("CLOSING HERE BBBBB");
-                try {
-                    throw new Exception("BBB");
-                } catch (Exception ee) {
-                    ee.printStackTrace();
-                }
 
             } finally {
                 try {
@@ -162,12 +156,7 @@ public class DatabaseManager {
                 } catch (Exception ignore) {
 
                 }
-                Logger.debug("CLOSING HERE CCCC");
-                try {
-                    throw new Exception("CCC");
-                } catch (Exception ee) {
-                    ee.printStackTrace();
-                }
+
                 tmpConnection.close();
             } catch (SQLException e) {
             } finally {
@@ -220,11 +209,11 @@ public class DatabaseManager {
                 if (threadConnection.get().isClosed()) {
                     //WERID... something closed the connection ??
                     try {
-                        try {
-                            throw new Exception("Connection was closed but the transaction is not fully completed??");
+                        /*try {
+                            //throw new Exception("Connection was closed but the transaction is not fully completed??");
                         } catch (Exception ee) {
                             ee.printStackTrace();
-                        }
+                        }*/
                         //threadConnection.get().close();
                         DatabaseConnection dconnection = _instances.get(theName);
                         Connection con = dconnection.getConnectionOnlyFromDatabaseManager();

@@ -115,12 +115,12 @@ public class AnonymousSecurityController extends Action.Simple {
         return internalServerError().as("application/json");
     }
 
-    public F.Promise<SimpleResult>  NotAuthorized() {
+    public F.Promise<Result> NotAuthorized() {
         //return play.libs.F.Promise.pure((SimpleResult) controllers.Auth.logout());
-        return F.Promise.pure((SimpleResult) FailedMessage("UNAUTHORIZED"));
+        return F.Promise.pure((Result) FailedMessage("UNAUTHORIZED"));
     }
 
-    public static play.libs.F.Promise<play.mvc.SimpleResult>  logout(final play.mvc.Http.Context ctx) {
+    public static F.Promise<Result>  logout(final play.mvc.Http.Context ctx) {
         try {
             ctx.session().remove(SecurityController.AUTH_TOKEN);
             ctx.session().remove(SecurityController.DESKTOP_TOKEN);
@@ -147,7 +147,7 @@ public class AnonymousSecurityController extends Action.Simple {
         }
 
 
-        return play.libs.F.Promise.pure((SimpleResult) redirect("/"));
+        return play.libs.F.Promise.pure((Result) redirect("/"));
     }
 
     public static Subject getSubject() throws org.apache.shiro.session.ExpiredSessionException {
@@ -177,7 +177,7 @@ public class AnonymousSecurityController extends Action.Simple {
         return null;
     };
 
-    public F.Promise<SimpleResult> call(final Http.Context ctx) throws Throwable {
+    public F.Promise<Result> call(final Http.Context ctx) throws Throwable {
         try {
 
 
@@ -304,10 +304,10 @@ public class AnonymousSecurityController extends Action.Simple {
         return NotAuthorized();
     }
 
-    protected F.Promise<SimpleResult> processRequest(Http.Context ctx) throws Throwable {
+    protected F.Promise<Result> processRequest(Http.Context ctx) throws Throwable {
         Logger.debug(" [ AnonymousProcessRequest ] - Start ");
         try {
-            F.Promise<SimpleResult> z = delegate.call(ctx);
+            F.Promise<Result> z = delegate.call(ctx);
             return z;
         } finally {
             try {

@@ -29,7 +29,6 @@ import models.db.Project;
 import models.db.acentera.impl.UserImpl;
 import models.web.*;
 import net.sf.json.JSONObject;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.session.ExpiredSessionException;
 import org.apache.shiro.session.Session;
@@ -44,7 +43,6 @@ import scala.Option;
 import utils.DatabaseManager;
 import utils.HibernateSessionFactory;
 import utils.security.TagArrayBasePermission;
-import utils.security.TagBasePermission;
 import utils.security.TagSingleBasePermission;
 
 import javax.crypto.Cipher;
@@ -120,13 +118,13 @@ public class SecurityController extends AnonymousSecurityController {
 
 
 
-    public play.libs.F.Promise<play.mvc.SimpleResult>  NotAuthorized() {
+    public F.Promise<Result> NotAuthorized() {
         //return play.libs.F.Promise.pure((SimpleResult) controllers.Auth.logout());
-        return play.libs.F.Promise.pure((SimpleResult) FailedMessage("UNAUTHORIZED"));
+        return play.libs.F.Promise.pure((Result) FailedMessage("UNAUTHORIZED"));
     }
 
 
-    public play.libs.F.Promise<play.mvc.SimpleResult> call(final play.mvc.Http.Context ctx) throws Throwable {
+    public F.Promise<Result> call(final Http.Context ctx) throws Throwable {
         User user = null;
         Logger.debug(" [ SecurityController ] Got Path : " + ctx.request().path());
         try {
@@ -399,10 +397,10 @@ public class SecurityController extends AnonymousSecurityController {
         return NotAuthorized();
     }
 
-    protected F.Promise<SimpleResult> processRequest(Http.Context ctx) throws Throwable {
+    protected F.Promise<Result> processRequest(Http.Context ctx) throws Throwable {
         Logger.debug(" [ SecurityController ] - Start ");
         try {
-            F.Promise<SimpleResult> z = delegate.call(ctx);
+            F.Promise<Result> z = delegate.call(ctx);
             return z;
         } finally {
             try {
