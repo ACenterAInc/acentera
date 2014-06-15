@@ -63,7 +63,7 @@ object Comet extends Controller with Authentication {
     JsObject(Seq("result" -> JsArray(jsObs)))
   }
 
-  def notGoodgetMessages(desktopId: String, lastMessageId: Int)  = Action.async { implicit request => {
+  def getMessages(desktopId: String, lastMessageId: Int)  = Action.async { implicit request => {
 
     val desktop = currentDesktop;
 
@@ -100,7 +100,7 @@ object Comet extends Controller with Authentication {
     }
   }
 
-  def getMessages(desktopId: String, lastMessageId: Int) = IsAuthenticated { (user, desktop) => implicit request => {
+  def oldGetMessages(desktopId: String, lastMessageId: Int) = IsAuthenticated { (user, desktop) => implicit request => {
 
     val desktop = currentDesktop(request, desktopId)
 
@@ -115,7 +115,6 @@ object Comet extends Controller with Authentication {
 
     val messagesFuture = promiseOfMessages.future
     val timeoutFuture = play.api.libs.concurrent.Promise.timeout(desktop, 40.seconds)
-    val timeoutDeadDesktopFuture = play.api.libs.concurrent.Promise.timeout(desktop, 25.seconds)
 
     Async {
       Future.firstCompletedOf(Seq(messagesFuture, timeoutFuture)).map {
