@@ -1189,6 +1189,8 @@ var desktopId = undefined;
 
 
 var startPolling = function(desktop, dtid, token, email, id) {
+//ACENTERA TEMP
+        return ;
         var poll = function (desktop, dtid, token, email, id, timeout) {
 
             if (lastError++>50) {

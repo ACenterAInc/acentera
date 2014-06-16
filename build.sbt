@@ -6,16 +6,19 @@ sbtPlugin := true
 
 organization := "com.acentera"
 
+//emberJsPrefix := "acentera"
+
 //compileOrder := CompileOrder.Mixed
 //Mixed
 //JavaThenScala
 //Mixed
 //javacOptions ++= Seq("-source", "1.7")
 
-//lazy val emberjs = (project in file("modules/play-emberjs")).enablePlugins(PlayScala).enablePlugins(PlayJava)
-lazy val root = (project in file(".")).enablePlugins(PlayScala).enablePlugins(PlayJava).settings(
-   emberJsPrefix:= "acentera"
+val acentera = (project in file(".")).enablePlugins(PlayScala).enablePlugins(PlayJava).settings(
+   emberJsPrefix:= "user",
+   javacOptions ++= Seq("-source", "1.7")
 )
+
 //dependsOn(emberjs)
 
 scalaVersion := "2.10.4"
