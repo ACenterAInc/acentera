@@ -8,6 +8,7 @@ insert into user (id, cred, salt, email, partner_id) select 0, 'D6uoyK9z6RRnYrK9
 
 # --- !Downs
 
+
 delete from user where email='admin@acentera.com';
 
 delete from partner where name='admin@acentera.com';

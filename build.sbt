@@ -14,7 +14,7 @@ organization := "com.acentera"
 
 //lazy val emberjs = (project in file("modules/play-emberjs")).enablePlugins(PlayScala).enablePlugins(PlayJava)
 lazy val root = (project in file(".")).enablePlugins(PlayScala).enablePlugins(PlayJava).settings(
-   emberJsPrefix:= "acentera"
+   emberJsPrefix:= "acentera
 )
 //dependsOn(emberjs)
 
@@ -22,10 +22,11 @@ scalaVersion := "2.11.1"
 
 libraryDependencies ++= Seq(
   javaJdbc,
-  javaEbean,
+  //javaEbean,
   cache,
   javaWs,
   "org.jasypt" % "jasypt" % "1.7",
+  "joda-time" % "joda-time" % "2.3",
   "org.apache.shiro" % "shiro-core" % "1.2.0",
   "org.apache.commons" % "commons-email" % "1.3.2",
   "com.google.code.maven-play-plugin.net.tanesha.recaptcha4j" % "recaptcha4j" % "0.0.8",

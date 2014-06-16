@@ -1,5 +1,6 @@
 //More detailed view dan the App.Servers object
 
+
 App.Distro = DS.Model.extend({
     name: DS.attr('string'),
     selecteD: DS.attr()
