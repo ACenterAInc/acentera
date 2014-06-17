@@ -26,7 +26,6 @@ package controllers.acentera;
 
 import models.db.User;
 import net.sf.json.JSONObject;
-import org.apache.shiro.SecurityUtils;
 import play.Logger;
 import play.libs.F;
 import play.mvc.*;
@@ -36,13 +35,13 @@ public class UserPasswordRequire extends SecurityController {
 
 
     @Override
-    protected F.Promise<SimpleResult> processRequest(Http.Context ctx) throws Throwable {
+    protected F.Promise<Result> processRequest(Http.Context ctx) throws Throwable {
 
         Logger.debug(" [ UserPasswordRequire ] - Start ");
         try {
             JSONObject jsonData = getPostBodyAsJson(ctx);
             if (confirmUserPassword(ctx, getUser(ctx), jsonData.getString("password"))) {
-                F.Promise<SimpleResult> z = delegate.call(ctx);
+                F.Promise<Result> z = delegate.call(ctx);
                 return z;
             } else {
                 return NotAuthorized();
@@ -53,8 +52,8 @@ public class UserPasswordRequire extends SecurityController {
     }
 
 
-    public play.libs.F.Promise<play.mvc.SimpleResult>  NotAuthorized() {
-        return play.libs.F.Promise.pure((SimpleResult) forbidden("{ \"error\": \"not authorized\" }").as("application/json"));
+    public F.Promise<Result> NotAuthorized() {
+        return play.libs.F.Promise.pure((Result) forbidden("{ \"error\": \"not authorized\" }").as("application/json"));
     }
 
     public static JSONObject getPostBodyAsJson(Http.Context ctx, String key) {
