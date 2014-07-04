@@ -21,7 +21,7 @@ val acentera = (project in file(".")).enablePlugins(PlayScala).enablePlugins(Pla
 
 //dependsOn(emberjs)
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.11.1"
 //2.11.1"
 
 libraryDependencies ++= Seq(
