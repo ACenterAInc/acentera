@@ -49,7 +49,7 @@ if (("" + window.location).startsWith("file://")) {
 } else if (("" + window.location).indexOf(":900") > 1) {
     customHost = "http://192.168.3.135:9000";
 } else {
-    customHost = "https://portal.acentera.com/";
+    customHost = "https://portal.acentera.com";
 }
 
 
