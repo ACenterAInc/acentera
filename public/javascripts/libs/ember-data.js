@@ -2474,7 +2474,7 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                   hash = adapter.ajaxOptions(url, type, hash);
                   //alert('ajax called url A : ' + url);
 
-                  hash.timeout = 3000;
+                  hash.timeout = 15000;
 
                   hash.success = function(json) {
                             try {
@@ -2584,11 +2584,10 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
 
 
                   hash.error = function(jqXHR, textStatus, errorThrown) {
-                    //alert(textStatus);
-                    //console.error(jqXHR);
-                   // alert("TYPE IS : " + type);
                     if (type == "GET") {
                         try {
+
+                            //TODO: What ahppend when timeout ??
                             if (jqXHR.status == 404) {
 
                                                 var r = JSON.parse(jqXHR.responseText);
