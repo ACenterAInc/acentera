@@ -1,5 +1,4 @@
 
-
 App.Project = DS.Model.extend({
         name: DS.attr('string'),
         disabled: DS.attr('number'),

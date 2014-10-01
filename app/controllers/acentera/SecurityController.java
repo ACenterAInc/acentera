@@ -38,7 +38,9 @@ import play.api.libs.Crypto;
 import play.cache.Cache;
 import play.i18n.Messages;
 import play.libs.F;
+import play.libs.Scala;
 import play.mvc.*;
+import scala.None;
 import scala.Option;
 import utils.DatabaseManager;
 import utils.HibernateSessionFactory;
@@ -55,32 +57,11 @@ public class SecurityController extends AnonymousSecurityController {
 
     //public final static String AUTH_TOKEN_HEADER = "X-AUTH-TOKEN";
     public static final String AUTH_TOKEN = "token";
-    public static final String AUTHSECRET_TOKEN = "token";
+    public static final String AUTHSECRET_TOKEN = "tokensecret";
     public static final String DESKTOP_TOKEN = "dtid";
     private Files session;
 
-    String uuid(play.mvc.Http.Context ctx) {
-        Logger.debug("UUID is : " + ctx._requestHeader().session());
-        Logger.debug("UUID VS is : " + ctx._requestHeader().headers());
-        Http.Cookie res = ctx.request().cookie(AUTH_TOKEN);
-        if (res == null) {
-            return "";
-        }
 
-
-        return res.value();
-    }
-
-    String getEmailFromSession(play.mvc.Http.Context ctx) {
-
-        Http.Cookie res = ctx.request().cookie("email");
-        if (res == null) {
-            return "";
-        }
-
-
-        return res.value();
-    }
 
     String getStringCacheValue ( play.mvc.Http.Context ctx, String key )  {
         String keyCache = uuid(ctx) + "." + key;
@@ -118,22 +99,21 @@ public class SecurityController extends AnonymousSecurityController {
 
 
 
-    public F.Promise<Result> NotAuthorized() {
-        //return play.libs.F.Promise.pure((SimpleResult) controllers.Auth.logout());
-        return play.libs.F.Promise.pure((Result) FailedMessage("UNAUTHORIZED"));
-    }
-
-
     public F.Promise<Result> call(final Http.Context ctx) throws Throwable {
         User user = null;
         Logger.debug(" [ SecurityController ] Got Path : " + ctx.request().path());
+        Logger.debug(" [ SecurityController ] Got Path Headers : " + ctx._requestHeader());
         try {
 
 
 
 
             //Get the Session
-            //HibernateSessionFactory.getSession();
+            try {
+                org.hibernate.Session s = HibernateSessionFactory.getSession();
+            } catch (Exception ee) {
+
+            }
 
             boolean isAuthorized = false;
             String cacheValue = getStringCacheValue(ctx, AUTH_TOKEN);
@@ -141,8 +121,10 @@ public class SecurityController extends AnonymousSecurityController {
             Logger.debug("GOT CACHE VALUE : " + cacheValue);
 
             String email = getEmailFromSession(ctx);
-            Logger.debug("GOT EMAIL : " + email);
-            if (cacheValue != null) {
+            Logger.debug("GOT EMAIL : " + email );
+            Logger.debug("GOT CACHE VALUE : " + cacheValue );
+            if ((cacheValue != null) && (cacheValue.compareTo("") != 0)) {
+                Logger.debug("cache is copareted to : " + cacheValue);
                 if (cacheValue.compareTo(email) == 0) {
                     ctx.args.put("email", email);
                     user = UserImpl.getUserByEmail(email);
@@ -153,8 +135,9 @@ public class SecurityController extends AnonymousSecurityController {
                     //Stay logged in if hit another server (or in dev by using token secret...)
                     user = UserImpl.getUserByEmail(email);
                     if (user == null) {
-                        return NotAuthorized();
+                        return NotAuthorized(ctx);
                     } else {
+                        Logger.debug("CRYPTO SIGN EMAIL OF : " + user.getEmail() + " salt : " + user.getSalt());
                         String k = Crypto.sign(user.getEmail() + "-" + user.getSalt() + "-" + user.getPassword());
                         Logger.debug("the crypto sign was : " + k);
                         Http.Cookie c = ctx.request().cookie("tokensecret");
@@ -168,46 +151,65 @@ public class SecurityController extends AnonymousSecurityController {
                                 isAuthorized = true;
                             }
                         } else {
-                            return NotAuthorized();
+                            return NotAuthorized(ctx);
                         }
                     }
                 }
             } else {
                 //Stay logged in if hit another server (or in dev by using token secret...)
+                Logger.debug("We might have it another system?");
                 user = UserImpl.getUserByEmail(email);
                 if (user == null) {
-                    return NotAuthorized();
+                    return NotAuthorized(ctx);
                 } else {
+                    Logger.debug("Crypto Sign... tokensecret");
                     String k = Crypto.sign(user.getEmail() + "-" + user.getSalt() + "-" + user.getPassword());
                     Logger.debug("the crypto sign was : " + k);
-                    if (k.compareTo(ctx._requestHeader().session().get("tokensecret").get()) == 0) {
-                        //Its all good
-                        isAuthorized = true;
-                    } else {
-                        return NotAuthorized();
+                    try {
+                        if (!ctx._requestHeader().session().get("tokensecret").isEmpty()) {
+                            if (k.compareTo(ctx._requestHeader().session().get("tokensecret").get()) == 0) {
+                                //Its all good
+                                isAuthorized = true;
+                            } else {
+                                return NotAuthorized(ctx);
+                            }
+                        } else {
+                            if (k.compareTo(ctx._requestHeader().headers().get("tokensecret").get()) == 0) {
+                                //Its all good
+                                isAuthorized = true;
+                            } else {
+                                return NotAuthorized(ctx);
+                            }
+                        }
+                    } catch (Exception notokensecret) {
+                        return NotAuthorized(ctx);
                     }
                 }
             }
 
-            Logger.debug("GOT USER : " + user);
+            Logger.debug("GOT USER : " + user + " nad is Authorized?" + isAuthorized);
             if ((user != null) && (isAuthorized)) {
                 ctx.args.put("user", user);
                 ctx.args.put("email", user.getEmail());
 
 
 
-
+                Logger.debug("Will generate phassphrase with private key");
                 String passphrase = play.Play.application().configuration().getString("privatekey");
                 MessageDigest digest = MessageDigest.getInstance("SHA");
                 digest.update(passphrase.getBytes());
                 SecretKeySpec key = new SecretKeySpec(digest.digest(), 0, 16, "AES");
 
+
+
                 Cipher aes = Cipher.getInstance("AES/ECB/PKCS5Padding");
                 aes.init(Cipher.DECRYPT_MODE, key);
                 String pw = null;
                 try {
-                    pw = new String(aes.doFinal(((byte[]) Cache.get(user.getEmail() + "_pass"))));
+                    pw = play.Play.application().configuration().getString("secret_key");
+                    Logger.debug("PW IS : " + pw);
                 } catch (Exception ee) {
+                    Logger.debug("CRYPTO SIGN EMAIL OF : " + user.getEmail() + " salt : " + user.getSalt());
                     if (play.Play.isDev()) {
                         pw = play.Play.application().configuration().getString("dev_default_user_password");
                     }
@@ -216,25 +218,34 @@ public class SecurityController extends AnonymousSecurityController {
                 //Because we are stateless we must login each time...
                 //TODO: If we impersonnate user (from an admin portal) to simulate we are someone else..
                 //we should override the login / user here..
+                Logger.debug("Pass is : " + pw);
                 UsernamePasswordToken tk = new UsernamePasswordToken(user.getEmail(), pw);
                 Subject currentUser = null;
                 try {
                     currentUser = getSubject();
                     tk.setRememberMe(true);
                     currentUser.login(tk);
+                } catch (org.apache.shiro.authc.AuthenticationException fblogin) {
+                    fblogin.printStackTrace();;
+                    Logger.debug("ERROR LOGGINGIN ?????????");
+                    currentUser = new Subject.Builder().buildSubject();
+                    currentUser.login(tk);
                 } catch (org.apache.shiro.session.UnknownSessionException usession) {
+                    usession.printStackTrace();;
                     currentUser = new Subject.Builder().buildSubject();
                     currentUser.login(tk);
                 } catch (Exception ee) {
+                    ee.printStackTrace();
                 }
 
 
                 if (!currentUser.isAuthenticated()) {
 
-                    ctx.session().remove(SecurityController.AUTH_TOKEN);
-                    ctx.session().remove(SecurityController.DESKTOP_TOKEN);
-                    ctx.response().discardCookie(SecurityController.AUTH_TOKEN);
-                    ctx.response().discardCookie(SecurityController.DESKTOP_TOKEN);
+                    Logger.debug("TOKEN IS NOT AUTHENTICATED ?????? ");
+                    //ctx.session().remove(SecurityController.AUTH_TOKEN);
+                    //ctx.session().remove(SecurityController.DESKTOP_TOKEN);
+                    //ctx.response().discardCookie(SecurityController.AUTH_TOKEN);
+                    //ctx.response().discardCookie(SecurityController.DESKTOP_TOKEN);
 
 
                     redirect("");
@@ -263,12 +274,13 @@ public class SecurityController extends AnonymousSecurityController {
 
                 if (currSession.isEmpty()) {
                     //OK Session is null, but.................................
+                    Logger.debug("Will create new WebUser");
                     WebUser wu = new WebUser(user.getEmail(), user.getPassword(), new UsernamePasswordToken(user.getEmail(), user.getPassword()));
                     AppObj$.MODULE$.addNewSession(token, wu);
                     currSession = AppObj$.MODULE$.getSession(token);
                 }
 
-
+                Logger.debug("currSession is... currSession");
                 if (currSession != null) {
                     //Do we have a desktop ? (browser tab..)
 
@@ -277,9 +289,9 @@ public class SecurityController extends AnonymousSecurityController {
                     try {
                         dtid = ctx._requestHeader().headers().get(DESKTOP_TOKEN).get();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        //e.printStackTrace();
                     }
-                    Logger.debug("dtid..." + dtid);
+                        Logger.debug("dtid..." + dtid);
 
                     DesktopObject desktop = null;
                     if (dtid != null) {
@@ -337,19 +349,23 @@ public class SecurityController extends AnonymousSecurityController {
                         ctx.args.put("desktop", desktop);
                     }
 
-                    ctx.args.put("token", token);
+                    if (token != null) {
+                        ctx.args.put("token", token);
+                    }
                     ctx.args.put("websession", webSession);
                     Logger.debug("WILL CALL DELETGATE?");
+                    ctx.args.put("subject", currentUser);
 
-
+                    Logger.debug("CURRENT USER IS : " + currentUser.getPrincipal());
                     return processRequest(ctx);
                 }
             }
             // }
 
-            return NotAuthorized();
+            return NotAuthorized(ctx);
         } catch (org.apache.shiro.session.UnknownSessionException e) {
             //Rollback any changes
+            e.printStackTrace();
             try {
                 DatabaseManager.getInstance().rollback();
             } catch (Exception ew) {
@@ -361,7 +377,7 @@ public class SecurityController extends AnonymousSecurityController {
 
             return logout(ctx);
         } catch (ExpiredSessionException e) {
-
+            e.printStackTrace();
             //Rollback any changes
             try {
                 DatabaseManager.getInstance().rollback();
@@ -394,13 +410,19 @@ public class SecurityController extends AnonymousSecurityController {
             HibernateSessionFactory.closeSession();
             Logger.debug(" [ SecurityController ] Got Path completed : " + ctx.request().path());
         }
-        return NotAuthorized();
+        return NotAuthorized(ctx);
     }
 
     protected F.Promise<Result> processRequest(Http.Context ctx) throws Throwable {
-        Logger.debug(" [ SecurityController ] - Start ");
+
+        Logger.debug(" [ SecurityController ] - Start with user of : " + getSubject().getPrincipal());
         try {
             F.Promise<Result> z = delegate.call(ctx);
+            Http.Response response = ctx.response();
+            response.setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
+            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");   // Only allow POST
+            response.setHeader("Access-Control-Max-Age", "86400");          // Cache response for 5 minutes
+            response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, dtid, token, tokensecret");         // Ensure this header is also allowed!
             return z;
         } finally {
             try {
@@ -442,7 +464,7 @@ public class SecurityController extends AnonymousSecurityController {
                         Logger.debug("desktop is now.. : " + desktop);
                         if (desktop == null) {
                             //We didnt know this session on this web server lets add it..
-                            String token = (String) Http.Context.current().args.get("token");
+                            String token = (String) uuidContext(Http.Context.current());
                             Option<WebSession> currSession = AppObj$.MODULE$.getSession(token);
                             String tmpDesktopId = currSession.get().addDesktopStaticId(dtid);
                             Logger.debug("DESKTOP ID IS : " + tmpDesktopId);
@@ -586,6 +608,7 @@ public class SecurityController extends AnonymousSecurityController {
                 getSubject().checkPermission("project:" + p.getId() + ":view");
             }
         } catch (Exception expired) {
+            expired.printStackTrace();;
             throw new org.apache.shiro.authz.AuthorizationException("");
         }
 
@@ -620,6 +643,18 @@ public class SecurityController extends AnonymousSecurityController {
     }
 
 
+    public static boolean canViewUser(User u) {
+
+        Logger.debug("IS PERMITTED : user:" + u.getId() + ":view ? ");
+        if (getSubject().isPermitted("user:" + u.getId() + ":view")) {
+            Logger.debug("IS PERMITTED : user:" + u.getId() + ":view ? TRUE ");
+            return true;
+        }
+
+        return false;
+    }
+
+
     public static boolean canViewUser(Long projectId, Long userId) {
 
         if (getSubject().isPermitted("project:" + projectId + ":admin")) {
@@ -647,7 +682,7 @@ public class SecurityController extends AnonymousSecurityController {
     }
 
     public static boolean isProjectAdmin(Long projectId) {
-
+        Logger.debug("Check if isPermitted : project:" + projectId + ":admin");
         if (getSubject().isPermitted("project:" + projectId + ":admin")) {
             return true;
         }
@@ -702,8 +737,10 @@ public class SecurityController extends AnonymousSecurityController {
 
 
     public static void checkPermission(Long projectId) {
+        Logger.debug("CHeck if is Aadmin...");
         if ( ! isProjectAdmin(projectId) ) {
             //Not admin? wem ust be able to view this..
+            Logger.debug("checkPermision of : project:" + projectId + ":view");
             getSubject().checkPermission("project:" + projectId + ":view");
         }
     }

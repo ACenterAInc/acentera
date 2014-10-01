@@ -44,12 +44,18 @@ public class Application extends Controller {
     //public static Action<AnyContent> asset(String path, String file) {
     //     return controllers.Assets.at(path, file);
     //}
+    public static Result optionsResponse(String wholepath) {
+
+        return noContent();
+    }
 
 
     @With(AnonymousSecurityController.class)
     public static Result index() {
 
-
+        Logger.debug("GOT REQUEST COOKIES : " + ctx());
+        Logger.debug("GOT REQUEST COOKIES : " + ctx()._requestHeader());
+        Logger.debug("INDEX GOT REQUEST COOKIES : " + ctx().request().body());
         if (request().cookie(SecurityController.AUTH_TOKEN) != null) {
             Logger.debug("APPLICATION RETURN INDEX -> " + play.Play.application().configuration().getString("application.env"));
             //Still need to have a subject
@@ -61,7 +67,16 @@ public class Application extends Controller {
                 Logger.debug("Principal is : " + s.getPrincipal());
 
                 if (ss == null || s.getPrincipal() == null) {
-                    throw new ExpiredSessionException("Expired");
+
+                    //Strange... lets as)sume it is ok....only fi we have proper cookies ?
+                    Http.Cookie c = ctx().request().cookie("tokensecret");
+                    Http.Cookie email = ctx().request().cookie("email");
+                    if (c != null && email != null) {
+                        String secret = c.value();
+                        String e = email.value();
+                    } else {
+                        throw new ExpiredSessionException("Expired");
+                    }
                 }
 
                 Logger.debug("AuthtneicateD ? " + s.isAuthenticated());
@@ -72,14 +87,24 @@ public class Application extends Controller {
                 return redirect("/");
             }
 
+            Http.Response response = ctx().response();
+            //Strange... lets as)sume it is ok....only fi we have proper cookies ?
+            Http.Cookie t = ctx().request().cookie("token");
+            Http.Cookie c = ctx().request().cookie("tokensecret");
+            Http.Cookie email = ctx().request().cookie("email");
+            Logger.debug("SET TOKEN TO : " + t.value());
+            response.setCookie("token", t.value());
+            response.setCookie("tokensecret", c.value());
+            response.setCookie("email", email.value());
             return ok(index.render("ACenterA Cloud", 1, play.Play.application().configuration().getString("application.env")));
         } else {
             return ok(login.render("login", ""));
         }
     }
 
+
     @With(SecurityController.class)
-    public static Result indexWithPath( String path ) {
+    public static Result indexWithPath(String path) {
 
         String[] t = request().headers().get("referer");
         String host = request().getHeader("Host");
@@ -93,9 +118,17 @@ public class Application extends Controller {
 
             Session ss = SecurityController.getSession();
 
-            Logger.debug("With Security Principal is : " + s.getPrincipal());
             if (ss == null || s.getPrincipal() == null) {
-                throw new ExpiredSessionException("Expired");
+
+                //Strange... lets as)sume it is ok....only fi we have proper cookies ?
+                Http.Cookie c = ctx().request().cookie("tokensecret");
+                Http.Cookie email = ctx().request().cookie("email");
+                if (c != null && email != null) {
+                    String secret = c.value();
+                    String e = email.value();
+                } else {
+                    throw new ExpiredSessionException("Expired");
+                }
             }
             Logger.debug("AuthtneicateD ? " + s.isAuthenticated());
         } catch (Exception error) {
@@ -110,13 +143,20 @@ public class Application extends Controller {
             response().setHeader("REDIRECT", "");
 
 
-            return ok(index.render("ACenterA Cloud", 1, play.Play.application().configuration().getString("application.env")));
+            Http.Response response = ctx().response();
+            //Strange... lets as)sume it is ok....only fi we have proper cookies ?
+            Http.Cookie tt = ctx().request().cookie("token");
+            Http.Cookie c = ctx().request().cookie("tokensecret");
+            Http.Cookie email = ctx().request().cookie("email");
+            Logger.debug("A SET TOKEN TO : " + tt.value());
+            response.setCookie("token", tt.value());
+            response.setCookie("tokensecret", c.value());
+            response.setCookie("email", email.value());
 
+            return ok(index.render("ACenterA Cloud", 1, play.Play.application().configuration().getString("application.env")));
         } else {
             response().setHeader("REDIRECT", "");
             return redirect("/#" + request().path());
         }
     }
-
-
 }

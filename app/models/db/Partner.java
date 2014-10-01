@@ -39,9 +39,8 @@ import utils.Utils;
 
 
 @Entity
-@Table(name="PARTNER", uniqueConstraints =
-    @UniqueConstraint(name = "idx_unique_partner", columnNames={"name"})
-)
+@Table(name="PARTNER")
+
 public class Partner  extends AutoIncrementId implements Serializable {
 
     /**

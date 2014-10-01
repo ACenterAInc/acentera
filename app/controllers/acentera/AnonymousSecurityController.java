@@ -32,18 +32,22 @@ import models.web.DesktopObject;
 import models.web.WebSession;
 import net.sf.json.JSONObject;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.session.ExpiredSessionException;
+import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.subject.Subject;
 import play.Logger;
 import play.api.libs.Crypto;
 import play.cache.Cache;
+import play.core.j.HttpExecutionContext;
 import play.i18n.Messages;
 import play.libs.F;
 import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.SimpleResult;
+import scala.Option;
 import utils.DatabaseManager;
 import utils.HibernateSessionFactory;
 
@@ -55,26 +59,48 @@ public class AnonymousSecurityController extends Action.Simple {
 
     //public final static String AUTH_TOKEN_HEADER = "X-AUTH-TOKEN";
     public static final String AUTH_TOKEN = "token";
-    public static final String AUTHSECRET_TOKEN = "token";
+    public static final String AUTHSECRET_TOKEN = "tokensecret";
     public static final String DESKTOP_TOKEN = "dtid";
 
-    String uuid(Http.Context ctx) {
-        Logger.debug("UUID is : " + ctx._requestHeader().session());
-        Logger.debug("UUID VS is : " + ctx._requestHeader().headers());
+
+    static String uuidContext(play.mvc.Http.Context ctx) {
         Http.Cookie res = ctx.request().cookie(AUTH_TOKEN);
         if (res == null) {
-            return "";
+            Option<String> headers = ctx._requestHeader().headers().get(AUTH_TOKEN);
+            if (headers.isEmpty()) {
+                return "";
+            } else {
+                return headers.get();
+            }
         }
-
 
         return res.value();
     }
 
-    String getEmailFromSession(Http.Context ctx) {
+    String uuid(play.mvc.Http.Context ctx) {
+        Http.Cookie res = ctx.request().cookie(AUTH_TOKEN);
+        if (res == null) {
+            Option<String> headers = ctx._requestHeader().headers().get(AUTH_TOKEN);
+            if (headers.isEmpty()) {
+                return "";
+            } else {
+                return headers.get();
+            }
+        }
+
+        return res.value();
+    }
+
+    String getEmailFromSession(play.mvc.Http.Context ctx) {
 
         Http.Cookie res = ctx.request().cookie("email");
         if (res == null) {
-            return "";
+            Option<String> headers = ctx._requestHeader().headers().get("email");
+            if (headers.isEmpty()) {
+                return "";
+            } else {
+                return headers.get();
+            }
         }
 
 
@@ -108,6 +134,9 @@ public class AnonymousSecurityController extends Action.Simple {
         JSONObject jsoUnauthorzed = new JSONObject();
         jsoUnauthorzed.put("status", "failed");
         jsoUnauthorzed.put("message", Messages.get(message));
+
+
+
         return notFound(jsoUnauthorzed.toString()).as("application/json");
     }
 
@@ -115,13 +144,24 @@ public class AnonymousSecurityController extends Action.Simple {
         return internalServerError().as("application/json");
     }
 
-    public F.Promise<Result> NotAuthorized() {
+    public F.Promise<Result> NotAuthorized(Http.Context ctx) {
         //return play.libs.F.Promise.pure((SimpleResult) controllers.Auth.logout());
+
+
+        ctx.response().setHeader("Access-Control-Allow-Origin","*");
+
+        if (ctx.request().getQueryString("callback") != null) {
+
+            return F.Promise.pure((Result) ok(ctx.request().getQueryString("callback") + "( {\"status\": 900 })").as("application/json"));
+        }
+
         return F.Promise.pure((Result) FailedMessage("UNAUTHORIZED"));
+
     }
 
     public static F.Promise<Result>  logout(final play.mvc.Http.Context ctx) {
         try {
+            Logger.debug("LOGOUT AAAA");
             ctx.session().remove(SecurityController.AUTH_TOKEN);
             ctx.session().remove(SecurityController.DESKTOP_TOKEN);
             ctx.response().discardCookie(SecurityController.AUTH_TOKEN);
@@ -152,9 +192,15 @@ public class AnonymousSecurityController extends Action.Simple {
 
     public static Subject getSubject() throws org.apache.shiro.session.ExpiredSessionException {
         try {
-            Subject s = SecurityUtils.getSubject();
-            if (s.getSession() == null) {
-                s = new Subject.Builder().buildSubject();
+            Http.Context context = Http.Context.current();
+
+            Subject s = (Subject)context.args.get("subject");
+            Logger.debug("S IS : " + s);
+            if (s == null) {
+                s = SecurityUtils.getSubject();
+                if (s.getSession() == null) {
+                    s = new Subject.Builder().buildSubject();
+                }
             }
             Logger.debug("SUBJECT SHIRO SESSIONID IS : " + s.getSession().getId());
             return s;
@@ -166,6 +212,19 @@ public class AnonymousSecurityController extends Action.Simple {
             return s;*/
             //Logger.debug("SHIRO SESSION IS NOW EXPIRED");
             throw new org.apache.shiro.session.ExpiredSessionException("");
+
+        } catch (UnknownAccountException ue) {
+            try {
+                Subject s = new Subject.Builder().buildSubject();
+                return s;
+            } catch (UnknownSessionException ss) {
+                ss.printStackTrace();
+            } catch (ExpiredSessionException ss) {
+                ss.printStackTrace();
+            } catch (Exception eee) {
+                eee.printStackTrace();;
+                throw eee;
+            }
         } catch (org.apache.shiro.session.ExpiredSessionException ee) {
             Logger.debug("SHIRO SESSION IS NOW EXPIRED");
             throw ee;
@@ -201,7 +260,8 @@ public class AnonymousSecurityController extends Action.Simple {
                     //Stay logged in if hit another server (or in dev by using token secret...)
                     user = UserImpl.getUserByEmail(email);
                     if (user == null) {
-                        return NotAuthorized();
+                        //Its ok we are in anonymousSecurityController...
+                        // return NotAuthorized(ctx);
                     } else {
                         String k = Crypto.sign(user.getEmail() + "-" + user.getSalt() + "-" + user.getPassword());
                         Logger.debug("the crypto sign was : " + k);
@@ -233,6 +293,7 @@ public class AnonymousSecurityController extends Action.Simple {
             }
 
             Logger.debug("GOT USER : " + user);
+
             if (user != null) {
                 //set the subject principals...
 
@@ -265,13 +326,19 @@ public class AnonymousSecurityController extends Action.Simple {
                 } catch (org.apache.shiro.session.UnknownSessionException usession) {
                     currentUser = new Subject.Builder().buildSubject();
                     currentUser.login(tk);
+                } catch (org.apache.shiro.authc.UnknownAccountException uae) {
+
                 } catch (Exception ee) {
                 }
+            } else {
+                //Subject currentUser = null;
+                //currentUser = new Subject.Builder().buildSubject();
             }
 
             return processRequest(ctx);
         } catch (ExpiredSessionException e) {
 
+            e.printStackTrace();
             //Rollback any changes
             try {
                 DatabaseManager.getInstance().rollback();
@@ -301,13 +368,21 @@ public class AnonymousSecurityController extends Action.Simple {
             }
             HibernateSessionFactory.closeSession();
         }
-        return NotAuthorized();
+        Logger.debug("WILL REGURN NOT AUTHORIZED?");
+        return NotAuthorized(ctx);
     }
 
     protected F.Promise<Result> processRequest(Http.Context ctx) throws Throwable {
         Logger.debug(" [ AnonymousProcessRequest ] - Start ");
         try {
             F.Promise<Result> z = delegate.call(ctx);
+
+            Http.Response response = ctx.response();
+            response.setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
+            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");   // Only allow POST
+            response.setHeader("Access-Control-Max-Age", "86400");          // Cache response for 5 minutes
+            response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, email, dtid, token, tokensecret");         // Ensure this header is also allowed!
+
             return z;
         } finally {
             try {

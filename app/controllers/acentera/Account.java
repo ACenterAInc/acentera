@@ -90,7 +90,7 @@ public class Account extends ACenterAController {
                         //Same password do we prevent it or not ?
                     } else {
                         u.setPassword(jsonData.getString("password_confirm"));
-                        u = UserImpl.saveOrUpdate(u);
+                        u = UserImpl.update(u);
                     }
                     OkJsonResult(AccountHelpers.getUserJson(u));
                 } else {
@@ -106,11 +106,20 @@ public class Account extends ACenterAController {
             u.setLang(jsonData.getString("lang"));
 
 
-            Partner p = PartnerImpl.getPartner(u.getPartnerId());
-            p.setNiceName(jsonData.getString("company"));
-            p.setName(jsonData.getString("email"));
-            p = PartnerImpl.save(p);
-            u = UserImpl.saveOrUpdate(u);
+            Partner p = u.getPartner();
+            try {
+                if (p.getNiceName().compareTo(jsonData.getString("company")) != 0) {
+                    p.setNiceName(jsonData.getString("company"));
+                }
+
+                if (p.getNiceName().compareTo(jsonData.getString("email")) != 0) {
+                    p.setName(jsonData.getString("email"));
+                }
+            } catch (Exception itsok) {
+                itsok.printStackTrace();
+            }
+
+            u = UserImpl.update(u);
 
             //JPA.em("default").flush()
             OkJsonResult(AccountHelpers.getUserJson(u));

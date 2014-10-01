@@ -31,7 +31,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import play.Application;
 import play.GlobalSettings;
+import play.Logger;
 import play.Play;
+import play.api.mvc.Result;
+import play.libs.F;
+import play.mvc.Action;
+import play.mvc.Http;
+import play.mvc.SimpleResult;
 import utils.DatabaseManager;
 import utils.HibernateSessionFactory;
 import utils.security.PlayShiroCache;
@@ -41,7 +47,47 @@ import java.lang.reflect.InvocationTargetException;
 
 public class Global extends GlobalSettings {
     //ApplicationContext ctx = null;
+    private class ActionWrapper extends Action.Simple {
+        public ActionWrapper(Action<?> action) {
+            this.delegate = action;
+        }
 
+
+        @Override
+        public F.Promise<play.mvc.Result> call(final Http.Context ctx) throws Throwable {
+            try {
+                Logger.debug("GOT CALL...");
+                F.Promise<play.mvc.Result> result = this.delegate.call(ctx);
+                Http.Response response = ctx.response();
+                response.setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
+                response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");   // Only allow POST
+                response.setHeader("Access-Control-Max-Age", "86400");          // Cache response for 5 minutes
+                response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, email, dtid, token, tokensecret");         // Ensure this header is also allowed!
+                return result;
+            } catch (Exception ee) {
+                ee.printStackTrace();
+                return null;
+            } finally {
+                //Get the Session
+                try {
+                    DatabaseManager.getInstance().closeIfConnectionOpen();
+                } catch (Exception ee) {
+
+                }
+                try {
+                    HibernateSessionFactory.closeSession();
+                } catch (Exception ee) {
+
+                }
+
+            }
+        }
+    }
+
+    @Override
+    public Action<?> onRequest(Http.Request request, java.lang.reflect.Method actionMethod) {
+        return new ActionWrapper(super.onRequest(request, actionMethod));
+    }
 
     @Override
     public void onStart(Application application) {
@@ -49,6 +95,10 @@ public class Global extends GlobalSettings {
         /*if (Play.isDev() && (User.find.all().size() == 0)) {
             DemoData.loadDemoData();
         }*/
+
+        Logger.debug("DOING ON START");
+        //System.out.println(System.getProperty ("java.library.path"));
+
         Thread.currentThread().setContextClassLoader(Play.application().classloader());
         //ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
         super.onStart(application);
@@ -66,6 +116,8 @@ public class Global extends GlobalSettings {
         /*if (Play.isDev() && (User.find.all().size() == 0)) {
             DemoData.loadDemoData();
         }*/
+
+        Logger.debug("DOING ON STOP");
 
         HibernateSessionFactory.closeSession();
         HibernateSessionFactory.unloadAll();

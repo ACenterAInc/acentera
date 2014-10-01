@@ -272,6 +272,7 @@ public class HibernateSessionFactory implements Lifecycle {
                     try {
                         session = sessionFactory.getCurrentSession();
                     } catch (HibernateException ex) {
+                        ex.printStackTrace();
                         try {
                             session = sessionFactory.openSession();
                         } catch (Exception ee)  {
@@ -304,6 +305,7 @@ public class HibernateSessionFactory implements Lifecycle {
 
             } else {
                 try {
+                    Logger.debug("Transaction is : " + session.getTransaction());
                     if (! session.getTransaction().isActive() ) {
                         Transaction t = session.beginTransaction();
                     }
@@ -323,6 +325,7 @@ public class HibernateSessionFactory implements Lifecycle {
                 ee.printStackTrace();;
             }
         }
+
 
         if (session != null && (!session.isOpen() || !session.isConnected())) {
             try {
@@ -415,46 +418,51 @@ public class HibernateSessionFactory implements Lifecycle {
      *  @throws HibernateException
      */
     public static void closeSession() throws HibernateException {
-        Session session = (Session) threadLocal.get();
 
-        threadLocal.set(null);
-
-        if (session != null) {
             try {
+                Session session = (Session) threadLocal.get();
+
+                threadLocal.set(null);
+
                 if (session != null) {
-                    if (session.isOpen()) {
-                        if (session.getTransaction() != null) {
-                            if ( !session.getTransaction().wasCommitted() ) {
-                                if (session.getTransaction().isActive()) {
-                                    if (!session.getTransaction().wasRolledBack()) {
-                                        session.getTransaction().commit();
+                    try {
+                        if (session != null) {
+                            if (session.isOpen()) {
+                                if (session.getTransaction() != null) {
+                                    if (!session.getTransaction().wasCommitted()) {
+                                        if (session.getTransaction().isActive()) {
+                                            if (!session.getTransaction().wasRolledBack()) {
+                                                session.getTransaction().commit();
+                                            }
+                                        }
                                     }
+                                } else {
                                 }
                             }
-                        } else {
+                            try {
+                                session.flush();
+                            } catch (Exception ee) {
+
+                            }
                         }
+
+                    } catch (HibernateException he) {
+                    } catch (Exception ee) {
                     }
                     try {
-                        session.flush();
+                        if (session.isOpen()) {
+                            session.close();
+                        }
+                    } catch (HibernateException he) {
+
                     } catch (Exception ee) {
 
                     }
+
+                    session = null;
                 }
-
-            } catch (HibernateException he) {
-            } catch (Exception ee) {
-            }
-            try {
-                if (session.isOpen()) {
-                    session.close();
-                }
-            } catch (HibernateException he) {
-
-            } catch (Exception ee) {
-
-            }
-
-            session = null;
+        } catch (Exception ewww) {
+            ewww.printStackTrace();
         }
     }
 

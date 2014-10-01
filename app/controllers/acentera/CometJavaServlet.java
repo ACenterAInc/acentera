@@ -39,19 +39,28 @@ public class CometJavaServlet extends Controller {
 
 
     public static Result create () {
-        Logger.debug(" GOT CREATE ");
-        WebSession webSession = SecurityController.getWebSession();
+        try {
+            Logger.debug(" GOT CREATE ");
+            WebSession webSession = SecurityController.getWebSession();
 
-        String dtid =  webSession.addDesktop();
+            String dtid = webSession.addDesktop();
 
-        JSONObject jsoRes = new JSONObject();
-        jsoRes.put("success", true);
-        jsoRes.put(SecurityController.DESKTOP_TOKEN, dtid);
+            JSONObject jsoRes = new JSONObject();
+            jsoRes.put("success", true);
+            jsoRes.put(SecurityController.DESKTOP_TOKEN, dtid);
 
-        ctx().response().setHeader("Access-Control-Allow-Origin", "*");
+            response().setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!
+            response().setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");   // Only allow POST
+            response().setHeader("Access-Control-Max-Age", "86400");          // Cache response for 5 minutes
+            response().setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, dtid, token, tokensecret");         // Ensure this header is also allowed!
 
-        Logger.debug("[ Comet ] - Created [  desktop : " + dtid + ",  " + SecurityController.getWebSession().getToken() + " ]");
-        return ok(jsoRes.toString()).as("application/json");
+            Logger.debug("[ Comet ] - Created [  desktop : " + dtid + ",  " + SecurityController.getWebSession().getToken() + " ]");
+            Logger.debug("JSO RES IS : " + jsoRes);
+            return ok(jsoRes.toString()).as("application/json");
+        } catch (Exception zz) {
+            zz.printStackTrace();
+            return ok("").as("application/json");
+        }
     }
 
 
@@ -67,7 +76,7 @@ public class CometJavaServlet extends Controller {
         jsoRes.put("success", true);
         jsoRes.put(SecurityController.DESKTOP_TOKEN, "");
 
-        ctx().response().setHeader("Access-Control-Allow-Origin", "*");
+        response().setHeader("Access-Control-Allow-Origin","*");
         return ok(jsoRes.toString()).as("application/json");
     }
 

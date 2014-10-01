@@ -4,6 +4,27 @@ try {
 var maxUserWaitTime = 12000;
 
 
+
+
+if (String.prototype.replaceAll == undefined) {
+    String.prototype.replaceAll=function(s1, s2) {return this.split(s1).join(s2)}
+}
+if (typeof String.prototype.startsWith != 'function') {
+  // see below for better implementation!
+  String.prototype.startsWith = function (str){
+    return this.indexOf(str) == 0;
+  };
+}
+
+
+
+String.prototype.trim = function() {
+    return this.replace(/^\s+|\s+$/g, "");
+};
+
+
+var theCurrentRecord = null;
+
 try {
     $.fn.dataTableExt.sErrMode = 'throw';
 } catch (e) {
@@ -21,18 +42,69 @@ if (window.prefix === undefined) {
     window.prefix = "/";
 }
 
-if (!(window.location.href.indexOf("/test") >= 0)) {
-    window.onerror = function(message, file, lineNumber) {
-        return true;
-    };
+
+//isCordovaApp = true;
+if (("" + window.location).startsWith("file://")) {
+    customHost = "http://192.168.3.135:9000";
+} else if (("" + window.location).indexOf(":900") > 1) {
+    customHost = "http://192.168.3.135:9000";
+} else {
+    customHost = "https://portal.acentera.com/";
 }
 
+
+//customHost = "http://192.168.2.17:9000";
+
+
+
+
+var modalHeight = 0;
+
+if (window.location.href.indexOf("/test") >= 0) {
+    customHost = "https://portal.acentera.com/test/";
+    /*window.onerror = function(message, file, lineNumber, colno, error) {
+       //alert('errrrz');
+       //alert(message);
+       //alert(file);
+       //alert(lineNumber);
+        try {
+            if (error) {
+               //alert(error.stack);
+            }
+            dfjdlfs();
+        } catch (ezz) {
+           //alert(ezz.stack);
+        }
+        return true;
+    };*/
+}
+
+hostUrl = customHost + prefix;
 //Remove of console errors
+//////alert('aaaa2');
+
+//if (typeof console == "undefined") {
 
 
 if (typeof console == "undefined") {
     this.console = {error: function() {}, log: function() {}};
 }
+
+
+
+Date.prototype.yyyymmdd = function() {
+    var yyyy = this.getFullYear().toString();
+    var mm = (this.getMonth()+1).toString();
+    var dd  = this.getDate().toString();
+    return yyyy + (mm[1]?mm:"0"+mm[0]) + (dd[1]?dd:"0"+dd[0]);
+};
+
+Date.prototype.yymmdd = function() {
+    var yy = this.getFullYear().toString().substring(2,4);
+    var mm = (this.getMonth()+1).toString();
+    var dd  = this.getDate().toString();
+    return yy + "/" + (mm[1]?mm:"0"+mm[0]) + "/" + (dd[1]?dd:"0"+dd[0]);
+};
 
 
 
@@ -97,25 +169,9 @@ if (!String.prototype.endsWith) {
     }
   }());
 }
+//////alert('aaaa3');
 
 
-// check if an element exists in array using a comparer function
-// comparer : function(currentElement)
-Array.prototype.inArray = function(comparer) {
-    for(var i=0; i < this.length; i++) {
-        if(comparer(this[i])) return true;
-    }
-    return false;
-};
-
-
-if (String.prototype.replaceAll == undefined) {
-    String.prototype.replaceAll=function(s1, s2) {return this.split(s1).join(s2)}
-}
-
-String.prototype.trim = function() {
-    return this.replace(/^\s+|\s+$/g, "");
-};
 
 
 /* Only works for native objects, host objects are not
@@ -154,6 +210,11 @@ function copy(source, deep) {
 }
 
 
+Number.prototype.format = function(n, x) {
+    var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\.' : '$') + ')';
+    return this.toFixed(Math.max(0, ~~n)).replace(new RegExp(re, 'g'), '$&,');
+};
+
 // adds an element to the array if it does not already exist using a comparer
 // function
 Array.prototype.pushIfNotExist = function(element, comparer) {
@@ -172,7 +233,7 @@ Array.prototype.remove = function() {
     }
     return this;
 };
-
+//////alert('aaaa4');
 
 if (typeof String.prototype.startsWith != 'function') {
   // see below for better implementation!
@@ -181,7 +242,7 @@ if (typeof String.prototype.startsWith != 'function') {
   };
 }
 
-
+//////alert('aaaa5');
 
 var isLoaded = false;
 
@@ -191,14 +252,11 @@ var jq = jQuery.noConflict();
 $ = jQuery.noConflict();
 var ml = null;
 
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+//////alert('aaaa6');
 
-ga('create', 'UA-34138073-1', 'portal.acentera.com');
+var haveGACreated = false;
 //ga('send', 'pageview');
-
+//////alert('aaaa8');
 
 
 //Some sliding animations... up and then down...
@@ -206,16 +264,16 @@ function slideUpReady( DivTag,objToHide, objToShow, executeNow ) {
 	if (executeNow) {
 		var realObjToShow = objToShow;
 		var realObjToHide = objToHide;
-		
+
 		var objp = jq(realObjToShow);
-	    if  ( (objp.position().top < 0) && (jq(realObjToHide).position().top >= 0) ) {	    	
+	    if  ( (objp.position().top < 0) && (jq(realObjToHide).position().top >= 0) ) {
 			jq(realObjToHide).animate({
 				"top": "-=" + jq(realObjToHide).height() + "px"
 			  }, {
-			    duration: 'slow',        				   
+			    duration: 'slow',
 			    complete: function() {
 			      var objp = jq(realObjToShow);
-			      if (objp.position().top >= 0) {	
+			      if (objp.position().top >= 0) {
 			    	  objp.hide().animate({"top": "-=" + objp.height() + "px"},{complete: function() {
 			    		  jq(this).show();
 			    		  jq(this).animate({"top": "+=" + objp.height()+ "px"},'slow');
@@ -227,17 +285,17 @@ function slideUpReady( DivTag,objToHide, objToShow, executeNow ) {
 			      }
 			    }
 			  });
-			
+
 			scrollTop();
 	    } else {
-	    	
+
 	    	if (jq(realObjToHide).position().top == jq(realObjToShow).position().top) {
 	    		//same object we do nothing
 	    	} else {
 	    		////////////////////////////////////////////////console.log('todo here');
 	    	}
 	    }
-	    
+
 	} else {
 		toHide = objToHide;
 		toShow = objToShow;
@@ -245,7 +303,7 @@ function slideUpReady( DivTag,objToHide, objToShow, executeNow ) {
 }
 
 function slideDown(DivTag, refid, size) {
-	
+
 	if (toHide != null && toShow != null) {
 		var realObjToShow = toShow;
 		var realObjToHide = toHide;
@@ -257,16 +315,16 @@ function slideDown(DivTag, refid, size) {
 			} else {
 				var currentTop = jq(realObjToHide).position().top;
 				if (size != 0) {
-							
+
 					if (currentTop >= 0) {
-						
-						jq(realObjToHide).animate({				
+
+						jq(realObjToHide).animate({
 							"top": "-=" +  jq(realObjToHide).height() + "px"
 						  }, {
-						    duration: 'slow',        				   
+						    duration: 'slow',
 						    complete: function() {
 						      var objp = jq(realObjToShow);
-						      if (objp.position().top >=0) {			    	  
+						      if (objp.position().top >=0) {
 						    	  objp.hide().animate({"top": "-=" + objp.height() + "px"},{complete: function() {
 						    		  jq(this).show();
 						    		  jq(this).animate({"top": "+=" + objp.height()+ "px"},'slow');
@@ -279,15 +337,15 @@ function slideDown(DivTag, refid, size) {
 						    }
 						  });
 					} else {
-						
+
 						if (jq(realObjToShow).position().top < 0) {
-							jq(realObjToHide).animate({				
+							jq(realObjToHide).animate({
 								"top": "-= 0px"
 							  }, {
-							    duration: 'slow',        				   
+							    duration: 'slow',
 							    complete: function() {
 							      var objp = jq(realObjToShow);
-							      if (objp.position().top >=0) {			    	  
+							      if (objp.position().top >=0) {
 							    	  objp.hide().animate({"top": "-=" + objp.height() + "px"},{complete: function() {
 							    		  jq(this).show();
 							    		  jq(this).animate({"top": "+=" + objp.height()+ "px"},'slow');
@@ -301,19 +359,19 @@ function slideDown(DivTag, refid, size) {
 							  });
 						}
 					}
-					
+
 					set_carousel_height(DivTag, jq(refid).height());
 				} else {
 					////////////////////////////////////////////////console.log('test333');
 					if (currentTop >= 0) {
-							
+
 						jq(realObjToHide).animate({
 							"top": "-=" + jq(realObjToHide).height() + "px"
 						  }, {
-						    duration: 'slow',        				   
+						    duration: 'slow',
 						    complete: function() {
 						      var objp = jq(realObjToShow);
-						      if (objp.position().top >=0) {			    	  
+						      if (objp.position().top >=0) {
 						    	  objp.hide().animate({"top": "-=" + objp.height() + "px"},{complete: function() {
 						    		  jq(this).show();
 						    		  jq(this).animate({"top": "+=" + objp.height()+ "px"},'slow');
@@ -329,10 +387,10 @@ function slideDown(DivTag, refid, size) {
 						jq(realObjToHide).animate({
 							"top": "-= 0px"
 						  }, {
-						    duration: 'slow',        				   
+						    duration: 'slow',
 						    complete: function() {
 						      var objp = jq(realObjToShow);
-						      if (objp.position().top >=0) {			    	  
+						      if (objp.position().top >=0) {
 						    	  objp.hide().animate({"top": "-=" + objp.height() + "px"},{complete: function() {
 						    		  jq(this).show();
 						    		  jq(this).animate({"top": "+=" + objp.height()+ "px"},'slow');
@@ -345,7 +403,7 @@ function slideDown(DivTag, refid, size) {
 						    }
 						  });
 					}
-					
+
 					set_carousel_height(DivTag, jq(refid).height());
 				}
 			}
@@ -353,13 +411,13 @@ function slideDown(DivTag, refid, size) {
 		scrollTop();
 		toHide = null;
 		toShow = null;
-	} 
-	
+	}
+
 }
 
 
 function slideUpNow(DivTag, refid, size) {
-	     
+
 	     if (jq(refid).position().top >= 0) {
 
             if (jq(refid).position().top>= (-1 * (jq(refid).height() * 40/100)) ) {
@@ -502,15 +560,15 @@ $('html').click(function() {
 
 var lastScrollTop = 0;
 function scrollTop() {
-    var d = new Date();
+    /*var d = new Date();
     var seconds = d.getTime() / 1000;
     if  (lastScrollTop != seconds) {
         lastScrollTop = seconds;
-
-        jq('body').animate({
+*/
+       jq('body').animate({
                 scrollTop: 0
        }, 80);
-    }
+  //  }
 }
 
 function pad2(number) {
@@ -561,6 +619,9 @@ var resizeInterval = null;
 //ugly function
 function resizeScreen(stop) {
 try {
+
+
+
  try {
     jq("[data-toggle='tooltip']").tooltip();
  } catch (e) {
@@ -819,6 +880,48 @@ function getMaxHeightFromObj(nicename, myHeight, oldHeight) {
 }
 
 
+/*
+(function() {
+
+var get = Ember.get, set = Ember.set;
+
+Ember.Location.registerImplementation('hashbang', Ember.HashLocation.extend({
+
+  getURL: function() {
+    return get(this, 'location').hash.substr(2);
+  },
+
+  setURL: function(path) {
+    get(this, 'location').hash = "!"+path;
+    set(this, 'lastSetURL', path);
+  },
+
+  onUpdateURL: function(callback) {
+    var self = this;
+    var guid = Ember.guidFor(this);
+
+    Ember.$(window).bind('hashchange.ember-location-'+guid, function() {
+      Ember.run(function() {
+        var path = location.hash.substr(2);
+        if (get(self, 'lastSetURL') === path) { return; }
+
+        set(self, 'lastSetURL', null);
+
+        callback(path);
+      });
+    });
+  },
+
+  formatURL: function(url) {
+    return '#!'+url;
+  }
+
+  })
+);
+
+})();
+*/
+
 function getNewHeight() {
 	var winW = 630, winH = 460;
 	if (document.body && document.body.offsetWidth) {
@@ -835,9 +938,9 @@ function getNewHeight() {
 	 winW = window.innerWidth;
 	 winH = window.innerHeight;
 	}
-	
+
 	var hasVScroll = document.body.scrollHeight > document.body.clientHeight;
-	
+
 	 if (hasVScroll) {
 		 return winH-20;
 	 } else {
@@ -861,10 +964,10 @@ function getNewWidth() {
 	 winW = window.innerWidth;
 	 winH = window.innerHeight;
 	}
-	
-	
+
+
 	var hasVScroll = document.body.scrollHeight > document.body.clientHeight;
-	
+
 	 if (hasVScroll) {
 		 return winW-50;
 	 } else {
@@ -879,9 +982,9 @@ function setAttribute(id, type, val) {
 }
 
 function removeContent(item) {
-	if (lastContentInclude.hasOwnProperty(item)) { 
+	if (lastContentInclude.hasOwnProperty(item)) {
 		try {
-			
+
 			var obj = jq(lastContentInclude[item].selector);
 			if (obj) {
 				obj.hide();
@@ -899,7 +1002,7 @@ function addContent(idx, ob) {
 
 function addContent(idx, ob, inc) {
 	lastContent[idx] = ob;
-	lastContentInclude[idx]=inc;	
+	lastContentInclude[idx]=inc;
 	ob.attr('contentid','-1');
 }
 
@@ -932,17 +1035,17 @@ function mycarousel_width(ulObject, DivTag) {
 };
 
 
-function set_carousel_height_last(DivTag, height,lastitem) { 
+function set_carousel_height_last(DivTag, height,lastitem) {
 	set_carousel_height(DivTag, height);
 	lastCarouselItem.push(lastitem);
 }
 
 function set_carousel_height(DivTag, height) {
 	try {
-		if (theMainUl.hasOwnProperty(DivTag)) {	
+		if (theMainUl.hasOwnProperty(DivTag)) {
 			var width = getNewWidth();
 			theMainUl[DivTag].height(height);
-			for(i=0;i<lastCarouselItem.length ; i++){	
+			for(i=0;i<lastCarouselItem.length ; i++){
 				lastCarouselItem[i].height(height);
 				lastCarouselItem[i].width(width);
 			}
@@ -999,7 +1102,7 @@ function showIt(DivTab, height, fct, v) {
 										if (newH <= 320) {
 											newH = 320;
 										}
-										
+
 										set_carousel_height(this.carouselDiv,newH);
 								 	}
 								 	//setupCallback: readyFct
@@ -1010,7 +1113,7 @@ function showIt(DivTab, height, fct, v) {
 			}
 		}
 	}
-	
+
 	 if (!(fct == undefined)) {
 		 if (theCarousel != null) {
 			if (theCarousel.hasOwnProperty(DivTab)) {
@@ -1020,15 +1123,15 @@ function showIt(DivTab, height, fct, v) {
 							 theCarousel[DivTab].resizeContent = fct;
 						 }
 					}
-					
+
 				}
 			}
 		 }
 	 }
-	 
+
 }
-	
-	
+
+
 function resetCarousel() {
 }
 
@@ -1053,13 +1156,13 @@ function initCarousel(DivTab, objectid) {
 											if (newH <= 320) {
 												newH = 320;
 											}
-											
+
 											set_carousel_height(this.refname,newH);
-									 	},										
+									 	},
 										last : []
 										};
-				
-				
+
+
 				carouselItems.push(theCarousel[DivTab]);
 			}
 		}
@@ -1070,9 +1173,9 @@ function initCarousel(DivTab, objectid) {
 //obsolete...
 jQuery.fn.center = function () {
     this.css("position","absolute");
-    this.css("top", Math.max(0, ((jq(window).height() - this.outerHeight()) / 4) + 
+    this.css("top", Math.max(0, ((jq(window).height() - this.outerHeight()) / 4) +
                                                 jq(window).scrollTop()) + "px");
-    this.css("left", Math.max(0, ((jq(window).width() - this.outerWidth()) / 2) + 
+    this.css("left", Math.max(0, ((jq(window).width() - this.outerWidth()) / 2) +
                                                 jq(window).scrollLeft()) + "px");
     return this;
 }
@@ -1182,11 +1285,20 @@ function getDisplayNameForStr(c, str, model,parent) {
 
 /* Async updates */
 
+var lastCtrl  = null;
+var latestModel = null;
+var createdModel = false;
+
+var captureStarted = false;
+var newcoupon = null;
+var newcoupon_notloaded = null;
+
 var lastSeqId = 0;
 var lastError = 0;
 var currDesktop = '';
 var desktopId = undefined;
-
+var preventSave = false;
+var ignoreSave = false;
 
 var startPolling = function(desktop, dtid, token, email, id) {
 //ACENTERA TEMP
@@ -1196,22 +1308,34 @@ var startPolling = function(desktop, dtid, token, email, id) {
             if (lastError++>50) {
                 return;
             }
+
+            ////alert("DESKTOP? " + desktop + "vs " + dtid);
             currDesktop = desktop;
+
             //TODO: If connection loost big loop
-            $.ajax(prefix + 'ajax/' + lastSeqId, {
+            $.ajax(hostUrl + 'ajax/' + lastSeqId, {
+                 timeout: 3000,
                  xhrFields: {
-                  withCredentials: true
+                  withCredentials: false
                 },
                 headers: {
-                        'dtid' : desktop
+                     "dtid": currDesktop,
+                     "token": token,
+                     "tokensecret": tokensecret,
+                     "email": email
                 },
-                complete: function(data) {
+                dataType: "json",
+                complete: function(d) {
 
-                    if ((data.status >= 300) && (data.status <= 303)) {
-                        document.location.href=prefix;
-                    } else {
 
-                       if (data.status >= 404) {
+                    var data = d.data;
+
+
+                    //if ((data.status >= 300) && (data.status <= 303)) {
+                    //    document.location.href=prefix;
+                    //} else {
+
+                       if (data.status >= 300) {
                               showConnectionProblem();
                               setTimeout(function () { poll(desktop, dtid, token, email, id) }, 4000);
                        } else {
@@ -1239,7 +1363,7 @@ var startPolling = function(desktop, dtid, token, email, id) {
                         } else {
                             setTimeout(function () { poll(desktop, dtid, token, email, id) }, 1000);
                         }
-                     }
+                    // }
                     }
                 },
 
@@ -1398,8 +1522,19 @@ var startPolling = function(desktop, dtid, token, email, id) {
            if ( dataMsg != undefined) {
             if  ((typeof msg != 'object') && msg != null && msg.startsWith("/")) {
                 allowUnload = false;
-                $.ajax(prefix + 'api/'+currDesktop+msg, {
+                $.ajax(hostUrl + 'api/'+currDesktop+msg, {
+                    timeout: 3000,
                     type: 'GET',
+                    headers: {
+                         "dtid": currDesktop,
+                         "token": token,
+                         "tokensecret": tokensecret,
+                         "email": email
+                    },
+                    xhrFields: {
+                          withCredentials: false
+                    },
+
                     dataType: "json",
                     async:  true,
                     contentType: "application/json; charset=utf-8",
@@ -1411,15 +1546,23 @@ var startPolling = function(desktop, dtid, token, email, id) {
                         //Problem while sending the request
                     }
 
-                });
+                }, 'jsonp');
 
 
             } else {
                 allowUnload = false;
-                $.ajax(prefix + 'api/ajax/', {
+                $.ajax(hostUrl + 'api/ajax/', {
+                    timeout: 3000,
                     type: 'POST',
+
+                    xhrFields: {
+                          withCredentials: false
+                    },
                     headers: {
-                            'dtid' : currDesktop
+                                         "dtid": currDesktop,
+                                         "token": token,
+                                         "tokensecret": tokensecret,
+                                         "email": email
                     },
                     data: JSON.stringify(content),
                     dataType: "json",
@@ -1427,7 +1570,7 @@ var startPolling = function(desktop, dtid, token, email, id) {
                     contentType: "application/json; charset=utf-8",
                     success: function(data) {
                          allowUnload = true;
-                                result.r = data;
+                         result.r = data;
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         //Problem while sending the request
@@ -1482,6 +1625,7 @@ var sendPostMessage = function(msg, postMessage, asynchronous, callback, returnD
      }
 
 
+
       var result = {
                maxtimeout : 160,
                firstTime : 0,
@@ -1519,19 +1663,28 @@ var sendPostMessage = function(msg, postMessage, asynchronous, callback, returnD
      if (currDesktop == undefined) {
          errorLoadingAjax();
      }
-
+//alert('a : ' + hostUrl + 'api/'+msg);
         if ( dataMsg != undefined) {
+
          if  ((typeof msg != 'object') && msg != null && msg.startsWith("/")) {
              allowUnload = false;
 
+            //alert('b');
              if (postMessage == undefined) {
-                 $.ajax(prefix + 'api/'+msg, {
+                 $.ajax(hostUrl + 'api/'+msg, {
                      type: 'GET',
+                     xhrFields: {
+                           withCredentials: false
+                     },
                      headers: {
-                            'dtid' : currDesktop
-                      },
+                                      "dtid": currDesktop,
+                                      "token": token,
+                                      "tokensecret": tokensecret,
+                                      "email": email
+                                 },
                      dataType: "json",
                      async:  true,
+                     timeout: 3000,
                      contentType: "application/json; charset=utf-8",
                      success: function(data) {
                           allowUnload = true;
@@ -1544,12 +1697,19 @@ var sendPostMessage = function(msg, postMessage, asynchronous, callback, returnD
 
                  });
              } else {
-                 $.ajax(prefix + 'api/'+msg, {
+                 $.ajax(hostUrl + 'api/'+msg, {
+                                             timeout: 3000,
                                              type: 'POST',
                                              dataType: "json",
-                                             headers: {
-                                                   'dtid' : currDesktop
+                                             xhrFields: {
+                                                      withCredentials: false
                                              },
+                 headers: {
+                                      "dtid": currDesktop,
+                                      "token": token,
+                                      "tokensecret": tokensecret,
+                                      "email": email
+                                 },
                                              data: postMessage,
                                               //JSON.stringify(postMessage),
                                               async:  true,
@@ -1569,12 +1729,20 @@ var sendPostMessage = function(msg, postMessage, asynchronous, callback, returnD
 
          } else {
 
+
              allowUnload = false;
-             $.ajax(prefix + 'api/'+msg, {
+             $.ajax(hostUrl + 'api/'+msg, {
                  type: 'POST',
-                 headers: {
-                         'dtid' : currDesktop
+                 timeout: 3000,
+                 xhrFields: {
+                       withCredentials: false
                  },
+                 headers: {
+                                  "dtid": currDesktop,
+                                  "token": token,
+                                  "tokensecret": tokensecret,
+                                  "email": email
+                             },
                  data: postMessage,
                  //JSON.stringify(postMessage),
                  dataType: "json",
@@ -1686,11 +1854,18 @@ var sendPostMessage = function(msg, postMessage, asynchronous, callback, returnD
               allowUnload = false;
 
               if (postMessage == undefined) {
-                  $.ajax(prefix + 'api/'+msg, {
+                  $.ajax(hostUrl + 'api/'+msg, {
+                      timeout: 3000,
                       type: 'GET',
-                      headers: {
-                             'dtid' : currDesktop
-                       },
+                      xhrFields: {
+                        withCredentials: false
+                      },
+                  headers: {
+                                       "dtid": currDesktop,
+                                       "token": token,
+                                       "tokensecret": tokensecret,
+                                       "email": email
+                                  },
                       dataType: "json",
                       async:  true,
                       contentType: "application/json; charset=utf-8",
@@ -1712,11 +1887,17 @@ var sendPostMessage = function(msg, postMessage, asynchronous, callback, returnD
           } else {
 
               allowUnload = false;
-              $.ajax(prefix + 'api/'+msg, {
+              $.ajax(hostUrl + 'api/'+msg, {
                   type: 'GET',
-                  headers: {
-                          'dtid' : currDesktop
+                  xhrFields: {
+                    withCredentials: false
                   },
+              headers: {
+                                   "dtid": currDesktop,
+                                   "token": token,
+                                   "tokensecret": tokensecret,
+                                   "email": email
+                              },
                   dataType: "json",
                   async:  asynchronous,
                   contentType: "application/json; charset=utf-8",
@@ -1739,7 +1920,7 @@ var sendPostMessage = function(msg, postMessage, asynchronous, callback, returnD
 //PUT
 var sendPutMessage = function(msg, postMessage, asynchronous, callback, returnData ) {
 try {
-console.error("PUT....");
+//console.error("PUT....");
      if (asynchronous == undefined) {
          asynchronous = true;
      }
@@ -1822,11 +2003,18 @@ console.error("PUT....");
              allowUnload = false;
 
              if (postMessage == undefined) {
-                 $.ajax(prefix + 'api/'+msg, {
+                 $.ajax(hostUrl + 'api/'+msg, {
+                     timeout: 3000,
                      type: 'PUT',
-                     headers: {
-                            'dtid' : currDesktop
-                      },
+                     xhrFields: {
+                           withCredentials: false
+                     },
+                 headers: {
+                                      "dtid": currDesktop,
+                                      "token": token,
+                                      "tokensecret": tokensecret,
+                                      "email": email
+                                 },
                      dataType: "json",
                      async:  true,
                      contentType: "application/json; charset=utf-8",
@@ -1841,12 +2029,19 @@ console.error("PUT....");
 
                  });
              } else {
-                 $.ajax(prefix + 'api/'+msg, {
+                 $.ajax(hostUrl + 'api/'+msg, {
+                                             timeout: 3000,
                                              type: 'PUT',
                                              dataType: "json",
-                                             headers: {
-                                                   'dtid' : currDesktop
-                                             },
+                                             xhrFields: {
+                                                   withCredentials: false
+                                            },
+                 headers: {
+                                      "dtid": currDesktop,
+                                      "token": token,
+                                      "tokensecret": tokensecret,
+                                      "email": email
+                                 },
                                              data: postMessage,
                                               //JSON.stringify(postMessage),
                                               async:  true,
@@ -1867,11 +2062,18 @@ console.error("PUT....");
          } else {
 
              allowUnload = false;
-             $.ajax(prefix + 'api/'+msg, {
+             $.ajax(hostUrl + 'api/'+msg, {
+                 timeout: 3000,
                  type: 'PUT',
-                 headers: {
-                         'dtid' : currDesktop
+                 xhrFields: {
+                       withCredentials: false
                  },
+             headers: {
+                                  "dtid": currDesktop,
+                                  "token": token,
+                                  "tokensecret": tokensecret,
+                                  "email": email
+                             },
                  data: postMessage,
                  //JSON.stringify(postMessage),
                  dataType: "json",
@@ -1955,7 +2157,7 @@ var sendGetMessage = function(msg, asynchronous, callback, returnData ) {
            allowUnload = false;
 
            if (postMessage == undefined) {
-               $.ajax(prefix + 'api/'+msg, {
+               $.ajax(hostUrl + 'api/'+msg, {
                    type: 'GET',
                    headers: {
                           'dtid' : currDesktop
@@ -1973,7 +2175,7 @@ var sendGetMessage = function(msg, asynchronous, callback, returnData ) {
 
                });
            } else {
-               $.ajax(prefix + 'api/'+msg, {
+               $.ajax(hostUrl + 'api/'+msg, {
                                            type: 'GET',
                                            dataType: "json",
                                            headers: {
@@ -1997,7 +2199,7 @@ var sendGetMessage = function(msg, asynchronous, callback, returnData ) {
        } else {
 
            allowUnload = false;
-           $.ajax(prefix + 'api/'+msg, {
+           $.ajax(hostUrl + 'api/'+msg, {
                type: 'GET',
                headers: {
                        'dtid' : currDesktop
@@ -2069,11 +2271,18 @@ var destroyDesktop = function (desktop) {
         }
 
         if (!asyncV) {
-            $.ajax(prefix + 'destroy/', {
+            $.ajax(hostUrl + 'destroy/', {
+                timeout: 3000,
                 async: asyncV,
-                headers: {
-                     'dtid' : desktop
+                xhrFields: {
+                      withCredentials: false
                 },
+            headers: {
+                                 "dtid": currDesktop,
+                                 "token": token,
+                                 "tokensecret": tokensecret,
+                                 "email": email
+                            },
                 success: function(data) {
                     desktop = '';
                 },
@@ -2095,8 +2304,18 @@ var destroyDesktopMaybe = function (desktop) {
              if (window.location.href.indexOf("localhost")) {
                  asyncV = true;
              }
-         $.ajax(prefix + 'destroySoon/' + desktop, {
+         $.ajax(hostUrl + 'destroySoon/' + desktop, {
+            timeout: 3000,
              async: asyncV,
+             xhrFields: {
+               withCredentials: false
+             },
+         headers: {
+                              "dtid": currDesktop,
+                              "token": token,
+                              "tokensecret": tokensecret,
+                              "email": email
+                         },
              success: function(data) {
                  //desktop = '';
              },
@@ -2107,49 +2326,346 @@ var destroyDesktopMaybe = function (desktop) {
  }
 
 
+var hash = window.location.hash;
+
+if (hash == "#_=_") {
+    window.location.hash = "#/";
+}
+
+//for caching... android app
+var internetSaved = false;
+var justDeleted = false;
+var forceCache = false;
+var isCordovaApp = false;
+var haveNoInternet = function() {
+    return false;
+}
+var checkConnection = function() {
+    return true;
+}
+
+var token = null;
+var tokensecret = null;
+var email = null;
+var desktopErrorCount = 0;
+
+var createDesktopReady = function(iter) {
+
+    try {
+        var tt = readCookie("email");
+
+        if (tt == null) {
+            createDesktop();
+            return;
+        } else {
+            createDesktop();
+        }
+    } catch (eff) {
+
+       createDesktop();
+       window.location.href=prefix + "logout";
+    }
+
+}
 var createDesktop = function (w) {
-    if ( currDesktop == '' ) {
-        $.ajax(prefix  + 'create?ts=' + new Date().getTime() / 1000, {
-            async:  false,
-            success: function(data) {
-                currDesktop = data.dtid;
-                allowUnload = true;
-                    try {
-                        w.addEventListener("beforeunload", function (t) {
-                            if ($.browser == undefined) {
-                                //weird not supported?
-                            } else {
-                                if (!$.browser.msie) {
-                                     if (allowUnload) {
-                                        destroyDesktop(currDesktop)
-                                        this.removeEventListener('beforeunload',arguments.callee,false)
-                                     }
-                               }
-                            }
-                        });
-                    } catch (ee) {
-                         w.onbeforeunload = function (t) {
-                               if (allowUnload) {
-                                     destroyDesktop(currDesktop)
-                               }
-                        };
-                    }
 
-                //Stall the long polling logic
-                startPolling(currDesktop, data.dtid, data.token, data.email, data.id);
-            },
 
-            error: function(jqXHR, textStatus, errorThrown) {
-                //TODO: Show Problem generating the desktop
-                setTimeout(function() { createDesktop() }, 4000);
+    try {
+        if ( currDesktop == '' ) {
+
+        //alert('a');
+            token = readCookie("token");
+
+            tokensecret = readCookie("tokensecret");
+            try {
+                email = readCookie("email");
+               //alert(email);
+                email = email.replaceAll("\"","");
+            } catch (eee) {
             }
-        });
+            createCookie("email",email);
+
+            //alert("CHECK?: " + checkConnection());
+
+
+            var tmpDtid = readCookie("dtid");
+            if (tmpDtid == null || ("" + tmpDtid).trim() == "") {
+                //alert("ZZ");
+                    $.ajax(hostUrl + 'create?ts=' + new Date().getTime() / 1000, {
+                        async:  true,
+                        crossDomain: true,
+                        timeout:3000,  // I chose 8 secs for kicks
+                        beforeSend: function(xhr) {
+                            xhr.withCredentials=true;
+                        },
+                        dataType: "json",
+                        headers: {
+                                 "token": token,
+                                 "tokensecret": tokensecret,
+                                 "email": email
+                        },
+                        success: function(data) {
+                            try {
+                                    currDesktop = data.dtid;
+                                    createCookie("dtid", currDesktop);
+
+                                    ////alert(currDesktop);
+                                    CustomRESTAdapter = CustomRESTAdapter.extend({
+                                            host: customHost,
+                                            namespace: 'api',
+                                            bulkCommit: true,
+                                            headers: {
+                                                   "dtid": currDesktop,
+                                                   "token": readCookie("token")
+                                            }
+                                    });
+                                    ////alert("GREAT " + currDesktop + customHost);
+
+                                    allowUnload = true;
+                                        try {
+                                            window.addEventListener("beforeunload", function (t) {
+                                                if ($.browser == undefined) {
+                                                    //weird not supported?
+                                                } else {
+                                                    if (!$.browser.msie) {
+                                                         if (allowUnload) {
+                                                            destroyDesktop(currDesktop)
+                                                            this.removeEventListener('beforeunload',arguments.callee,false)
+                                                         }
+                                                   }
+                                                }
+                                            });
+                                        } catch (ee) {
+                                            try {
+                                                 window.onbeforeunload = function (t) {
+                                                       if (allowUnload) {
+                                                             destroyDesktop(currDesktop)
+                                                       }
+                                                };
+                                            } catch (eee) {
+                                            }
+                                        }
+                                        ////alert('start');
+                                    //Stall the long polling logic
+                                    //do not do longPolling...
+                                    //startPolling(currDesktop, data.dtid, data.token, data.email, data.id);
+                                } catch (ee ){
+                                    //TODO: Show Problem generating the desktop
+                                    desktopErrorCount++;
+                                    if (desktopErrorCount <= 10) {
+                                        //unless we have dtid??
+                                        setTimeout(function() { createDesktop() }, 4000);
+                                    }
+                                }
+                        },
+
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            //TODO: Show Problem generating the desktop
+                            //alert('a1');
+                            desktopErrorCount++;
+                            if (desktopErrorCount <= 10) {
+                                //unless we have dtid??
+                                setTimeout(function() { createDesktop() }, 4000);
+                            }
+                        }
+                    });//, 'jsonp');
+            } else {
+                currDesktop = tmpDtid;
+            }
+
+            //Load data from Store first
+
+            preventSave = false;
+            //loadFromStore();
+            isLoading=false;
+            //container.injection('application:main', 'store', 'store:main');
+           ////alert('aaaa');
+          //alert('advance?');
+            App.advanceReadiness();
+        } else {
+            App.advanceReadiness();
+
+        }
+    } catch (eeee) {
+
+         console.error(eeee.stack);
+
+
+        App.advanceReadiness();
     }
 }
-function updateControllerOnlyAfterLoaded ( ctrl, key, obj, counter) {
 
+
+
+/*Ember.Application.initializer({
+    name  : 'currentUser',
+    after : 'store',
+    initialize: function(container, app) {
+        //alert('z');
+        //loadFromStore();
+      //  var controller = container.lookup('controller:currentUser');
+     //   container.typeInjection('controller', 'currentUser', 'controller:currentUser');
+     //   preventSave = false;
+    //
+    }
+});
+*/
+var deletedId = null;
+var customLoad = function(force, store) {
+
+if (force) {
+    preventSave = false;
+} else {
+    preventSave = true;
+}
+
+//alert('customload' + apptype);
+try {
+        if (("" + apptype).indexOf("coupon") >= 0) {
+
+
+
+                    if (!isCordovaApp) {
+                           if (force) forceCache = true;
+                                                var acc = store.find('account');
+
+                        if (force) forceCache = true;
+                        var datum = store.findAll('coupondata');
+                    } else {
+                    //alert('findall');
+                          if (force) forceCache = true;
+                                var acc = store.find('account');
+
+                            if (force) forceCache = true;
+
+                            var datum = store.findAll('coupondata').then(function(e) {
+                                    //alert('findall done');
+                                    if (force) forceCache = true;
+                                    var events = store.findAll('category');
+                                    if (force) forceCache = true;
+                                    var giftcategory = store.findAll('source');
+                                    if (force) forceCache = true;
+                                    var s = store.findAll('coupon');
+                                    if (force) forceCache = true;
+                                    var stores = store.findAll('coupondetail');
+                                    if (force) forceCache = true;
+                                    var friend = store.findAll('couponlistdata');
+                                    var gift = store.findAll('couponlist');
+                                    var eventgift = store.findAll('aubaine');
+
+                                    if (force) forceCache = true;
+                                    var shopping = store.findAll('latestcoupon');
+                                    if (force) forceCache = true;
+
+                                    hasErrors=false;
+                                    //alert('findall done 1');
+                            });
+                    }
+
+
+/*
+                try {
+                   //alert('here - ' + force);
+                    if (force) forceCache = true;
+                        var acc = store.find('account');
+
+                 if (force) forceCache = true;
+                 var categories = store.findAll('category');
+                 if (force) forceCache = true;
+                 var sources = store.findAll('source');
+                 if (force) forceCache = true;
+                 console.error("WILL LOAD ALL COUPON")
+                 var coupon = store.findAll('coupon');
+                 if (force) forceCache = true;
+                 console.error("WILL LOAD ALL COUPONDETAUL")
+                 if (force) forceCache = true;
+                 var sources = store.findAll('coupondetail');
+                 if (force) forceCache = true;
+                 var coupondata = store.findAll('couponlistdata');
+
+                 if (force) forceCache = true;
+                 var couponlist =s store.findAll('couponlist');
+
+                 if (force) forceCache = true;
+                 var news = store.findAll('aubaine');
+
+                 if (force) forceCache = true;
+                 var latestcpon = store.findAll('latestcoupon');
+
+                 } catch (ee) {
+                   //alert(ee.stack);
+                 }
+                 */
+                 hasErrors=false;
+             } else if (("" + apptype).indexOf("dwarf") >= 0) {
+               //alert('findall dwarf');
+                var latestcpon = store.findAll('dwarf');
+                hasErrors=false;
+             } else {
+
+                if (!isCordovaApp) {
+                       if (force) forceCache = true;
+                                            var acc = store.find('account');
+
+                    if (force) forceCache = true;
+                    var datum = store.findAll('giftdata');
+                } else {
+                //alert('findall');
+                if (force) forceCache = true;
+                                                            var acc = store.find('account');
+
+                                                     if (force) forceCache = true;
+
+                        var datum = store.findAll('giftdata').then(function(e) {
+                                //alert('findall done');
+                                if (force) forceCache = true;
+                                var events = store.findAll('event');
+                                if (force) forceCache = true;
+                                var giftcategory = store.findAll('giftcategory');
+                                if (force) forceCache = true;
+                                var s = store.findAll('state');
+                                if (force) forceCache = true;
+                                var stores = store.findAll('magasin');
+                                if (force) forceCache = true;
+                                var friend = store.findAll('friend');
+                                var gift = store.findAll('gift');
+                                var eventgift = store.findAll('eventgift');
+                                if (force) forceCache = true;
+                                var lists = store.findAll('list');
+                                if (force) forceCache = true;
+                                var wishlist = store.findAll('whishgift');
+                                if (force) forceCache = true;
+                                var shopping = store.findAll('shopping');
+                                if (force) forceCache = true;
+
+                                hasErrors=false;
+                                //alert('findall done 1');
+                        });
+                }
+
+             }
+            running--;
+            window.localStorage.setItem('JUSTLOADED', 0);
+        } catch (eww) {
+           //alert(eww.stack);
+        }
+}
+
+
+
+
+function loadFromStore() {
+
+    //Do not save
+    preventSave = false;
+
+}
+
+function updateControllerOnlyAfterLoaded ( ctrl, key, obj, counter) {
+try {
     if (obj == undefined) {
         running--;
+        //console.error("SET RUNNING AAA --" + running);
         ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') - 1 );
         return;
     }
@@ -2165,6 +2681,7 @@ function updateControllerOnlyAfterLoaded ( ctrl, key, obj, counter) {
        ////console.log("RUNNING-- LOADED A : " + running);
        ////console.log("key and data : " + key + " and obj : " + obj);
         running--;
+        //console.error("SET RUNNING AAA LOADED --" + running);
     } else {
         if ( counter <= 0 ) {
             ctrl.set(key,obj);
@@ -2177,16 +2694,23 @@ function updateControllerOnlyAfterLoaded ( ctrl, key, obj, counter) {
             updateControllerOnlyAfterLoaded( ctrl, key, obj, 1);
         }, 300);
     }
+
+    } catch (z) {
+        console.error(z.stack);
+      }
 }
 
 function updateControllerOnlyWhenFulfilled( ctrl, key, obj) {
+  try {
     if (obj == undefined) {
         running--;
+        //console.error("SET RUNNING BBB --" + running);
         ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') - 1 );
         return;
     }
     if (obj.isFulfilled) {
         running--;
+        //console.error("SET RUNNING BBB --" + running);
        ////console.log("RUNNING-- LOADED B : " + running);
        ////console.log("only when " + key);
        ////console.log(key + " is ");
@@ -2201,10 +2725,15 @@ function updateControllerOnlyWhenFulfilled( ctrl, key, obj) {
             updateControllerOnlyWhenFulfilled( ctrl, key, obj);
         });
     }
+  } catch (z) {
+    console.error(z.stack);
+  }
 }
 
 function onlyAfterAllObjectLoaded(dataMsg, ctrl) {
+try {
     //console.log('RELOAD?' + ctrl.get('cookieLoaded'));
+   //alert('ALL COOKIE LOADED ? ' + ctrl.get('cookieLoaded'));
     if (ctrl.get('cookieLoaded') < 0) {
 
         var allLoaded = true;
@@ -2233,6 +2762,8 @@ function onlyAfterAllObjectLoaded(dataMsg, ctrl) {
 //console.log('allLoaded ?' + allLoaded);
          if (allLoaded) {
         //console.log('allLoaded ?' + allLoaded);
+            try {
+            //alert('ALL LOADED');
             for(var key in dataMsg) {
                         try {
                               //console.log(key);
@@ -2249,6 +2780,7 @@ function onlyAfterAllObjectLoaded(dataMsg, ctrl) {
                                                 ctrl.set(key, dataMsg[key]);
                                                 //console.error("CTRL... CALLLING SET : " + key + "DONE");
                                                 running++;
+                                                //console.error("SET RUNNING AAA ++" + running);
 
 
                                                 //console.log("WILL SET OF " + key);
@@ -2267,28 +2799,49 @@ function onlyAfterAllObjectLoaded(dataMsg, ctrl) {
                            ////console.log(ignore.stack);
                         }
             }
+            } catch (ww) {
+
+            }
+
 
             try {
+               //alert('will call postSetupPrivateController');
                 ctrl.postSetupPrivateController(ctrl);
             } catch (zz) {
                 console.error(zz.stack);
             }
+
+
+            try {
+                if (ctrl.get('content') != null) {
+                    console.error("SET CONTENT TO : " + ctrl.get("content").get('constructor'));
+                    console.error(ctrl.get("content"));
+                    AppController.set("currentModel", ctrl.get('content'));
+                }
+            } catch (ee ){
+
+            }
          } else {
                  Ember.run.later(function() {
+                    //alert('will call postSetupPrivateController.. only after all Loaded 1');
                      onlyAfterAllObjectLoaded(dataMsg, ctrl);
                  }, 200);
          }
     } else {
+       //alert('will call postSetupPrivateController.. only after all Loaded');
         Ember.run.later(function() {
             onlyAfterAllObjectLoaded(dataMsg, ctrl);
         }, 200);
     }
-
+} catch (z) {
+   //alert(z.stack);
+  }
 }
 
 function updateControllerFromCookie(ctrl, controller) {
-
+   //alert("CTRL : " + controller);
     if (controller == null) {
+       //alert('return null');
         return;
     }
     /*if (controller.get('content') == null) {
@@ -2298,66 +2851,85 @@ function updateControllerFromCookie(ctrl, controller) {
         return;
     }*/
 
-
+//alert('A');
     //TODO: IN THE CASE OF A ArrayController... we will have to modify this to get the value from a field ie : cookieObject
     //console.error("CONSTCUTOR : " + controller.get('content').get('constructor'));
-    var cName = "c_" + controller.get('content').get('constructor').toString().replaceAll("App.","");
-
-    var c = readCookie(cName);
+    var cName = "";
+    var c = "";
     var dataMsg = { };
     try {
-       if (c != null) {
-          dataMsg = jQuery.parseJSON(c);
-       }
-    } catch (e) {
-       ////console.log(e.stack);
-    }
-    var store = controller.get('store');
+        cName = "c_" + controller.get('content').get('constructor').toString().replaceAll("App.","");
 
+        c = readCookie(cName);
 
-    ctrl.set('cookieLoaded', -1 );
-    for(var key in dataMsg) {
         try {
-              //console.log(" COOKIE : " + key);
-               if (key.endsWith("_acenteraobj")) {
-                  //  Ember.run.next(function() {
-                     var toFindObject = dataMsg[key];
-
-                      var theKey = toFindObject.controller_key;
-                     var theType = toFindObject.type;
-                     var theId = toFindObject.id;
-                     var s = controller.get('store');
-
-                     running++;
-                    ////console.log("RUNNING++ updateController A : " + running);
-                     var f = s.find(theType, theId );
-                     ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') + 1 );
-                     updateControllerOnlyWhenFulfilled(ctrl, theKey, f);
-               } else {
-                    /*if (dataMsg[key + "_acenteraobj"] == undefined) {
-
-                        try {
-                            if (dataMsg[key] != null) {
-
-                                ctrl.get('content').set(key, dataMsg[key]);
-                                running++;
-                               ////console.log("RUNNING++ updateController B : " + running);
-                                ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') + 1 );
-                                updateControllerOnlyAfterLoaded(ctrl, key, dataMsg[key], 0);
-                            }
-                        } catch (w) {
-                           ////console.log(w.stack);
-                        }
-                        //});
-                    }*/
-               }
-        } catch (ignore) {
-           ////console.log(ignore.stack);
+           if (c != null) {
+              dataMsg = jQuery.parseJSON(c);
+           }
+        } catch (e) {
+           ////console.log(e.stack);
         }
+
+    }catch (ez) {
+
+    }
+
+    //alert('BB');
+    var store = controller.get('store');
+   //alert('CC');
+
+//alert("ZZ");
+    try {
+        ctrl.set('cookieLoaded', -1 );
+
+        for(var key in dataMsg) {
+            try {
+                  //console.log(" COOKIE : " + key);
+                   if (key.endsWith("_acenteraobj")) {
+                      //  Ember.run.next(function() {
+                         var toFindObject = dataMsg[key];
+
+                          var theKey = toFindObject.controller_key;
+                         var theType = toFindObject.type;
+                         var theId = toFindObject.id;
+                         var s = controller.get('store');
+
+                         running++;
+                         //console.error("SET RUNNING BBB --" + running);
+                        ////console.log("RUNNING++ updateController A : " + running);
+                         var f = s.find(theType, theId );
+                         ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') + 1 );
+                         updateControllerOnlyWhenFulfilled(ctrl, theKey, f);
+                   } else {
+                        /*if (dataMsg[key + "_acenteraobj"] == undefined) {
+
+                            try {
+                                if (dataMsg[key] != null) {
+
+                                    ctrl.get('content').set(key, dataMsg[key]);
+                                    running++;
+                                   ////console.log("RUNNING++ updateController B : " + running);
+                                    ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') + 1 );
+                                    updateControllerOnlyAfterLoaded(ctrl, key, dataMsg[key], 0);
+                                }
+                            } catch (w) {
+                               ////console.log(w.stack);
+                            }
+                            //});
+                        }*/
+                   }
+            } catch (ignore) {
+               ////console.log(ignore.stack);
+            }
+        }
+    } catch (ezz) {
+       //alert(ezz.stack);
     }
 
     ////console.log('hack');
+    //alert('HACK');
      Ember.run.later(function() {
+       //alert('only after all start?');
         onlyAfterAllObjectLoaded(dataMsg, ctrl);
      }, 10);
 }
@@ -2482,6 +3054,17 @@ function createCookieDomain(name, value, days, domain) {
                   + ";domain=" + domain + ";path=/";
 }
 
+function addToCookie(tx) {
+    try {
+        tx.executeSql('DELETE FROM ACCOUNT WHERE k = "' + cname + '"');
+        tx.executeSql('INSERT INTO ACCOUNT (k, v) VALUES("' + cname + '", "' + cval + '")');
+    } catch (ee) {
+
+    }
+}
+
+var cname = null;
+var cval = null;
 function createCookie(name,value,days) {
     if (days) {
         var date = new Date();
@@ -2489,8 +3072,23 @@ function createCookie(name,value,days) {
         var expires = "; expires="+date.toGMTString();
     }
     else var expires = "";
+
+    try {
+        window.localStorage.setItem(name, value);
+    } catch (zz) {
+    }
+    try {
+        cname=name;
+        cval = value;
+
+        coupondb.transaction(addToCookie, errorCB, successCB);
+    } catch (zz) {
+    }
+
     document.cookie = name+"="+value+expires+"; path=/";
+
 }
+
 
 function readCookie(name) {
     try {
@@ -2505,6 +3103,15 @@ function readCookie(name) {
 
     }
     //return empty
+    //cookie did not exists ?
+
+    try {
+        var value = window.localStorage.getItem(name);
+        return value;
+    } catch (ee) {
+       //alert(ee.stack);
+
+    }
     return null;
 }
 
@@ -2524,11 +3131,13 @@ App = Ember.Application.create({previousUrl: '', currentUrl: '', currentPath: ''
 App.deferReadiness();
 
 
+var deferSave = false;
 
 //Every routes should extend BaseRoute
 Ember.Controller = Ember.Controller.extend({
     needs: ["application"],
     loaded: false,
+    wifi: false,
     reload_model: true,
     current_percentage: 0,
     cookieLoaded: -1,
@@ -2577,9 +3186,44 @@ Ember.ArrayController = Ember.ArrayController.extend({
     }.observes('content','model','breadcrumbTitle')
 });*/
 
+var ignoreAlert = false;
+
 Ember.ObjectController = Ember.ObjectController.extend({
-    postSetupPrivateController: function() {
+    topbarTitle: null,
+    topbarTemplate: null,
+    isCordovaApp: function() {
+            if (window.isCordovaApp) {
+                return true;
+            } else {
+                return false;
+            }
+    }.property(),
+    postSetupPrivateController: function(ctrl) {
+        try {
+            theCurrentRecord = this.get('content');
+
+            //NOT SURE?
+            try {
+                if (theCurrentRecord.get('id') != undefined) {
+                    //theCurrentRecord.reload().then(function(record) { record.rollback() });
+                }
+            } catch (ee) {
+            }
+
+            if (this.get('topbarTemplate') != null) {
+                ctrl.controllerFor('application').send('topbarTemplate', this.get('topbarTemplate'));
+            }
+            if (this.get('topbarTitle') != null) {
+                ctrl.controllerFor('application').send('setTopbarTitle', this.get('topbarTitle'));
+            }
+        } catch (eee) {
+        }
     },
+    account: null,
+    offline: false,
+    isOffline: function() {
+        return this.get('offline');
+    }.observes('offline').property('offline'),
     needs: ["application"],
     loaded: false,
     reload_model: true,
@@ -2634,6 +3278,7 @@ App.BaseRoute = Ember.Route.extend({
         try {
             if (self.get('tmpModelRunningCount') >= 1) {
                   running--;
+                  //console.error("SET RUNNING ZZZ --" + running);
                  ////console.log("RUNNING-- tmpModelRunningCount : " + running);
                   self.set('tmpModelRunningCount',0);
             }
@@ -2720,6 +3365,7 @@ App.BaseRoute = Ember.Route.extend({
          running = 0;
      }
      running++;
+     //console.error("SET RUNNING CCC --" + running);
     ////console.log("RUNNING++ B : " + running);
     ////console.log("RUNNING MODEL.... AT : " + running);
      this.set('tmpModelRunningCount', 1);
@@ -2734,11 +3380,16 @@ App.BaseRoute = Ember.Route.extend({
                 running = 0;
         }
         running++;
+        //console.error("SET RUNNING DDD --" + running);
        ////console.log("ROUTE CONTROLLER Z A+" + running);
         //if AppController is null make sure we set the variable
+       //alert('setup controller... load from Store ? ' + (AppController));
         if (AppController == null) {
             AppController=controller.get("controllers.application");
+            //first time..
+            loadFromStore();
         }
+
 
         //call Parent
         this._super(controller, model);
@@ -2770,11 +3421,20 @@ App.BaseRoute = Ember.Route.extend({
             //call route setupController function
             //If this one have extra data to load it can do "running++"
             //and once completed.. running--;
+
+            //var topbarTemplate = controller.get('topbarTemplate');
             var topbarTemplate = self.get('topbarTemplate');
             AppController.set('topbarController', self);
             if (topbarTemplate != undefined) {
                 this.controllerFor('application').send('topbarTemplate', topbarTemplate);
+            } else {
+
+                topbarTemplate = controller.get('topbarTemplate');
+                if (topbarTemplate != undefined) {
+                        this.controllerFor('application').send('topbarTemplate', topbarTemplate);
+                }
             }
+
 
 
             var leftmenuTpl = self.get('leftmenuTemplate');
@@ -2791,6 +3451,10 @@ App.BaseRoute = Ember.Route.extend({
             controller.set('successMsg', null);
             AppController.set('currentController', controller);
             self.setupPrivateController(controller,model);
+            console.error("SET CURRENT MODEL TO :" + model);
+            AppController.set('currModel', model);
+
+
 
 
 
@@ -2816,6 +3480,15 @@ App.BaseRoute = Ember.Route.extend({
                 this.controllerFor('application').send('setTopbarModel', controller.get('content'));
             }
 
+            var topbarTitle = controller.get('topbarTitle');
+            //console.log(leftmenuModel);
+            if (topbarTitle != undefined) {
+                this.controllerFor('application').send('setTopbarTitle', topbarTitle);
+//            } else {
+         //this.controllerFor('application').send('setTopbarTitle', "");
+            }
+
+
 
         } catch (e) {
            //console.error(e.stack);
@@ -2828,6 +3501,7 @@ App.BaseRoute = Ember.Route.extend({
       //make sure to reduce running since we have finished calling everything and view can render
 
       running--;
+      //console.error("SET RUNNING WWW --" + running);
      //console.log("ROUTE WILL CALL markAsLoaded of " + controller.get('constructor'));
       var s = this;
       Ember.run.later(function() {
@@ -2841,6 +3515,7 @@ App.BaseRoute = Ember.Route.extend({
   setupPrivateController : function(controller,model) {
      //this._super(controller, model);
      running--;
+     //console.error("SET RUNNING W1 --" + running);
     ////console.log("SETUP PRIVATE CONTROLLER Z A-" + running);
   },
   getNewRoute: function() {
@@ -2852,6 +3527,7 @@ var hidDiv = null;
 var hidTransparent = null;
 var hidImg = null;
 var bdy = null;
+var force = false;
 var footerObj = null;
 
 $( document ).ready( function() {
@@ -2871,15 +3547,19 @@ App.BaseView = Ember.View.extend({
   isRendered: false,
   didInsertElement: function() {
       //console.error("GOT : " + this.get('controller').get('constructor'));
-      this._super();
-
       try {
+        this._super();
+
+
 
         //Temporary
         try {
             if (this.get('controller.reload_model')) {
-                this.get('controller').get('content').reload();
+                if (this.get('controller').get('content.id') != undefined) {
+                    this.get('controller').get('content').reload();
+                }
             }
+            currModel = this.get('controller').get('content');
         } catch (itsok) {
         }
 
@@ -2887,12 +3567,13 @@ App.BaseView = Ember.View.extend({
         //setTimeout(function() {
 
                 try {updateControllerFromCookie(self.get('controller'), self.get('controller'));} catch (eew) {
-               //////console.log(eew.stack);
+
+                   //alert(eww.stack);
             }
         //}, 3000);
 
       } catch (ee) {
-        //console.error(ee.stack);
+       //alert(ee.stack);
       }
 
 
@@ -2920,8 +3601,7 @@ App.BaseView = Ember.View.extend({
 
 
 
-//create the Desktop first...
-createDesktop(window);
+
 
 /* Application created in something before IE: test data
 ********************/
@@ -3009,7 +3689,6 @@ App.ApplicationRoute = Ember.Route.extend({
        setupPrivateController: function(controller, model) {
             var self = this;
 
-
             controller.set('startLoadingTS', (new Date().getTime() / 1000));
             controller.setStartLoading();
 
@@ -3025,21 +3704,19 @@ App.ApplicationRoute = Ember.Route.extend({
                 };
             });
 
-            /*//controller.set('projects', model.projects);
-           ////console.log('SET RUNNING TO A2+ ' + running);
             running++;
             model.projects.then(function(e) {
-                    controller.set('projects', e.get('content'));
-                    controller.set('projectsObject', e);
-                    running--;
-            });*/
+                controller.set('projects', e.get('content'));
+                controller.set('projectsObject', e);
+                running--;
+            });
        },
        model: function(params) {
              var store = this.get("store");
 
              var multimodel = {
                 account: store.find('account'),
-                //projects: store.find('projects')
+                projects: store.findAll('projects')
              }
              return multimodel;
        },
@@ -3055,12 +3732,49 @@ App.ApplicationRoute = Ember.Route.extend({
                      this.controllerFor("modal").set('model', model);
                      this.controllerFor("modal").set('content', model.content);
                      this.controllerFor("modal").set('ctrl', model.controller);
+                     if (model.hasOwnProperty("didInsert")) {
+
+                        this.controllerFor("modal").set('didInsert', model.didInsert);
+                     } else {
+                        this.controllerFor("modal").set('didInsert', null);
+                     }
+                     try {
+                     //console.error("MODAL");
+                     //console.error(model);
+                        //alert(model.saveEnabled);
+                        if (model.saveEnable != undefined) {
+
+
+                            this.controllerFor("modal").set('saveEnable', model.saveEnable);
+                        } else {
+                            this.controllerFor("modal").set('saveEnable', true);
+                        }
+                     } catch (zz) {
+                     }
+
+
+                    if (isOnWifi) {
+                        var r = null;
+
+
+                        try {
+                            var url = window.location.hash.substring(1);
+
+                            ga('send', 'pageview', {
+                                'page': url + "/" + model.tpl,
+                                'title': url + "/" + model.tpl
+                            });
+                        } catch (e) {
+                        }
+                    }
+
+
                      return this.render("modal", {
                        into: 'application',
                        outlet: 'modal'
                      });
                  } catch (ee) {
-                     //console.log(ee.stack);
+                     console.log(ee.stack);
                  }
            },
 
@@ -3088,9 +3802,9 @@ App.ApplicationController = Ember.Controller.extend({
             return this.get('account.lang');
         }
         return 'en';
-  }.property('account.lang'),
-  //projectsObject: null,
-  //projects: [],
+  }.observes('account').property('account.lang'),
+  projectsObject: null,
+  projects: [],
   topbarView: 'topbar',
   topbarTemplate: 'single',
   leftmenuTemplate: 'leftmenu',
@@ -3136,13 +3850,13 @@ App.ApplicationController = Ember.Controller.extend({
           }
 
           setTimeout(function() {
-              //alert('calling end loading.. ' + running);
+              ////////alert('calling end loading.. ' + running);
               self.setEndLoading();
           }, innerDelay/2);
 
           if (innerDelay-5>=0) {
               setTimeout(function() {
-                    //alert('calling end loading1.. ' + running);
+                    ////////alert('calling end loading1.. ' + running);
                     self.setEndLoading();
               }, innerDelay-5);
           }
@@ -3156,7 +3870,7 @@ App.ApplicationController = Ember.Controller.extend({
                                       if (self.get('startLoadingTS') == undefined) {
                                         self.set('startLoadingTS', (new Date().getTime() / 1000));
                                       }
-                                      ////alert('running is : ' + running);
+                                      //console.error('running is : ' + running);
                                       hidDiv = $("#hidDiv");
                                       hidImg = $("#hidImg");
                                       hidTransparent = $("#hidTransparentDiv");
@@ -3173,13 +3887,13 @@ App.ApplicationController = Ember.Controller.extend({
 
            $("body").css("cursor", "progress");
 
-           //////alert(endRunningMaxInterval);
+           ////////////alert(endRunningMaxInterval);
            if (endRunningMaxInterval == null) {
                    endRunningMaxInterval = setInterval(function() {
                          if (self.get('loading')) {
                               //AN ERROR OCCURED IN THE WEBSITE or it took too Long.. (limit is .. 12 seconds for now) see below
                               //TODO: Let user know... to refresh its browser?
-                              //alert('FORCE END LOADING');
+                              ////////alert('FORCE END LOADING');
                               running = 0;
 
                               if (endRunningInterval != null) {
@@ -3191,13 +3905,17 @@ App.ApplicationController = Ember.Controller.extend({
                               }
                               self.set('loading', false);
                               resizeScreen();
-                                        hidDiv = $("#hidDiv");
-                                        hidImg = $("#hidImg");
-                                        hidTransparent = $("#hidTransparentDiv");
-                                        hidTransparent.addClass("hidden").removeClass("visible");
-                                        hidDiv.addClass("hidden").removeClass("visible");
-                                        hidImg.addClass("hidden").removeClass("visible");
-                                        bdy.css("cursor", "default");
+
+                                        setTimeout(function() {
+                                            hidDiv = $("#hidDiv");
+                                            hidImg = $("#hidImg");
+                                            hidTransparent = $("#hidTransparentDiv");
+                                            hidTransparent.addClass("hidden").removeClass("visible");
+                                            hidDiv.addClass("hidden").removeClass("visible");
+                                            hidImg.addClass("hidden").removeClass("visible");
+                                            bdy.css("cursor", "default");
+                                        }, 300);
+
                               resizeScreen();
                         }
                          clearInterval(endRunningMaxInterval);
@@ -3211,6 +3929,7 @@ App.ApplicationController = Ember.Controller.extend({
     setEndLoading: function() {
                 try {
                 var self = this;
+                //console.error('running is : ' + running);
                 if (( running <= 0)) {
                     if (bdy != undefined) {
                         var timeElapsed = 9999;
@@ -3218,15 +3937,16 @@ App.ApplicationController = Ember.Controller.extend({
 
                         if (self.get('startLoadingTS') != undefined) {
                             timeElapsed = (new Date().getTime() / 1000) - self.get('startLoadingTS');
-                            minElapseLimit = 1;
+                            minElapseLimit = 0;
 
                             if (  ! AppController.get('hasLoaded') ) {
-                                //alert('minELAPSELMIT SET TO 0');
-                                minElapseLimit = 1;
+                                ////////alert('minELAPSELMIT SET TO 0');
+                                minElapseLimit = 0;
                             }
                         }
 
                         //console.log("HAS LOADED.. timeElapsed vs : " + minElapseLimit);
+
                         if (timeElapsed >= minElapseLimit) {
                                 self.set('loading', false);
                                 try {
@@ -3246,16 +3966,18 @@ App.ApplicationController = Ember.Controller.extend({
                                       hidDiv.addClass("hidden").removeClass("visible");
                                       hidImg.addClass("hidden").removeClass("visible");
                                       self.set('startLoadingTS', undefined);
+                                      //$("#loadingdata").hide();
                                  } catch (e) {
                                    ////console.log(e.stack);
                                  }
 
-                                 //alert('set to -5 ... ' + timeElapsed + " vs " + minElapseLimit);
+                                 ////////alert('set to -5 ... ' + timeElapsed + " vs " + minElapseLimit);
                                  running = -5;
                                  Ember.run.once(self, function() {
                                     try {
-                                       ////console.log("HAS LOADED?? : " + AppController.get('hasLoaded'));
+                                        console.log("HAS LOADED?? : " + AppController.get('hasLoaded'));
                                         if (  ! AppController.get('hasLoaded') ) {
+                                                //console.error('set to true?');
                                                 AppController.set('hasLoaded', true);
                                                 self.set('startLoadingTS', 0);
                                                ////console.log("WILL SET TO TRUE : " + AppController.get('hasLoaded'));
@@ -3271,6 +3993,9 @@ App.ApplicationController = Ember.Controller.extend({
                                             if (leftMnu != undefined) {
                                                 leftMnu.rerender();
                                             }*/
+                                            /*setTimeout(function() {
+                                                $("#loadingdata").hide();
+                                            }, 150);*/
 
                                             var topMnu= Ember.View.views['topMenu'];
                                             if (topMnu != undefined) {
@@ -3282,7 +4007,7 @@ App.ApplicationController = Ember.Controller.extend({
                                         }
 
                                     } catch (ee) {
-                                   ////console.log(ee.stack);
+                                        console.log(ee.stack);
                                     }
                                  });
                         } else {
@@ -3315,8 +4040,10 @@ App.ApplicationController = Ember.Controller.extend({
       breadcrumb : null,
       refreshBreadcrumb: function() {
               var br = this.get('currentModel');
-              this.set('currentModel', null);
-              this.set('currentModel', br);
+              if (br != null) {
+                  this.set('currentModel', null);
+                  this.set('currentModel', br);
+              }
       },
       modelChangeForBreadcrumb: function () {
             if (this.get('currentModel') == null ) {
@@ -3426,10 +4153,17 @@ App.ApplicationController = Ember.Controller.extend({
       }.observes('currentPath'),
 
       actions: {
+            setTopbarView: function(view) {
+                this.set('topbarView', view);
+                var topMnu= Ember.View.views['topMenu'];
+                //topMnu.rerender();
+            },
             refreshBreadcrumb: function() {
                     var br = this.get('currentModel');
-                    this.set('currentModel', null);
-                    this.set('currentModel', br);
+                    if (br != null) {
+                        this.set('currentModel', null);
+                        this.set('currentModel', br);
+                    }
             },
         /* changeContext: function(e, v) {
               //console.log('CHANGE CONTEXT' + this.get('currentPath'));
@@ -3462,35 +4196,51 @@ App.ApplicationController = Ember.Controller.extend({
               }
           },
           setTopbarModel: function(ctrl) {
-            this.set('topbarModel', ctrl);
+            if (this.get('tobarModel') != ctrl) {
+                this.set('topbarModel', ctrl);
+            }
 
             try {
                 Ember.View.views['topMenu'].rerender();
             } catch (e) {
             }
          },
+         setTopbarTitle: function(title) {
+             if (this.get('topbarTitle') != title) {
+                this.set('topbarTitle', title);
+             }
+
+
+             try {
+                 Ember.View.views['topMenu'].rerender();
+             } catch (e) {
+             }
+          },
          leftmenu: function(tpl) {
             this.set('leftmenuTemplate', tpl);
 
-            try {
+            /*try {
                 Ember.View.views['leftMenu'].rerender();
             } catch (e) {
-            }
+            }*/
          },
          topbarTemplate: function(mode) {
-            this.set('topbarTemplate', mode);
+            //if (this.get('topbarTemplate') != mode) {
+                this.set('topbarTemplate', mode);
 
-            //Somehow we must rerender..
-            try {
-                var topMnu= Ember.View.views['topMenu'];
-                if (topMnu != undefined) {
-                    //topMnu.rerender();
+                //Somehow we must rerender..
+                try {
+                    var topMnu= Ember.View.views['topMenu'];
+                    if (topMnu != undefined) {
+                        topMnu.rerender();
+                    }
+                } catch (e) {
+                   ////console.log(e.stack);
                 }
-            } catch (e) {
-               ////console.log(e.stack);
-            }
+            //}
          },
          logout: function() {
+            window.localStorage.clear();
             window.location.href=prefix+"logout"
          },
          goto: function (e, w, parentModel) {
@@ -3523,7 +4273,7 @@ App.ApplicationController = Ember.Controller.extend({
 
 
 });
-
+//////alert('a0');
 var customHost = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '') + prefix
 if (prefix == "/") {
         customHost = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')
@@ -3580,7 +4330,7 @@ App.ApplicationSerializer = DS.RESTSerializer.extend({
                 embedKey = key;
                ////console.log(embedKey);
                ////console.log(result);
-                ////alert(embedKey);
+                //////////alert(embedKey);
                  ////console.log('tttaaa');
                  ////console.log(result);
 
@@ -3626,6 +4376,7 @@ App.reopen({
     lang: Ember.computed.alias('controllers.application.account.lang')
 });
 
+
 App.set("i18n", Ember.Object.create({}));
 
 function updateModel(object) {
@@ -3645,13 +4396,14 @@ function updateModel(object) {
         }
 
     } catch (ex){
-       ////console.log(ex.stack);
+       console.log(ex.stack);
     }
 }
 
 var loadingEmber = true;
 
-$(document).ready(function(){
+
+var appReady = function() {
 
 try {
 
@@ -3672,7 +4424,7 @@ try {
                         }
                     }
                 } catch (e) {
-                   ////console.log(e.stack);
+                  //alert(e.stack);
                 }
             }
             maxItemRetry--;
@@ -3698,7 +4450,7 @@ try {
 
                 }
             } catch (e) {
-               ////console.log(e.stack);
+              //alert(e.stack);
             }
         }
         maxCtrlItemRetry--;
@@ -3710,17 +4462,22 @@ try {
     loadingEmber=false;
 
 
+ //alert('creat edesk ready');
+    createDesktopReady(0);
+ //alert('creat edesk ready done');
 
-        App.advanceReadiness();
+
 
   }catch(zzzz) {
-       ////console.log(zzzz.stack);
+      console.error(zzzz.stack);
   }
+
+
 
   setTimeout(function() {
       createCookie("error_project", 0);
   }, 2000);
-});
+};
 
 /*
 App.map_routes = [];
@@ -3738,11 +4495,31 @@ App.MapRoutes = function(routes) {
       });
 };*/
 
+var lastRoute = null;
+var lastModel = null;
+var currRoute = null;
+var currModel = null;
+
 
 App.Router.reopen({
   notifyGoogleAnalytics: function() {
       try {
+
+        resizeScreen();
+
         scrollTop();
+
+        if  (currRoute != null) {
+            var idx = currRoute.indexOf(".");
+            lastRoute = currRoute.substring(idx+1, currRoute.length);
+            if (lastRoute.endsWith(".index")) {
+                lastRoute = lastRoute.substring(0, lastRoute.length-6)
+            }
+        }
+
+        currRoute = AppController.get('currentPath');
+        lastModel = currModel;
+        //currModel = AppController.get('currentModel');
 
         AppController.set('previousUrl', AppController.get('currentUrl'));
         AppController.set('currentUrl', this.get('url'));
@@ -3753,23 +4530,90 @@ App.Router.reopen({
         createCookie("task_url", this.get('url'));
 
         resizeScreen();
-            return ga('send', 'pageview', {
-                'page': this.get('url'),
-                'title': this.get('url')
-              });
-              } catch (ee) {
+
+        //if (haveGACreated) {
+                    if (!haveGACreated) {
+                        haveGACreated = true;
+                        createGA();
+                    }
+
+                var url = this.get('url');
+
+                if (url == "") {
+                    url = "/index";
+                }
+
+                return ga('send', 'pageview', {
+                        'page': url,
+                        'title': url
+                });
+
+          //} else {
+          //}
+          return true;
+      } catch (ee) {
                 console.error(ee.stack);
-              }
-      return null;
+      }
+      return true;
   }.on('didTransition')
 });
 
 
 } catch (acenteraerror) {
-   ////console.log(acenteraerror.stack);
+   console.error('GOT ERROR');
+  //alert(acenteraerror.stack);
+   console.error(acenteraerror.stack);
 }
 
 
+var currDate = new Date();
+var retries = 0;
+
+function createGA() {
+        try {
+
+                var clientId = readCookie("dtid");
+                if (clientId == null) {
+                    haveGACreated = false;
+                }
+
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
 
+              ga('create', 'UA-34138073-1', {
+                 'storage': 'none',
+                 'clientId': "" + clientId
+                 }
+              );
 
+              ga('set', 'checkProtocolTask', function(){});
+
+
+              ga('send', 'pageview');
+        } catch (eeee){
+                //alert(eeee.stack);
+        }
+}
+
+
+var gaPlugin;
+
+ //alert("Z2: ");
+var successAnalyticsHandler = function() {
+    //alert('success');
+}
+
+var analyticsErr = function(e) {
+    //alert('error');
+    //alert(e);
+}
+
+var states = {};
+ //alert("Z3: " + isCordovaApp);
+
+$(document).ready(function(){
+    appReady();
+});

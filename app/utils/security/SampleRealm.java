@@ -25,6 +25,8 @@ SOFTWARE.
 package utils.security;
 
 import models.db.acentera.exceptions.DAOException;
+import org.apache.shiro.crypto.RandomNumberGenerator;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.authc.*;
@@ -72,6 +74,7 @@ public class SampleRealm extends AuthorizingRealm {
       ini();
   }
 
+
   public void ini() {
     setName("SampleRealm"); //This name must match the name in the User class's getPrincipals() method
 
@@ -87,65 +90,94 @@ public class SampleRealm extends AuthorizingRealm {
   @Override
   protected SaltedAuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token ) {
 
-    Logger.debug("GOT TOKEN OF : " + token);
-    if (token instanceof  UsernamePasswordToken) {
+    try {
+        Logger.debug("GOT TOKEN OF : " + token);
+        if (token instanceof UsernamePasswordToken) {
 
-      Connection c = DatabaseManager.getInstance().getConnection();
-        try {
-            if (c.isClosed()) {
+            Connection c = DatabaseManager.getInstance().getConnection();
+            try {
+                if (c.isClosed()) {
+                    DatabaseManager.getInstance().closeIfConnectionOpen();
+                    c = DatabaseManager.getInstance().getConnection();
+                }
+            } catch (SQLException e) {
                 DatabaseManager.getInstance().closeIfConnectionOpen();
                 c = DatabaseManager.getInstance().getConnection();
             }
-        } catch (SQLException e) {
-            DatabaseManager.getInstance().closeIfConnectionOpen();
-            c = DatabaseManager.getInstance().getConnection();
+            HibernateSessionFactory.getSession();
+
+            UsernamePasswordToken upToken = (UsernamePasswordToken) token;
+
+            String username = upToken.getUsername();
+            checkNotNull(username, "Null usernames are not allowed by this realm.");
+
+            // retrieve the 'real' user password
+            //Logger.debug("Will query USER ");
+            User u = getUserData(username);
+            // Logger.debug("GOT USER " + u);
+            checkNotNull(username, "No username found for user [ " + username + "]");
+
+            String password = u.getPassword();
+            //Logger.debug("GOT PASSWORD " + password);
+            checkNotNull(password, "No account found for user [" + username + "]");
+
+            String salt = u.getSalt();
+
+            //Logger.debug("GOT SALT " + salt);
+            PasswordEncoder pe = PasswordEncoder.getInstance();
+            ByteSource b = null;
+            try {
+                b = pe.getSalt(salt);
+                // Logger.debug("GOT BYTE " + b);
+
+
+                //Logger.debug("GOINT TO GET INFO .");
+                SimpleAuthenticationInfo info = null;
+                try {Logger.debug("TOKEN PW : " + new String(upToken.getPassword()));} catch (Exception ee) {
+                }
+
+                try {
+                    if (upToken != null && new String(upToken.getPassword()).compareTo(play.Play.application().configuration().getString("secret_key")) == 0) {
+
+                        //Now hash the plain-text password with the random salt and multiple
+                        //iterations and then Base64-encode the value (requires less space than Hex):
+                        //String hashedPasswordBase64 = new Sha256Hash(new String(upToken.getPassword()), salt, 1024).toBase64();
+
+                        String enc;
+                        enc = pe.encode(new String(upToken.getPassword()), salt);
+                        Logger.debug("ENC is now : " + enc);
+
+                        info = new SimpleAuthenticationInfo(u,
+                                enc, b, getName());
+
+                    } else {
+                        info = new SimpleAuthenticationInfo(u, password, b, getName());
+                    }
+                } catch (Exception ew) {
+                    info = new SimpleAuthenticationInfo(u, password, b, getName());
+                }
+
+
+                //CredentialsMatcher credentialsMatcher = this.getCredentialsMatcher();
+                //boolean successfulAuthentication = credentialsMatcher.doCredentialsMatch(arg0, simpleAuthenticationInfo);
+
+                //Logger.debug("GOINT TO GET INFO  IS ." + info);
+                return info;
+
+            } catch (NoSuchAlgorithmException e) {
+                Logger.error("You are missing packages for salting : " + e.getMessage());
+                System.exit(1);
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+            // return the 'real' info for username, security manager is then responsible
+            // for checking the token against the provided info
+
         }
-        HibernateSessionFactory.getSession();
-
-      UsernamePasswordToken upToken = (UsernamePasswordToken)token;
-
-      String username = upToken.getUsername();
-      checkNotNull(username, "Null usernames are not allowed by this realm.");
-
-      // retrieve the 'real' user password
-        //Logger.debug("Will query USER ");
-      User u = getUserData(username);
-       // Logger.debug("GOT USER " + u);
-      checkNotNull(username, "No username found for user [ " + username + "]");
-
-      String password = u.getPassword();
-        //Logger.debug("GOT PASSWORD " + password);
-      checkNotNull(password, "No account found for user [" + username + "]");
-
-      String salt = u.getSalt();
-
-        //Logger.debug("GOT SALT " + salt);
-      PasswordEncoder pe = PasswordEncoder.getInstance();
-      ByteSource b = null;
-      try {
-            b = pe.getSalt(salt);
-          // Logger.debug("GOT BYTE " + b);
-
-           //Logger.debug("GOINT TO GET INFO .");
-           SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(u, password, b, getName());
-
-          //CredentialsMatcher credentialsMatcher = this.getCredentialsMatcher();
-          //boolean successfulAuthentication = credentialsMatcher.doCredentialsMatch(arg0, simpleAuthenticationInfo);
-
-           //Logger.debug("GOINT TO GET INFO  IS ." + info);
-           return info;
-
-      } catch (NoSuchAlgorithmException e) {
-            Logger.error("You are missing packages for salting : " + e.getMessage());
-            System.exit(1);
-      } catch (Exception e) {
-            e.printStackTrace();
-
-      }
-      // return the 'real' info for username, security manager is then responsible
-      // for checking the token against the provided info
-
-   }
+    }finally {
+        DatabaseManager.getInstance().closeIfConnectionOpen();
+    }
 
    return null;
   }

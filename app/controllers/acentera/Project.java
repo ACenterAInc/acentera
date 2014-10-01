@@ -51,6 +51,7 @@ public class Project extends ACenterAController {
     public static Result getProjectById(Long projectId ) {
 
         //only users that can access this project
+        Logger.debug("Check projectId Permissions for : " +projectId);
         SecurityController.checkPermission(projectId);
 
         return OkJsonResult(
@@ -83,6 +84,7 @@ public class Project extends ACenterAController {
                     ProjectsHelpers.getAvailableProjectsAsJson(getUser())
             );
         } catch (Exception ee) {
+            ee.printStackTrace();;
             return FailedMessage(ee.getMessage());
         }
     }

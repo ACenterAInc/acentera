@@ -30,8 +30,6 @@ import models.db.acentera.exceptions.DAOException;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.hibernate.service.jdbc.connections.spi.ConnectionProvider;
 import play.Logger;
 import utils.DatabaseManager;
 import utils.HibernateSessionFactory;
@@ -157,6 +155,14 @@ public class UserImpl extends DAO {
         s.saveOrUpdate(u);
         return u;
     }
+
+    public static User update(User u) throws DAOException {
+
+        Session s = (Session) HibernateSessionFactory.getSession();
+        s.update(u);
+        return u;
+    }
+
 
     public static Set<String> getUserPermissions(User user) throws SQLException {
         //s.add("user:demo@acentera.com:write");

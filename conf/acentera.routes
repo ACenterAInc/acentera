@@ -23,6 +23,8 @@ GET      /destroy                             controllers.acentera.CometJavaServ
 
 
 
+
+
 #API / Model Access
 GET      /api/account                                       controllers.acentera.Account.getAccount()
 PUT      /api/account                                       controllers.acentera.Account.updateAccount()
@@ -81,3 +83,4 @@ GET     /assets/*file                controllers.Assets.at(path="/public", file)
 #Catch All Rule
 GET     /                                    controllers.acentera.Application.index()
 GET     /*wholepath                          controllers.acentera.Application.indexWithPath(wholepath: String)
+OPTIONS   /*wholepath                         controllers.acentera.Application.optionsResponse(wholepath: String)

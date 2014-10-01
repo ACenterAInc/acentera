@@ -66,7 +66,7 @@ import java.util.Random;
 
 
 
-public class Auth extends Controller {
+public class Auth extends ACenterAController {
 
     // Returns the authentication tokens
     public static class Login {
@@ -82,24 +82,32 @@ public class Auth extends Controller {
     public static Result authenticate() {
         HibernateSessionFactory.getSession();
         try {
+            Logger.debug("AUTHENTICATE 1");
 
             Form<Login> loginForm = Form.form(Login.class).bindFromRequest();
 
+            Logger.debug("AUTHENTICATE 2");
             if (loginForm.hasErrors()) {
                 ObjectNode authTokenJson = Json.newObject();
                 authTokenJson.put("success", false);
                 authTokenJson.put("message", "Invalid Username / Password");
+                Logger.debug("AUTHENTICATE 3");
+                response().setHeader("Access-Control-Allow-Origin","*");
                 return ok(authTokenJson);
             }
+            Logger.debug("AUTHENTICATE 4");
 
             String uuid = java.util.UUID.randomUUID().toString();
 
             Login login = loginForm.get();
+            Logger.debug("AUTHENTICATE 5");
 
             WebUser wu = new WebUser(login.email, login.password, new UsernamePasswordToken(login.email, login.password));
 
+            Logger.debug("AUTHENTICATE 6");
             if (wu.authenticate()) {
 
+                Logger.debug("AUTHENTICATE 7");
                 Random rand = new Random();
 
                 // nextInt is normally exclusive of the top value,
@@ -115,7 +123,7 @@ public class Auth extends Controller {
                 Cache.set(uuid + ".token", wu.email());
 
                 Logger.trace("User email is : " + wu.email());
-
+                Logger.debug("AUTHENTICATE 8");
                 ObjectNode authTokenJson = Json.newObject();
                 authTokenJson.put("success", true);
                 authTokenJson.put("url", "/user/");
@@ -124,9 +132,11 @@ public class Auth extends Controller {
                 response().setCookie("email", wu.email());
                 response().setCookie("tokensecret", k);
 
+                Logger.debug("AUTHENTICATE 9 : " + authTokenJson);
                 session(SecurityController.AUTH_TOKEN, uuid);
                 session("email", wu.email());
                 session("tokensecret", k);
+                response().setHeader("Access-Control-Allow-Origin","*");
                 return ok(authTokenJson);
             }
 
@@ -135,14 +145,17 @@ public class Auth extends Controller {
             ObjectNode authTokenJson = Json.newObject();
             authTokenJson.put("success", false);
             authTokenJson.put("message", Messages.get("INVALID_PASSWORD"));
+            response().setHeader("Access-Control-Allow-Origin","*");
             return ok(authTokenJson);
         } catch (Exception ew) {
+            Logger.debug("AUTHENTICATE 11");
             ew.printStackTrace();
             HibernateSessionFactory.rollback();
 
             ObjectNode authTokenJson = Json.newObject();
             authTokenJson.put("success", false);
             authTokenJson.put("message", Messages.get("INVALID_PASSWORD"));
+            response().setHeader("Access-Control-Allow-Origin","*");
             return ok(authTokenJson);
 
         } finally {

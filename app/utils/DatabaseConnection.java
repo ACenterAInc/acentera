@@ -24,6 +24,8 @@ SOFTWARE.
 
 package utils;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import play.Logger;
 import play.api.Play;
@@ -35,16 +37,35 @@ import java.io.FileReader;
 import java.sql.*;
 
 import com.mysql.jdbc.Driver;
+import play.api.db.DB;
+
+import javax.sql.DataSource;
 
 /* We do not use JPA Since Scala / Play had problem with JPA */
 public class DatabaseConnection {
     private String DBName = "";
-    private BasicDataSource ds = null;
+    private DataSource ds = null;
     public DatabaseConnection(String dBName) {
         this.DBName = dBName;
     }
 
     public int initialize() {
+
+        ds = DB.getDataSource("default",Play.current());
+        /*if (ds != null) {
+            try {ds.close();} catch (Exception ee) {}
+        }
+        HibernateSessionFactory.getConfiguration().getData
+        ds = null;
+        File f = Play.current().getFile("conf/hikaricp.properties");
+        HikariConfig config = new HikariConfig(f.getAbsolutePath());
+        f = null;
+        HikariDataSource ds = new HikariDataSource(config);
+        */
+        return 0;
+    }
+
+    public int initializea() {
         try {
             //registering the jdbc driver here, your string to use
             //here depends on what driver you are using.
@@ -153,7 +174,7 @@ public class DatabaseConnection {
 
         if (ds == null) {
             Driver dr;
-
+/*
             ds = new BasicDataSource();
             ds.setDriverClassName(className);
             ds.setUrl(url);
@@ -172,7 +193,7 @@ public class DatabaseConnection {
             ds.setValidationQuery("select 1 from dual");
             ds.setValidationQueryTimeout(15000);
             ds.setRemoveAbandoned(true);
-
+*/
 
             try {
                 if (mustCreateH2Func) {
@@ -277,11 +298,12 @@ public class DatabaseConnection {
 
     public void unloadAll() {
         if (ds!=null) {
+            /*
             try {
                 ds.close();
             } catch ( Exception ee) {
 
-            }
+            }*/
             ds = null;
         }
     }

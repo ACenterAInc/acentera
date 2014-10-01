@@ -22,6 +22,7 @@ resolvers += "Typesafe OSS Snapshots" at "http://repo.typesafe.com/typesafe/repo
 
 resolvers += "Akka Repo" at "http://repo.akka.io/repository"
 
+resolvers += Resolver.url("Edulify Repository", url("http://edulify.github.io/modules/releases/"))(Resolver.ivyStylePatterns)
 
 // Use the Play sbt plugin for Play projects
 
