@@ -21,6 +21,9 @@ val acentera = (project in file(".")).enablePlugins(PlayScala).enablePlugins(Pla
 
 //dependsOn(emberjs)
 
+
+resolvers += Resolver.url("Edulify Repository", url("https://edulify.github.io/modules/releases/"))(Resolver.ivyStylePatterns)
+
 scalaVersion := "2.11.1"
 //2.11.1"
 
@@ -30,6 +33,7 @@ libraryDependencies ++= Seq(
   cache,
   //javaWs,
   "org.jasypt" % "jasypt" % "1.7",
+  "com.edulify" %% "play-hikaricp" % "1.5.0",
   "joda-time" % "joda-time" % "2.3",
   "org.apache.shiro" % "shiro-core" % "1.2.0",
   "org.apache.commons" % "commons-email" % "1.3.2",
@@ -44,14 +48,15 @@ libraryDependencies ++= Seq(
   "net.sf.ezmorph" % "ezmorph" % "1.0.6",
   "com.google.code.gson" % "gson" % "2.2.4",
   "commons-collections" % "commons-collections" % "3.2.1",
+  "com.zaxxer" % "HikariCP-java6" % "2.0.1" % "compile",
   // springPackage % "spring-context" % springVersion,
   // springPackage % "spring-core" % springVersion,
   /// springPackage % "spring-jdbc" % springVersion,
   // springPackage % "spring-orm" % springVersion,
   //springPackage % "spring-beans" % springVersion,
-  "org.hibernate" % "hibernate-c3p0" % "4.2.1.Final",
-  "org.hibernate" % "hibernate-core" % "4.2.1.Final",
-  "org.hibernate" % "hibernate-entitymanager" % "4.2.1.Final",
+  "org.hibernate" % "hibernate-hikaricp" % "4.3.6.Final",
+  "org.hibernate" % "hibernate-core" % "4.3.6.Final",
+  "org.hibernate" % "hibernate-entitymanager" % "4.3.6.Final",
   "org.hibernate.javax.persistence" % "hibernate-jpa-2.0-api" % "1.0.1.Final",
   /* "org.hibernate" % "hibernate-entitymanager" % "4.3.4.Final",
    "org.hibernate" % "hibernate-c3p0" % "4.3.4.Final",
