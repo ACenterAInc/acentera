@@ -100,6 +100,10 @@ public class Global extends GlobalSettings {
         //System.out.println(System.getProperty ("java.library.path"));
 
         Thread.currentThread().setContextClassLoader(Play.application().classloader());
+
+         java.security.Security.setProperty("networkaddress.cache.ttl" , "10");
+         java.security.Security.setProperty("networkaddress.cache.negative.ttl" , "10");
+
         //ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
         super.onStart(application);
 
