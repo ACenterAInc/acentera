@@ -402,14 +402,17 @@ function isEmailNotExist(obj, async) {
                         $('#login-alert-box').html('authenticated');
                         $('#login-alert-box').addClass('alert-success');
 
-                        if (response.email != undefined) {
-                            createCookie("email",response.email, 9999);
-                        }
-                        if (response.token != undefined) {
-                            createCookie("token",response.token, 9999);
-                        }
-                        if (response.tokensecret != undefined) {
-                            createCookie("tokensecret",response.tokensecret, 9999);
+                        try {
+                            if (response.email != undefined) {
+                                createCookie("email",response.email, 9999);
+                            }
+                            if (response.token != undefined) {
+                                createCookie("token",response.token, 9999);
+                            }
+                            if (response.tokensecret != undefined) {
+                                createCookie("tokensecret",response.tokensecret, 9999);
+                            }
+                        } catch (ee) {
                         }
                        try {
                             var oldUrl = window.location.hash;
@@ -433,7 +436,6 @@ function isEmailNotExist(obj, async) {
                             $("#password").addClass('error');
 
                     }
-
 
                 }, 'json');
 

@@ -496,6 +496,9 @@ function slideLeftMenu(uuid, objToMove) {
        });
 }
 
+function isOnWifi() {
+    return true;
+}
 
 function slideRightMenu(uuid, objToMove) {
 	jq(objToMove).css('position','relative');
