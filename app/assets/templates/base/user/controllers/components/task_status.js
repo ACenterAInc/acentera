@@ -78,10 +78,10 @@ App.TaskStatusView = Ember.View.extend({
 
                     var m = this.get('redirect_model');
                     if ( m != undefined ) {
-                        m.reload();
+                        try { m.reload(); } catch (ee) {}
                     } else {
                         m = this.get('ctrl').get('controllers.project.content');
-                        m.reload();
+                        try { m.reload(); } catch (ee) {}
                     }
 
                     console.error("TEST A ");
@@ -109,10 +109,10 @@ App.TaskStatusView = Ember.View.extend({
 
                 var m = this.get('redirect_model');
                 if ( m != undefined ) {
-                    m.reload();
+                    try { m.reload(); } catch (ee) {}
                 } else {
                     m = this.get('ctrl').get('controllers.project.content');
-                    m.reload();
+                    try { m.reload(); } catch (ee) {}
                 }
 
                 this.get('ctrl').set('showErrorGoBackButton', true);
@@ -135,10 +135,10 @@ App.TaskStatusView = Ember.View.extend({
 
                     var m = this.get('redirect_model');
                     if ( m != undefined ) {
-                        m.reload();
+                        try { m.reload(); } catch (ee) {}
                     } else {
                         m = this.get('ctrl').get('controllers.project.content');
-                        m.reload();
+                        try { m.reload(); } catch (ee) {}
                     }
 
                     this.get('ctrl').transitionToRoute(this.get('complete_redirect_route'), m);

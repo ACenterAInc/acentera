@@ -1874,12 +1874,12 @@ define("ember-data/lib/adapters/rest_adapter",
       deleteRecord: function(store, type, record) {
         var id = get(record, 'id');
 
-        var data = {};
-        serializer.serializeIntoHash(data, type, record, { includeId: true });
+        //var data = {};
+        //serializer.serializeIntoHash(data, type, record, { includeId: true });
 
 
-        return this.ajax(this.buildURL(type.typeKey, id), "DELETE", { data: data });
-        //return this.ajax(this.buildURL(type.typeKey, id), "DELETE");
+        //return this.ajax(this.buildURL(type.typeKey, id), "DELETE", { data: data });
+        return this.ajax(this.buildURL(type.typeKey, id), "DELETE");
       },
 
       /**
