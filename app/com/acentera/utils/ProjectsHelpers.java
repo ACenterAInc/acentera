@@ -525,13 +525,16 @@ public class ProjectsHelpers {
                     Iterator<Map.Entry<String, ProjectDevices>> itrResponse = devicesToReturn.entrySet().iterator();
                     while(itrResponse.hasNext()) {
                         Map.Entry<String, ProjectDevices> item = itrResponse.next();
-                        Logger.debug("deviceTOReturn ProjectDevices  : " + item.getValue());
-                        Logger.debug("deviceTOReturn ProjectDevices  Device : " + item.getValue().getDevice());
-                        Logger.debug("deviceTOReturn ProjectDevices  Device getDropletInfo : " + item.getValue().getDevice().getDropletInfo());
-                        if (item.getValue().getDevice().getDropletInfo().has("id")) {
-                            if (!(processedDevices.contains(item.getValue().getDevice().getId()))) {
-                                processedDevices.add(item.getValue().getDevice().getId());
-                                jsoServersArray.add(item.getValue().getDevice().getDropletInfo());
+                        Logger.debug("is disabled : " + item.getValue().getDevice().isDisabled() + " vs " + item.getValue().getDevice().getState());
+                        if (!item.getValue().getDevice().isDisabled()) {
+                            Logger.debug("deviceTOReturn ProjectDevices  : " + item.getValue());
+                            Logger.debug("deviceTOReturn ProjectDevices  Device : " + item.getValue().getDevice());
+                            Logger.debug("deviceTOReturn ProjectDevices  Device getDropletInfo : " + item.getValue().getDevice().getDropletInfo());
+                            if (item.getValue().getDevice().getDropletInfo().has("id")) {
+                                if (!(processedDevices.contains(item.getValue().getDevice().getId()))) {
+                                    processedDevices.add(item.getValue().getDevice().getId());
+                                    jsoServersArray.add(item.getValue().getDevice().getDropletInfo());
+                                }
                             }
                         }
                     }
