@@ -22,6 +22,7 @@ SOFTWARE.
 
 */
 
+//import com.newrelic.api.agent.NewRelic;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.*;
@@ -56,7 +57,8 @@ public class Global extends GlobalSettings {
         @Override
         public F.Promise<play.mvc.Result> call(final Http.Context ctx) throws Throwable {
             try {
-                Logger.debug("GOT CALL...");
+                Logger.debug("GOT CALL... : " + "/" + ctx.request().path());
+                //NewRelic.setTransactionName(null, "/" + ctx.request().path());
                 F.Promise<play.mvc.Result> result = this.delegate.call(ctx);
                 Http.Response response = ctx.response();
                 response.setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!

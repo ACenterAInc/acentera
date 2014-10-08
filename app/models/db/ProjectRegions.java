@@ -55,11 +55,11 @@ public class ProjectRegions extends AutoIncrementId {
 
     @Expose public @Getter @Setter String slug;
 
-    @Expose public @Getter @Setter Integer extid;
+    @Expose public @Getter @Setter String extid;
 
 
 
-    public boolean isEquals(MetaData obj) {
+    public boolean isEquals(Object obj) {
         ProjectRegions uObj = (ProjectRegions) obj;
 
         if ( ! (getProject().equals(uObj.getProject()) ) )          return false;

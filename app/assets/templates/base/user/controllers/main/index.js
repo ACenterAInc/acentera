@@ -22,6 +22,9 @@ App.MainIndexController = Ember.ObjectController.extend({
     breadcrumbUseParentModel: true,
     breadcrumbTitle: "Projects",
     breadcrumbVisible: true,
+    postSetupPrivateController: function(ctrl) {
+        //alert('a');
+    },
     //projects: [],  //--removed somehow this breaks...
     pendingInvites: function() {
         var pendingProjects = [];

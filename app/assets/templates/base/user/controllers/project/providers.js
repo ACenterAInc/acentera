@@ -17,8 +17,15 @@ App.ProjectProvidersController = Ember.ObjectController.extend({
     needs : [ "application","project"],
     breadcrumbTitle: "Providers",
     selectedProviderType: null,
+    new_account: "",
     new_provider_apikey: "",
     new_provider_secretkey: "",
+    isDigitalocean: function() {
+        return (this.get('selectedProviderType') == "digitaloceanv2");
+    }.property('selectedProviderType'),
+    isAzure: function() {
+        return (this.get('selectedProviderType') == "azure");
+    }.property('selectedProviderType'),
     content: Ember.computed.alias('controllers.project.project').cacheable(),
     actions: {
             select: function (provider) {
@@ -34,7 +41,7 @@ App.ProjectProvidersController = Ember.ObjectController.extend({
                 }
             },
             cancelNewProvider: function(e) {
-                resetValues(this, ['new_provider_tag', 'new_provider_name', 'new_provider_apikey','new_provider_secretkey']);
+                resetValues(this, ['new_provider_tag', 'new_provider_name', 'new_account', 'new_provider_apikey','new_provider_secretkey']);
                 var isVisible = $("#createProvider:visible");
                 if (isVisible.length > 0) {
                     $("#addCloud").click();
@@ -46,21 +53,42 @@ App.ProjectProvidersController = Ember.ObjectController.extend({
                 var self = this;
                 try {
 
-                if ( Ember.View.views['new_provider_name'].validate() && Ember.View.views['new_provider_tag'].validate() &&
-                                    Ember.View.views['new_provider_apikey'].validate() &&
-                                    Ember.View.views['new_provider_secretkey'].validate() ) {
+                //alert(this.get('selectedProviderType'));
+                var providerValidate = false;
+                 if (this.get('selectedProviderType') == "digitaloceanv2") {
+                    providerValidate = Ember.View.views['new_provider_secretkey'].validate();
+                 }
+                 if (this.get('selectedProviderType') == "azure") {
+                    providerValidate = Ember.View.views['new_provider_account'].validate() && (this.get('uploaded_file') != null);
+                    if (this.get('uploaded_file') == null) {
+                        App.getI18NValue('missing_pem_file');
+                    }
+                 }
+
+                if ( Ember.View.views['new_provider_name'].validate() && Ember.View.views['new_provider_tag'].validate() && providerValidate ) {
 
                             var prov = this.get('store').createRecord('Provider',{});
                             prov.set('name', this.get('new_provider_name'));
                             prov.set('tag', this.get('new_provider_tag'));
-                            prov.set('apikey', this.get('new_provider_apikey'));
-                            prov.set('secretkey', this.get('new_provider_secretkey'));
+
+                            if (this.get('selectedProviderType') == "digitaloceanv2") {
+                                prov.set("secretkey", this.get('new_provider_secretkey'));
+                            }
+
+                            if (this.get('selectedProviderType') == "azure") {
+                                prov.set('account', this.get('new_provider_account'));
+                                //prov.set('apikey', this.get('new_provider_apikey'));
+                                //prov.set('secretkey', this.get('new_provider_secretkey'));
+                                prov.set('uploaded_file', this.get('uploaded_file'));
+                            }
+
+
                             prov.set('type', App.capitalize(this.get('selectedProviderType')));
 
                             AppController.setStartLoadingWithDelay();
 
                             prov.save().then(function(e) {
-                                 prov.deleteRecord();
+                                 //prov.deleteRecord();
                                  //Object will automatically update the browser... lets just close
 
                                  self.get('controllers.project.content').reload().then(function (e) {
@@ -78,8 +106,13 @@ App.ProjectProvidersController = Ember.ObjectController.extend({
                                       self.set('errorMsg', response.responseJSON.message);
                                    }
                                } else {
-
-                                    self.set('errorMsg', App.getI18NValue('error_saving_model_to_backend'));
+                                    if (response.responseJSON.message == "invalid_cred") {
+                                        self.set('errorMsg', App.getI18NValue("provider.cannot_connect"));
+                                    } else if ( response.responseJSON.message == "duplicate_entity") {
+                                        self.set('errorMsg', App.getI18NValue("provider.already_exists"));
+                                    } else {
+                                        self.set('errorMsg', App.getI18NValue(response.responseJSON.message));
+                                    }
                                }
                                running--;
                             });

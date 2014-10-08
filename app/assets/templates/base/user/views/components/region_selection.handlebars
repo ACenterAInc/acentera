@@ -19,25 +19,34 @@
         <div class="row">
 
             <div id="collapse3" class="accordion-body collapse in body">
-                <div class="col-lg-12 text-center">
-                    <div class="col-lg-3 text-center">
+                <div class="col-lg-12 text-center leftfloat">
+                    <div class="col-lg-2 text-center">
                     </div>
-                    <div class="col-lg-8 text-center">
+                    <div class="col-lg-10 text-center">
+                      <div class="row col-lg-12">
+                     {{#if regionsList.length}}
+                        {{#eachIndexed v in regionsList}}
 
-                     {{#if regionsAvailable.length}}
-                        {{#eachIndexed v in regionsAvailable}}
-
-                            {{#if-equal param1=index param2=3}}
-                                </div><div class="row">
+                            {{!--#if-equal param1=index param2=3}}
+                                </div><div class="row col-lg-12">
                             {{/if-equal}}
                             {{#if-equal param1=index param2=6}}
-                                </div><div class="row">
+                                </div><div class="row  col-lg-12">
                             {{/if-equal}}
-                            {{#if-equal param1=index param2=9}}
-                                </div><div class="row">
+                            {{#if-equal param1=index param2=12}}
+                                </div><div class="row  col-lg-12">
                             {{/if-equal}}
+                            {{#if-equal param1=index param2=12}}
+                            </div><div class="row  col-lg-12">
+                            {{/if-equal}}
+                            {{#if-equal param1=index param2=15}}
+                            </div><div class="row  col-lg-12">
+                            {{/if-equal--}}
+
+                            {{#in-array param1=v param2=regionsAvailable}}
+
                                 {{#if-equal param1=v.slug param2=slug}}
-                                    <a class="col-lg-3 text-center quick-btn active" style="height:150px;width:150px">
+                                    <a class="col-lg-2 text-center quick-btn active" style="height:150px;width:150px">
                                         <span>{{v.name}}</span>
                                         <br/>
                                         <span {{bind-attr class=v.slug}}></span>
@@ -45,29 +54,31 @@
                                 {{/if-equal}}
 
                                 {{#else-equal param1=v.slug param2=slug}}
-                                    <a class="col-lg-3 text-center quick-btn" {{action selectRegion v}} style="height:150px;width:150px">
+                                    <a class="col-lg-2 text-center quick-btn" {{action selectRegion v}} style="height:150px;width:150px">
                                         <span>{{v.name}}</span>
                                         <br/>
                                         <span {{bind-attr class=v.slug}}></span>
                                     </a>
                                 {{/else-equal}}
-                            {{!-- else
-                                <a data-original-title="Region currently disabled to ensure performance" data-toggle="tooltip" class="quick-btn disabled" {{action disabled}} disabled="disabled" style="height:150px;width:150px">
+
+                            {{/in-array}}
+                            {{#not-in-array param1=v param2=regionsAvailable}}
+                                <a data-original-title="Region currently disabled on this Cloud" data-toggle="tooltip" class="col-lg-2 quick-btn disabled" {{action disabled}} disabled="disabled" style="height:150px;width:150px">
                                     <span>{{v.name}}</span>
                                     <span>disabled</span>
-                                    <span {{bind-attr class=v}}></span>
+                                    <span {{bind-attr class=v.slug}}></span>
                                 </a>
-                            --}}
+                            {{/not-in-array}}
                         {{/eachIndexed}}
                      {{else}}
                         <div class="col-lg-8 text-left">
                             <br/>
-                           No regions available for this API Key.
+                           No regions are available for this API Key.
                         </div>
                      {{/if}}
                     </div>
 
-
+                    </div>
 
 
 

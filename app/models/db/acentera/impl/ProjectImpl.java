@@ -34,6 +34,7 @@ import controllers.acentera.SecurityController;
 import models.db.*;
 import models.db.acentera.constants.RoleConstants;
 import models.db.acentera.constants.TagConstants;
+
 import models.db.acentera.exceptions.DAOException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -889,7 +890,11 @@ public class ProjectImpl extends DAO {
 
             //TODO: This shouldn't call ProjectsHelpers
 
-            return ProjectsHelpers.getInstance().getUserWithRolesAsJson(userProject, u);
+            try {
+                return ProjectsHelpers.getInstance().getUserWithRolesAsJson(userProject, u);
+            } catch (Exception e) {
+                return null;
+            }
         }
 
         return null;
@@ -984,7 +989,11 @@ public class ProjectImpl extends DAO {
                 s.saveOrUpdate(uProject);
 
                 //TODO: Refactor so this doens't use ProjectsHelpers..... DAO Shouldn't call ProjectHelpers..
-                return ProjectsHelpers.getInstance().getUserWithRolesAsJson(uProject, u);
+                try {
+                    return ProjectsHelpers.getInstance().getUserWithRolesAsJson(uProject, u);
+                } catch (Exception e) {
+                    return null;
+                }
             }
         }
 

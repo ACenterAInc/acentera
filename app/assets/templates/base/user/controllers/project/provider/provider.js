@@ -55,6 +55,12 @@ App.ProjectProviderIndexController = Ember.ObjectController.extend({
             }
         }.observes('content.tags.@each'),
         newTags: [],
+        canDelete: function() {
+            if (this.get('content.candelete') == undefined) {
+                return true;
+            }
+            return (this.get('content.candelete') != 0);
+        }.property('content'),
         tagChanged: false,
         successMsg: null,
         content: null,

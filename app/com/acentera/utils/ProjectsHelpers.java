@@ -46,6 +46,7 @@ import models.db.acentera.impl.*;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.hibernate.Session;
+import org.joda.time.DateTime;
 import play.Logger;
 import utils.HibernateSessionFactory;
 import utils.Utils;
@@ -59,6 +60,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 
 public class ProjectsHelpers {
+
 
 
     protected static ProjectsHelpers _instance = null;
@@ -188,7 +190,7 @@ public class ProjectsHelpers {
                         while(itrRegionsProviders.hasNext() && selectedRegion == null) {
                             ProjectProvidersRegions ppr = itrRegionsProviders.next();
                             if (ppr.getExtId() != null) {
-                                if (ppr.getExtId().intValue() == droplet.getRegionId().intValue()) {
+                                if (ppr.getExtId().compareTo("" + droplet.getRegionId()) == 0) {
                                     selectedRegion = ppr;
                                 }
                             }
@@ -555,7 +557,7 @@ public class ProjectsHelpers {
         return res;
     }
 
-    public String getUserWithRolesAsJson(UserProjects uproject, User currentUser) {
+    public String getUserWithRolesAsJson(UserProjects uproject, User currentUser) throws JsonProcessingException {
 
         //TODO: Does currentUser have access to read this user information for this project ?
 
@@ -644,7 +646,8 @@ public class ProjectsHelpers {
                 jsoUser.put("tags", mapper.writeValueAsString(projectTags));
 
         } catch (Exception e) {
-            e.printStackTrace();
+
+            throw e;
         }
 
         return jso.toString();
@@ -721,6 +724,7 @@ public class ProjectsHelpers {
 
     public static  JSONObject getProjectsAsJson(Project projects) {
         //Make sure to do an hibernate commit before we get the projectasjson..
+        Logger.debug("PERFMISSION REFRESH DONE A ?");
         if (SecurityController.canViewProject(projects.getId())) {
 
             Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
@@ -735,6 +739,7 @@ public class ProjectsHelpers {
 
             return res;
         } else {
+            Logger.debug("PERFMISSION REFRESH DONE B ?");
             JSONObject res = new JSONObject();
             res.put("projects", new JSONObject());
             return res;
@@ -742,7 +747,7 @@ public class ProjectsHelpers {
     }
 
 
-    public String getUserProjectWithRolesAsJson(Project p, User u) {
+    public String getUserProjectWithRolesAsJson(Project p, User u) throws JsonProcessingException {
 
         SecurityController.getSubject().checkPermission("project:" + p.getId() + ":view");
 
@@ -860,8 +865,9 @@ public class ProjectsHelpers {
                 Set<ProjectProviders> userAccessProviders = new HashSet<ProjectProviders>();
                 while(itrProjectProviders.hasNext()) {
                     ProjectProviders pr = itrProjectProviders.next();
-
+                    Logger.debug("WILL CHECK PROVIDER : " + pr.getInternal_type());
                     if (SecurityController.isTagPermitted(p.getId(), pr)) {
+                        Logger.debug("WILL CHECK PROVIDER A");
                         userAccessProviders.add(pr);
                         try {
                             if (pr.getRegions() != null) {
@@ -875,6 +881,7 @@ public class ProjectsHelpers {
 
                         }
                     }
+                    Logger.debug("WILL CHECK PROVIDER B");
                 }
 
                 jso.put("regions", mapper.writeValueAsString(projectRegionsSet));
@@ -916,7 +923,8 @@ public class ProjectsHelpers {
         return ow.writeValueAsString(q);
     }
 
-    public static void getOrReloadAPIRegions(ProjectProviders prov) {
+    public static void getOrReloadAPIRegions(ProjectProviders prov) throws Exception {
+
         DigitalOcean apiClient = new DigitalOceanClient(prov.getApikey(), prov.getSecretkey());
         try {
             List<Region> lstRegions = apiClient.getAvailableRegions();
@@ -942,7 +950,7 @@ public class ProjectsHelpers {
                     }
 
                 } else {
-                    ProjectRegions pr = ProjectRegionsImpl.getOrCreateRegion(prov.getProject(), r.getSlug(), r.getName(), r.getId());
+                    ProjectRegions pr = ProjectRegionsImpl.getOrCreateRegion(prov.getProject(), r.getSlug(), r.getName(), String.valueOf(r.getId()));
                     prov.addRegion(pr);
                 }
             }

@@ -78,30 +78,40 @@
                             {{ReadOnly-TextField class="form-control col-lg-6" valueBinding="content.type" elementId="cloud"}}
                         </td>
                     </tr>
+                    {{#if-equal param1=content.type param2="Digitalocean"}}
+                        <tr>
+                            <td>
+                                {{#if-equal param1=content.type param2="Digitalocean"}}
+                                    {{i18n "digitalocean.clientid"}}
+                                {{/if-equal}}
+                                {{#else-equal param1=content.type param2="Digitalocean"}}
+                                    {{i18n "api_key"}}
+                                {{/else-equal}}
+                            </td>
+                            <td>
+                                <i class="fa fa-question-circle" {{bind-attr-i18n data-original-title="digitalocean.clientid_tooltip"}} data-toggle="tooltip"></i>
+                            </td>
+                            <td>
+                                {{view App.NotEmptyTextField class="form-control col-lg-6" refBinding="content.apikey" valueBinding="content.apikey" elementId="apikey"}}
+                            </td>
+                        </tr>
+                    {{/if-equal}}
+
+
                     <tr>
                         <td>
-                            {{#if-equal param1=content.type param2="Digitalocean"}}
-                                {{i18n "digitalocean.clientid"}}
+                            {{#if-equal param1=content.type param2="DigitaloceanV2"}}
+                                {{i18n "token"}}
                             {{/if-equal}}
-                            {{#else-equal param1=content.type param2="Digitalocean"}}
-                                {{i18n "api_key"}}
+                            {{#else-equal param1=content.type param2="DigitaloceanV2"}}
+                                {{i18n "secret_key"}}
                             {{/else-equal}}
                         </td>
                         <td>
-                            <i class="fa fa-question-circle" {{bind-attr-i18n data-original-title="digitalocean.clientid_tooltip"}} data-toggle="tooltip"></i>
-                        </td>
-                        <td>
-                            {{view App.NotEmptyTextField class="form-control col-lg-6" refBinding="content.apikey" valueBinding="content.apikey" elementId="apikey"}}
-                        </td>
-                    </tr>
+                            {{#if-equal param1=content.type param2="DigitaloceanV2"}}
+                                <i class="fa fa-question-circle" {{bind-attr-i18n data-original-title="provider.token"}} data-toggle="tooltip"></i>
+                            {{/if-equal}}
 
-
-                    <tr>
-                        <td>
-                            {{i18n "secret_key"}}
-                        </td>
-                        <td>
-                            <!--<i class="fa fa-question-circle" {{bind-attr-i18n data-original-title="digitalocean.clientid_tooltip"}} data-toggle="tooltip"></i>-->
                         </td>
                         <td>
                             {{view App.EmptyTextField class="form-control col-lg-6" refBinding="content.secretkey" placeholderTranslate="leave_empty_if_you_do_not_want_to_change_it" valueBinding="content.secretkey" elementId="secretkey"}}
@@ -190,7 +200,11 @@
                 <div class="form-actions row col-lg-12">
                     <div style="height:35px">
                         <div class="col-lg-1">
-                            <input type="submit" {{action deleteAPI}} value="Delete" class="btn btn-danger">
+                            {{#if canDelete}}
+                                <input type="submit" {{action deleteAPI}} value="Delete" class="btn btn-danger">
+                            {{else}}
+                                <input type="submit" {{action deleteAPI}} value="Delete" class="btn btn-danger" disabled="disabled">
+                            {{/if}}
                         </div>
                         <div class="col-lg-8">
                             &nbsp;

@@ -95,7 +95,7 @@ public class ProjectSshKey extends AutoIncrementId implements TagSingleBasePermi
 
 
 
-    public boolean isEquals(MetaData obj) {
+    public boolean isEquals(Object obj) {
         ProjectSshKey uObj = (ProjectSshKey) obj;
 
         if ( ! (getId().equals(uObj.getId()) ) )                           return false;

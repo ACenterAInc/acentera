@@ -38,6 +38,7 @@ import play.Logger;
 import org.apache.shiro.util.ByteSource;
 import models.db.User;
 import models.db.acentera.impl.UserImpl;
+import play.cache.Cache;
 import utils.DatabaseConnection;
 import utils.DatabaseManager;
 import utils.HibernateSessionFactory;
@@ -45,6 +46,8 @@ import utils.HibernateSessionFactory;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -89,12 +92,12 @@ public class SampleRealm extends AuthorizingRealm {
 
   @Override
   protected SaltedAuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token ) {
-
+      Connection c = null;
     try {
         Logger.debug("GOT TOKEN OF : " + token);
         if (token instanceof UsernamePasswordToken) {
 
-            Connection c = DatabaseManager.getInstance().getConnection();
+            c = DatabaseManager.getInstance().getConnection();
             try {
                 if (c.isClosed()) {
                     DatabaseManager.getInstance().closeIfConnectionOpen();
@@ -104,7 +107,7 @@ public class SampleRealm extends AuthorizingRealm {
                 DatabaseManager.getInstance().closeIfConnectionOpen();
                 c = DatabaseManager.getInstance().getConnection();
             }
-            HibernateSessionFactory.getSession();
+            //HibernateSessionFactory.getSession();
 
             UsernamePasswordToken upToken = (UsernamePasswordToken) token;
 
@@ -176,7 +179,12 @@ public class SampleRealm extends AuthorizingRealm {
 
         }
     }finally {
-        DatabaseManager.getInstance().closeIfConnectionOpen();
+        try {
+            c.close();
+        } catch (Exception ee) {
+
+        }
+        //DatabaseManager.getInstance().closeIfConnectionOpen();
     }
 
    return null;
@@ -219,16 +227,24 @@ public class SampleRealm extends AuthorizingRealm {
   private Set<String> permissionsOf(User user) {
       //for now
 
+      String cacheKey = "user-" + user.getId() + "-permissions";
+      Set<String> cachedPerm = (Set<String>)Cache.get(cacheKey);
 
-      Set<String> s = null;
-      try {
-          s = UserImpl.getUserPermissions(user);
-      } catch (SQLException e) {
-          e.printStackTrace();
-          s = new HashSet<String>();
+      if (cachedPerm == null) {
+          Logger.debug("PERFMISSION DONE");
+          Set<String> s = null;
+          try {
+              s = UserImpl.getUserPermissions(user);
+          } catch (SQLException e) {
+              e.printStackTrace();
+              s = new HashSet<String>();
+          }
+          Logger.debug("PERMISSIONS ARE : " + s);
+          cachedPerm = s;
+          Cache.set(cacheKey, cachedPerm, 300);
       }
-        Logger.debug("PERMISSIONS ARE : " + s);
-      return s;
+      return cachedPerm;
+
   }
 
   private Set<String> rolesOf(User user) {
@@ -264,4 +280,8 @@ public class SampleRealm extends AuthorizingRealm {
       throw new AuthenticationException(message);
     }
   }
+
+    public void invalidateUser(PrincipalCollection principals) {
+        clearCache(principals);
+    }
 }

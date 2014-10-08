@@ -170,6 +170,37 @@ App.NumberTextField = App.GenericTranslateTextField.extend({
 Ember.Handlebars.helper('Number-TextField', App.NumberTextField);
 
 
+
+
+App.FileUpload = Ember.TextField.extend({
+    type: 'file',
+    change: function(evt) {
+        var input = evt.target;
+        if (input.files && input.files[0]) {
+            var that = this;
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var data = e.target.result;
+                that.set('parentView.content', data);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    },
+    validate: function() {
+             return this.focusOut(null);
+    },
+    focusOut: function(event) {
+       var that = this;
+       if (that.get('parentView.content') != null) {
+            return true;
+       } else{
+            return false;
+       }
+    }
+});
+Ember.Handlebars.helper('FileUpload-TextField', App.FileUpload);
+
 App.EmptyDifferTextField = Ember.TextField.extend({
     attributeBindings: ['style'],
     keyDown: function(event) {

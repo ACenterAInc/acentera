@@ -1187,7 +1187,21 @@ jQuery.fn.center = function () {
 
 
 
+function bytesToSize(bytes) {
+   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+   if (bytes == 0) return '0 Byte';
+   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+};
 
+function MBToSize(mbytes) {
+   var sizes = ['KB', 'MB', 'GB', 'TB'];
+   if (mbytes == 0) return '0 Byte';
+   mbytes = mbytes * 1024;
+   var i = parseInt(Math.floor(Math.log(mbytes) / Math.log(1024)));
+
+   return Math.round(mbytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+};
 
 
 
@@ -2673,27 +2687,58 @@ try {
         return;
     }
 
+console.error('GET LOADED? ' + ctrl.get('loaded'));
     if (ctrl.get('loaded')) {
 
        //////console.log("after loaded " + key);
        ////console.log(key + " is ");
        ////console.log(obj);
 
-        ctrl.set(key,obj);
-        ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') - 1 );
+            console.error('GET FINDING OF : ' + key);
+            try {
+                var tmpData = AppController.get('store').all(key).filter(function(data) {
+                    return data.get('id') == obj.id });
+                console.error('TMPDATA : ' + tmpData);
+                if (tmpData.length > 0) {
+                //.length;
+                //AppController.get('store').all(key, )
+                    ctrl.set(key,obj);
+                }
+            } catch (ee) {
+                ctrl.set(key,obj);
+            }
+
+            ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') - 1 );
        ////console.log("RUNNING-- LOADED A : " + running);
        ////console.log("key and data : " + key + " and obj : " + obj);
         running--;
         //console.error("SET RUNNING AAA LOADED --" + running);
     } else {
         if ( counter <= 0 ) {
-            ctrl.set(key,obj);
+
+            try {
+                var tmpData = AppController.get('store').all(key).filter(function(data) {
+                            return data.get('id') == obj.id });
+
+                    if (tmpData.length > 0) {
+                    //.length;
+                    //AppController.get('store').all(key, )
+                        ctrl.set(key,obj);
+                    }
+            } catch (ee) {
+                ctrl.set(key,obj);
+            }
+            running--;
+
         }
         Ember.run.later(function() {
         //Ember.run.next(updateControllerOnlyWhenFulfilled( ctrl, key, obj));
             /*if ( counter <= 0 ) {
 
             }*/
+
+
+
             updateControllerOnlyAfterLoaded( ctrl, key, obj, 1);
         }, 300);
     }
@@ -2703,33 +2748,74 @@ try {
       }
 }
 
-function updateControllerOnlyWhenFulfilled( ctrl, key, obj) {
+var llllll=0;
+function updateControllerOnlyWhenFulfilled( ctrl, key, obj, itr) {
   try {
+    console.error("ITR : " + itr);
+      if (itr >= 100) {
+        return;
+      }
     if (obj == undefined) {
         running--;
         //console.error("SET RUNNING BBB --" + running);
         ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') - 1 );
         return;
     }
-    if (obj.isFulfilled) {
+    console.error("IS FULFILLED : " + obj.isFulfilled);
+
+    console.error(obj);
+    console.error(obj.isFulfilled);
+    console.error(obj.get('isFulfilled'));
+
+
+    if ((obj.isFulfilled == undefined && obj != undefined) || (obj.isFulfilled)) {
         running--;
         //console.error("SET RUNNING BBB --" + running);
        ////console.log("RUNNING-- LOADED B : " + running);
-       ////console.log("only when " + key);
-       ////console.log(key + " is ");
-       ////console.log(obj.get('content'));
-        ctrl.set(key,obj.get('content'));
-        Ember.run.next(function() {
-                 ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') - 1 );
-         });
+       console.log("only when " + key);
+       console.log(key + " is ");
+       console.log(obj);
+       if (obj.length > 0) {
+          obj = obj[0];
+       }
+        try {
+            if (!obj.get('isDisabled')) {
+                console.error("SET CONTENT..." + obj);
+                console.error(obj);
+                console.error(obj.get('content'));
+                console.error("AZZ SET CONTENT..." + obj);
+                console.error(" KEY : " + key);
+                if (obj.get('content') == undefined) {
+                    console.error("GET CONTENT IS UNDEF...");
+                    if (obj.length > 0) {
+                        console.error('set array ');
+                        ctrl.set(key,obj[0]);
+                    } else {
+                        console.error("SET KEY : " + key + " to obj");
+                        console.error(obj);
+                        ctrl.set(key,obj);
+                    }
+                } else {
+                    ctrl.set(key,obj.get('content'));
+                }
+
+            }
+            Ember.run.next(function() {
+             ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') - 1 );
+            });
+        } catch (z) {
+            console.error(z.stack);
+        }
+
+
     } else {
-        Ember.run.next(function() {
+        Ember.run.later(function() {
         //Ember.run.next(updateControllerOnlyWhenFulfilled( ctrl, key, obj));
-            updateControllerOnlyWhenFulfilled( ctrl, key, obj);
-        });
+            updateControllerOnlyWhenFulfilled( ctrl, key, obj, itr++);
+        }, 100);
     }
   } catch (z) {
-    console.error(z.stack);
+   console.error(z.stack);
   }
 }
 
@@ -2764,24 +2850,66 @@ try {
         }*/
 //console.log('allLoaded ?' + allLoaded);
          if (allLoaded) {
-        //console.log('allLoaded ?' + allLoaded);
+          //console.log('allLoaded ?' + allLoaded);
             try {
             //alert('ALL LOADED');
             for(var key in dataMsg) {
                         try {
-                              //console.log(key);
+                             //console.log(key);
                                if (key.endsWith("_acenteraobj")) {
+                                   //console.error("TTTTOK : " + key);
                                   //do nothing
+                                  console.error("LAODING.....");
+                                  console.error(key);
+                                  var key1 = key.replaceAll("_acenteraobj","");
+                                  console.error(key1);
+                                  console.error(dataMsg[key]);
+                                  var theId = dataMsg[key]['id'];
+                                  var theType = dataMsg[key]['type'];
+
+                                  var s = ctrl.get('store');
+                                  var tmpData = s.all(theType).filter(function(data) {
+                                      return data.get('id') == theId });
+                                 console.error("KEYIDZ");
+                                 console.error(tmpData);
+                                 if (tmpData.length <= 0) {
+                                     //console.error("KEYIDZ1 find");
+                                     var f = s.find(theType, theId );
+                                     ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') + 1 );
+                                     updateControllerOnlyWhenFulfilled(ctrl, key1, f, 1);
+                                 } else {
+                                    console.error("KEYIDZ1 we already got it.. but is it deleted?");
+                                    var obj = tmpData;
+                                    console.error(obj);
+                                    console.error(key1);
+                                    console.error("TAZ");
+                                    console.error(!obj.get('isDisabled'));
+                                    if (!obj.get('isDisabled')) {
+
+                                      //ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') + 1 );
+                                      console.error("ABB" + key1);
+                                      updateControllerOnlyWhenFulfilled(ctrl, key1, obj,1 );
+                                    }
+                                 }
+
+
+                                  /*var f = s.find(theType, theId );
+                                  ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') + 1 );
+                                  updateControllerOnlyWhenFulfilled(ctrl, theKey, f);
+                                  */
+
                                } else {
+                               console.error("TEST33");
+                               console.error(key + "_acenteraobj");
+                               console.error(dataMsg[key]);
+                               console.error(dataMsg[key + "_acenteraobj"]);
                                     if (dataMsg[key + "_acenteraobj"] == undefined) {
-                                        //console.error("OK : " + key);
                                         try {
-                                            //console.error("OK : " + dataMsg[key]);
                                             if (dataMsg[key] != null) {
-                                                ////console.error("CTRL... : " + ctrl.get('constructor') + " " + key);
-                                                //console.error("CTRL... CALLLING SET : " + key);
+
+
                                                 ctrl.set(key, dataMsg[key]);
-                                                //console.error("CTRL... CALLLING SET : " + key + "DONE");
+
                                                 running++;
                                                 //console.error("SET RUNNING AAA ++" + running);
 
@@ -2793,13 +2921,13 @@ try {
                                                 updateControllerOnlyAfterLoaded(ctrl, key, dataMsg[key], 0);
                                             }
                                         } catch (w) {
-                                           //console.log(w.stack);
+                                          console.log(w.stack);
                                         }
                                         //});
                                     }
                                }
                         } catch (ignore) {
-                           ////console.log(ignore.stack);
+                           console.log(ignore.stack);
                         }
             }
             } catch (ww) {
@@ -2817,8 +2945,8 @@ try {
 
             try {
                 if (ctrl.get('content') != null) {
-                    console.error("SET CONTENT TO : " + ctrl.get("content").get('constructor'));
-                    console.error(ctrl.get("content"));
+                   //console.error("SET CONTENT TO : " + ctrl.get("content").get('constructor'));
+                   //console.error(ctrl.get("content"));
                     AppController.set("currentModel", ctrl.get('content'));
                 }
             } catch (ee ){
@@ -2897,12 +3025,28 @@ function updateControllerFromCookie(ctrl, controller) {
                          var theId = toFindObject.id;
                          var s = controller.get('store');
 
+
                          running++;
                          //console.error("SET RUNNING BBB --" + running);
                         ////console.log("RUNNING++ updateController A : " + running);
-                         var f = s.find(theType, theId );
-                         ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') + 1 );
-                         updateControllerOnlyWhenFulfilled(ctrl, theKey, f);
+
+                        var tmpData = s.all(theType).filter(function(data) {
+                            return data.get('id') == theId });
+                       //console.error("KEYIDZ");
+                       //console.error(tmpData);
+                        if (tmpData.length <= 0) {
+                           //console.error("KEYIDZ1 find");
+                             var f = s.find(theType, theId );
+                             ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') + 1 );
+                             updateControllerOnlyWhenFulfilled(ctrl, theKey, f, 1);
+                         } else {
+                             //console.error("KEYIDZ1 we already got it.. but is it deleted?");
+                              var obj = tmpData[0];
+                              if (!obj.get('isDisabled')) {
+                                //ctrl.set('cookieLoaded', ctrl.get('cookieLoaded') + 1 );
+                                updateControllerOnlyWhenFulfilled(ctrl, theKey, obj, 1);
+                              }
+                         }
                    } else {
                         /*if (dataMsg[key + "_acenteraobj"] == undefined) {
 
@@ -2940,6 +3084,7 @@ function updateControllerFromCookie(ctrl, controller) {
 
 function updateCookie(model, key, val) {
 try {
+console.log("updateCookie ? : ");
     controller = AppController.get('currentController');
    //console.log(controller);
 
@@ -2955,18 +3100,19 @@ try {
 
 
     var cNamea = "c_" + model.get('constructor').toString().replaceAll("App.","");
-   //console.log("controller loaded ? : " + controller.get('loaded'));
+   console.log("controller loaded ? : " + controller.get('loaded'));
     if (!(controller.get('loaded'))) {
         return true;
     }
 
-   //console.log("COOKIE LOADED : " + controller.get('cookieLoaded'));
-    if (controller.get('cookieLoaded') >= 0) {
+   console.log("COOKIE LOADED : " + controller.get('cookieLoaded'));
+    if (controller.get('cookieLoaded') > 0) {
         return true;
     }
 
     var cookieController = controller;
 
+console.log("COOKIE LOADED Z : " + controller.get('cookieLoaded'));
     var cName = "c_" + model.get('constructor').toString().replaceAll("App.","");
     var c = readCookie(cName);
 
@@ -2979,7 +3125,7 @@ try {
     } catch (e) {
        ////console.log(e.stack);
     }
-
+console.log("COOKIE LOADED  Z1: " + controller.get('cookieLoaded'));
     //If wrong cookie...
     if (dataMsg == null) {
         dataMsg = {};
@@ -2992,20 +3138,22 @@ try {
     } catch (err) {
     }
 
-
+console.log("COOKIE LOADED Z2 : " + controller.get('cookieLoaded'));
     delete dataMsg[key];
     delete dataMsg[key+"_acenteraobj"];
 
    //console.log('typEKey is :' + typeKey);
     if (typeKey != null) {
+console.error("WIL STORE DATA : " + key);
+    console.log(dataMsg);
 
-   ////console.log(dataMsg);
         dataMsg[key+"_acenteraobj"] = {
             id : val.get('id'),
             type : typeKey,
             controller_key : key
         };
     } else {
+        console.log("COOKIE LOADED Z3 : " + controller.get('cookieLoaded'));
         if (dataMsg[key+"_acenteraobj"] == undefined) {
             dataMsg[key] = val;
         }
@@ -3014,9 +3162,11 @@ try {
     //
    //console.log('CREATING COOKIE ' + cName);
    //console.log(dataMsg);
+console.error(cName);
+console.error(dataMsg);
     createCookie(cName, JSON.stringify( dataMsg ) );
  } catch (cookieError) {
-   ////console.log(cookieError.stack);
+   console.log(cookieError.stack);
  }
 }
 
@@ -3190,6 +3340,16 @@ Ember.ArrayController = Ember.ArrayController.extend({
 });*/
 
 var ignoreAlert = false;
+
+DS.Model = DS.Model.extend({
+        disable_date: DS.attr('string'),
+        isDisabled: function() {
+            if (this.get('disable_date') == null) {
+                return false;
+            }
+            return true;
+        }.property('disable_date')
+});
 
 Ember.ObjectController = Ember.ObjectController.extend({
     topbarTitle: null,
@@ -3454,7 +3614,7 @@ App.BaseRoute = Ember.Route.extend({
             controller.set('successMsg', null);
             AppController.set('currentController', controller);
             self.setupPrivateController(controller,model);
-            console.error("SET CURRENT MODEL TO :" + model);
+           //console.error("SET CURRENT MODEL TO :" + model);
             AppController.set('currModel', model);
 
 
@@ -3646,6 +3806,30 @@ App.IfEqualComponent = Ember.Component.extend({
     }.property('view','size','type','param1', 'param2','v')
 });
 
+App.InArrayComponent = Ember.Component.extend({
+  inArray: function() {
+    var paramToValidate = this.get('param1');
+    var bFound = false;
+    for (var i = 2; i <= 10; i++) {
+        var arr = this.get('param' + i);
+        if ((arr != null) && !bFound) {
+           //console.error(arr);
+            var l = arr.length;
+            for (var z = 0; z < arr.length; z++) {
+                if (arr[z].get('id') == paramToValidate.get('id')) {
+                   //console.error(paramToValidate);
+                   //console.error("FOUND IT");
+                    return true;
+                }
+            }
+        }
+    }
+   //console.error(paramToValidate);
+   //console.error("DIDNT FOUND IT=");
+    return false;
+  }.property('param1', 'param2','param3','param4','param5','param6','param7','param8','param9','param10','param11')
+});
+
 
 App.InListComponent = Ember.Component.extend({
   inList: function() {
@@ -3664,6 +3848,7 @@ App.InListComponent = Ember.Component.extend({
 
 
 App.ElseEqualComponent = App.IfEqualComponent.extend({});
+App.NotInArrayComponent = App.InArrayComponent.extend({});
 App.StartWithComponent = App.IfEqualComponent.extend({});
 App.ElseStartWithComponent = App.IfEqualComponent.extend({});
 
@@ -3978,7 +4163,7 @@ App.ApplicationController = Ember.Controller.extend({
                                  running = -5;
                                  Ember.run.once(self, function() {
                                     try {
-                                        console.log("HAS LOADED?? : " + AppController.get('hasLoaded'));
+                                       //console.log("HAS LOADED?? : " + AppController.get('hasLoaded'));
                                         if (  ! AppController.get('hasLoaded') ) {
                                                 //console.error('set to true?');
                                                 AppController.set('hasLoaded', true);
@@ -4047,6 +4232,7 @@ App.ApplicationController = Ember.Controller.extend({
                   this.set('currentModel', null);
                   this.set('currentModel', br);
               }
+
       },
       modelChangeForBreadcrumb: function () {
             if (this.get('currentModel') == null ) {
@@ -4534,6 +4720,11 @@ App.Router.reopen({
 
         resizeScreen();
 
+        try {
+             Ember.View.views['leftMenu'].rerender();
+         } catch (e) {
+         }
+
         //if (haveGACreated) {
                     if (!haveGACreated) {
                         haveGACreated = true;
@@ -4563,7 +4754,7 @@ App.Router.reopen({
 
 
 } catch (acenteraerror) {
-   console.error('GOT ERROR');
+  //console.error('GOT ERROR');
   //alert(acenteraerror.stack);
    console.error(acenteraerror.stack);
 }

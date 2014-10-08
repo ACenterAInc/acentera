@@ -67,7 +67,7 @@ public class ProjectTags extends MetaData implements Serializable {
 
 
     @Override
-    public boolean isEquals(MetaData obj) {
+    public boolean isEquals(Object obj) {
         ProjectTags uObj = (ProjectTags) obj;
 
 

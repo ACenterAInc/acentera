@@ -30,7 +30,8 @@ App.ProjectServerCreateController = Ember.ObjectController.extend({
         distros: null,
         slug: null,
         selected_providerChange: function() {
-            this.set('regionsAvailable', this.get('selected_provider').get('regions').get('content'));
+            this.set('regionsAvailable', this.get('selected_provider').get('available_regions').get('content'));
+            this.set('regionsList', this.get('selected_provider').get('regions').get('content'));
 
             try {
                 //Unload all Distro's find of Images resturns a single hash of distributions...

@@ -24,6 +24,7 @@ SOFTWARE.
 
 package controllers.acentera;
 
+//import com.newrelic.api.agent.NewRelic;
 import models.db.User;
 import models.db.acentera.impl.UserImpl;
 import models.web.AppObj;
@@ -375,6 +376,8 @@ public class AnonymousSecurityController extends Action.Simple {
     protected F.Promise<Result> processRequest(Http.Context ctx) throws Throwable {
         Logger.debug(" [ AnonymousProcessRequest ] - Start ");
         try {
+            //Logger.debug("GOT CALL... : " + "/" + ctx.request().path());
+            //NewRelic.setTransactionName(null, "/" + ctx.request().path());
             F.Promise<Result> z = delegate.call(ctx);
 
             Http.Response response = ctx.response();

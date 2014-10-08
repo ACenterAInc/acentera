@@ -62,7 +62,7 @@ public class ProjectProvidersTags extends AutoIncrementId {
 
     private static final long serialVersionUID = -87392980223422L;
 
-    public boolean isEquals(MetaData obj) {
+    public boolean isEquals(Object obj) {
         ProjectProvidersTags uObj = (ProjectProvidersTags) obj;
 
         if ( ! (getId().equals(uObj.getId()) ) )          return false;

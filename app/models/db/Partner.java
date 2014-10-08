@@ -145,7 +145,7 @@ public class Partner  extends AutoIncrementId implements Serializable {
     }
 
 
-    public boolean isEquals(MetaData obj) {
+    public boolean isEquals(Object obj) {
 
         Partner uObj = (Partner) obj;
         if (this.getId() != uObj.getId())

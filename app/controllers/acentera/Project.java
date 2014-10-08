@@ -34,6 +34,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.hibernate.Session;
+import org.joda.time.DateTime;
 import play.Logger;
 import play.i18n.Messages;
 import play.mvc.Result;
@@ -54,11 +55,21 @@ public class Project extends ACenterAController {
         Logger.debug("Check projectId Permissions for : " +projectId);
         SecurityController.checkPermission(projectId);
 
-        return OkJsonResult(
-                ProjectsHelpers.getInstance().getUserProjectWithRolesAsJson(
-                        ProjectImpl.getProjectInfo(projectId, getUser()), getUser()
-                )
-        );
+        try {
+            return OkJsonResult(
+                    ProjectsHelpers.getInstance().getUserProjectWithRolesAsJson(
+                            ProjectImpl.getProjectInfo(projectId, getUser()), getUser()
+                    )
+            );
+        } catch (Exception ee) {
+            ee.printStackTrace();;
+            JSONObject jso = new JSONObject();
+            jso.put("id", projectId);
+            jso.put("disable_date", "" + new DateTime());
+            JSONObject prod = new JSONObject();
+            prod.put("project", jso);
+            return OkJsonResult(prod);
+        }
     }
 
 
@@ -181,10 +192,14 @@ public class Project extends ACenterAController {
 
 
         ProjectProviders provider  = ProjectImpl.createProjectProvider(projectId, getUser(), jsonData);
-        ProjectsHelpers.getOrReloadAPIRegions(provider);
-        return OkCreatedJsonResult(
-                ProjectsHelpers.getProjectProvidersAsJson(provider)
-        );
+        try {
+            ProjectsHelpers.getOrReloadAPIRegions(provider);
+            return OkCreatedJsonResult(
+                    ProjectsHelpers.getProjectProvidersAsJson(provider)
+            );
+        } catch (Exception e) {
+            return FailedMessage(e);
+        }
     }
 
     public static Result updateCloudProvider(Long projectId, Long providerId) {
@@ -194,15 +209,19 @@ public class Project extends ACenterAController {
 
         //Make sure we can execute this action
         JSONObject jsonData = getPostBodyAsJson("provider");
+
         ProjectProviders provider  = ProjectImpl.updateCloudProvider(projectId, providerId, getUser(),jsonData);
+        try {
+            //Ok lets validate the connectivity... (and gater regions...)
+            ProjectsHelpers.getOrReloadAPIRegions(provider);
 
-        //Ok lets validate the connectivity... (and gater regions...)
-        ProjectsHelpers.getOrReloadAPIRegions(provider);
 
-
-        return OkJsonResult(
-                ProjectsHelpers.getProjectProvidersAsJson(provider)
-        );
+            return OkJsonResult(
+                    ProjectsHelpers.getProjectProvidersAsJson(provider)
+            );
+        } catch (Exception e) {
+            return FailedMessage(e);
+        }
     }
 
 

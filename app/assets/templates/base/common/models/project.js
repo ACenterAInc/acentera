@@ -14,6 +14,8 @@ App.Project = DS.Model.extend({
         isConfigured: DS.attr('number')
 });
 
+
+
 /*
 App.ProjectSerializer = DS.RESTSerializer.extend({
   normalizePayload: function(type, payload) {

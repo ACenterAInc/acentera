@@ -1,6 +1,8 @@
 App.RegionSelectionView = Ember.View.extend({
     templateName: 'components/region_selection',
-    regions: [ 'nyc', 'sfo' , 'ams' ],
+    regions: null,//[ 'nyc', 'sfo' , 'ams' ],
+    regionsList: [],
+    products: [],
     slug: null,
     regionsAvailable: null
 });

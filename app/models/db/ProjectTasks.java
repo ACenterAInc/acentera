@@ -92,7 +92,7 @@ public class ProjectTasks extends AutoIncrementId {
     @JsonIgnore
     public @Getter @Setter User user;
 
-    public boolean isEquals(MetaData obj) {
+    public boolean isEquals(Object obj) {
         ProjectTasks uObj = (ProjectTasks) obj;
 
         if ( ! (getId().equals(uObj.getId()) ) )                           return false;

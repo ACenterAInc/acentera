@@ -32,6 +32,7 @@ libraryDependencies ++= Seq(
   //javaEbean,
   cache,
   //javaWs,
+  "org.bouncycastle" % "bcprov-jdk16" % "1.46",
   "org.jasypt" % "jasypt" % "1.7",
   "com.edulify" %% "play-hikaricp" % "1.5.0",
   "joda-time" % "joda-time" % "2.3",

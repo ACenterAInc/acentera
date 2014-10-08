@@ -1,4 +1,5 @@
 
+
 App.get("i18n").reopen({
     fr : {
             leftmenu: {
@@ -8,12 +9,27 @@ App.get("i18n").reopen({
             last_name: "Nom de famille",
             project: {
                     admin_must_enable: "Pour utiliser ce project, vous devez selectionner un services de cloud et lui configurer un set de clef API."
+            },
+            digitalocean: {
+                      token: "Token qui provient du control panel du site web de DigitalOcean"
+            },
+            provider: {
+                            already_exists: "Ce nom pour ce cloud provider existe deja.",
+                            pem_file: "Fichier PEM",
+                            cannot_connect: "Impossible de se connecter au cloud avec les informations recu. Veuillez confirmer les informations.",
+                            token: "Token qui provient du control panel du site web de DigitalOcean"
             }
     },
     en : {
             invalid_password: "Password is invalid.",
             leftmenu: {
                 project_list: "Project List"
+            },
+            provider: {
+                already_exists: "Provider name already exists",
+                cannot_connect: "Unable to connect to selected provider with provided credentials, please validate and try again",
+                pem_file: "PEM File",
+                token: "Generated TOKEN from the DigitalOcean WebSite"
             },
             warning_alert_prefix: "Warning !",
             error_invalid_fields_values: "Various fields contains invalid values.",
@@ -71,7 +87,18 @@ App.get("i18n").reopen({
             },
             digitalocean : {
                 clientid: "Cient ID",
-                clientid_tooltip: "Client Id retreived from the cloud provider"
+                clientid_tooltip: "Client Id retreived from the cloud provider",
+                token: "Generated TOKEN from the DigitalOcean WebSite"
+            },
+            azure: {
+                        name: "Azure",
+                        privatekey: "Whole content of the rsa private key section included in the .pem file",
+                        certificate: "Whole content of the certificate section included in the .pem file",
+                        subscription_nicename: "BizSpark",
+                        account_input_placeholder: "16ef445a-a462-211a-25ea-a9e61b44744a",
+                        privatekey_input_placeholder: "-----BEGIN RSA PRIVATE KEY-----MII.....-----END RSA PRIVATE KEY-----",
+                        public_input_placeholder: "-----BEGIN CERTIFICATE-----MII.....-----END CERTIFICATE-----",
+                        subscription_id: "Azure subscription id, example: 16ef445a-a462-211a-25ea-a9e61b44744a"
             }
     }
 });

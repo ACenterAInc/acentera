@@ -27,8 +27,15 @@ package controllers.acentera;
 import models.db.User;
 import models.web.DesktopObject;
 import models.web.WebSession;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.mgt.RealmSecurityManager;
 import play.mvc.With;
+import sun.security.krb5.Realm;
 import utils.security.PasswordEncoder;
+import utils.security.SampleRealm;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 
 public abstract class ACenterAController extends AnonymousController {
@@ -49,6 +56,32 @@ public abstract class ACenterAController extends AnonymousController {
 
     public static boolean confirmUserPassword(User u, String password) throws Exception {
         return (PasswordEncoder.getInstance().encode(password, u.getSalt()).compareTo(u.getPassword()) == 0);
+    }
+
+    public static boolean refreshPermissions() {
+
+
+        RealmSecurityManager mgr =
+                (RealmSecurityManager) SecurityUtils.getSecurityManager();
+
+        Collection<org.apache.shiro.realm.Realm> realmCollection = mgr.getRealms();
+
+        Iterator<org.apache.shiro.realm.Realm> i = realmCollection.iterator();
+
+        //There should be only one realm?
+        while(i.hasNext()) {
+
+            try {
+                SampleRealm r = (SampleRealm) i.next();
+
+                r.invalidateUser(SecurityUtils.getSubject().getPrincipals());
+            } catch (Exception ee) {
+
+            }
+
+        }
+
+        return true;
     }
 
     public static boolean checkPermission(String access) {

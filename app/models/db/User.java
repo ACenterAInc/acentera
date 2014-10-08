@@ -241,7 +241,7 @@ public class User extends AutoIncrementId {
         return false;
     }
 
-    public boolean isEquals(MetaData obj) {
+    public boolean isEquals(Object obj) {
         User uObj = (User) obj;
         if (this.getId() != uObj.getId())
             return false;

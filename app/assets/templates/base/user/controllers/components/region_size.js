@@ -1,6 +1,6 @@
 App.ResizeRegionAvailableSize = Ember.View.extend({
     attributeBindings: ['style'],
-    style: "margin-left:15px;width: 170px;height: 170px;float:left;",
+    style: "",
     content: null,
     selected : null,
     currsize:  null,
@@ -160,10 +160,11 @@ App.ResizeRegionAvailableSize = Ember.View.extend({
                     return false;
                 }*/
 
-
                 var avail = this.get('availableSizes');
+
                 if (avail != undefined) {
                     for (var i = 0; i < avail.length;i++) {
+
                         if (parseFloat(avail[i]) == parseFloat(this.get('content'))) {
                             $("#size_" + this.get('content')).tooltip("destroy");
                             $("#size_" + this.get('content')).removeClass("disable");

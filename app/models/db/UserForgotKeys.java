@@ -70,7 +70,7 @@ public class UserForgotKeys extends AutoIncrementId {
     private @Getter @Setter int redeemed;
 
 
-    public boolean isEquals(MetaData obj) {
+    public boolean isEquals(Object obj) {
 
         UserForgotKeys uObj = (UserForgotKeys) obj;
         if (this.getId() != uObj.getId())

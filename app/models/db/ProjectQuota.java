@@ -80,7 +80,7 @@ public class ProjectQuota extends AutoIncrementId implements Quota {
 
     private static final long serialVersionUID = -87392980223422L;
 
-    public boolean isEquals(MetaData obj) {
+    public boolean isEquals(Object obj) {
         ProjectQuota uObj = (ProjectQuota) obj;
 
         if ( ! (getId().equals(uObj.getId()) ) )                    return false;

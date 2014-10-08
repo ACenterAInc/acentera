@@ -1617,24 +1617,24 @@ define("ember-data/lib/adapters/rest_adapter",
                 var res = this.customFindLocalStore(type.typeKey, id);
                 //alert(type.typeKey);
 
-            console.error("RES IS : " + toFind);
+            //console.error("RES IS : " + toFind);
             //if (res.hasOwnProperty(toFind)) {
 
-                console.error("FOUND OF");
+               //console.error("FOUND OF");
 
 
                 var d = {};
                 d[type.typeKey] = res;
 
-                console.error(res);
+               //console.error(res);
 
-                console.error(d);
+               //console.error(d);
 
                 //alert('found');
                 return d;
             //}
 
-            console.error(res);
+           //console.error(res);
             //console.error("RES1 IS : ");
             //console.error(this.ajax(this.buildURL(type.typeKey, id), 'GET'));
             //alert(id);
@@ -2068,7 +2068,7 @@ define("ember-data/lib/adapters/rest_adapter",
                           }
                           //OVERRIDE END
 
-                          console.error("LL OVERRIDED IS : " + ll);
+                         //console.error("LL OVERRIDED IS : " + ll);
 
                           slashIdx = ll.indexOf("/");
                           objName = ll;
@@ -2084,10 +2084,10 @@ define("ember-data/lib/adapters/rest_adapter",
 
 
                               for (var v in window.localStorage) {
-                                  console.error(v);
+                                 //console.error(v);
                                   try {
                                   if (v.startsWith("App.")) {
-                                      console.error(v.toLowerCase() + " vs " + "." + ll.substring(0, ll.length-1));
+                                     //console.error(v.toLowerCase() + " vs " + "." + ll.substring(0, ll.length-1));
                                       //alert(ll);
                                       if (ll.endsWith("ies")) {
                                           ll = ll.substring(0, ll.length-3) + "y";
@@ -2101,8 +2101,8 @@ define("ember-data/lib/adapters/rest_adapter",
                                           ll = ll.replace("s/","/");
                                       }
 
-                                      console.error("LOOKING FOR : " + ("" + v).toLowerCase() + " contains " + "." + ll + "_") ;
-                                      console.error("LOOKING RES : " + (("" + v).toLowerCase().indexOf("." + ll + "_")));
+                                     //console.error("LOOKING FOR : " + ("" + v).toLowerCase() + " contains " + "." + ll + "_") ;
+                                     //console.error("LOOKING RES : " + (("" + v).toLowerCase().indexOf("." + ll + "_")));
                                       //LOOKING FOR : couponlistdata/42 vs app.couponlistdata_42
                                       if (("" + v).toLowerCase().indexOf("." + ll + "_") >= 1) {
                                           console.log("FOUND: " + v);
@@ -2114,7 +2114,7 @@ define("ember-data/lib/adapters/rest_adapter",
                                                       if (tmpObj["cache"] != null) {
                                                           var tmp = tmpObj["cache"];
                                                           if (tmp > lastObjCache) {
-                                                              console.error("FOUND");
+                                                             //console.error("FOUND");
                                                               lastObjCache = tmp;
                                                           }
                                                       }
@@ -2128,7 +2128,7 @@ define("ember-data/lib/adapters/rest_adapter",
                                                       }
                                                   }
                                           } catch (eee) {
-                                            console.error(eee.stack);
+                                           //console.error(eee.stack);
                                           }
 
                                             console.log("FOUND AZZ");
@@ -2148,7 +2148,7 @@ define("ember-data/lib/adapters/rest_adapter",
                                           if (ll.indexOf("/") >=2) {
                                               v = v.toLowerCase();
                                               l=l.toLowerCase();
-                                              console.error("IESS : " + v + " vs " + ll.replace("/","_"));
+                                             //console.error("IESS : " + v + " vs " + ll.replace("/","_"));
                                               if (("" + v).toLowerCase().indexOf("." + ll.replace("/","_")) >= 1) {
                                                   ////console.log("FOUND: " + v);
                                                   //console.error( window.localStorage[v] );
@@ -2159,7 +2159,7 @@ define("ember-data/lib/adapters/rest_adapter",
                                                       if (tmpObj["cache"] != null) {
                                                           var tmp = tmpObj["cache"];
                                                           if (tmp > lastObjCache) {
-                                                              console.error("FOUND AA");
+                                                             //console.error("FOUND AA");
                                                               lastObjCache = tmp;
                                                           }
                                                       }
@@ -2194,8 +2194,8 @@ define("ember-data/lib/adapters/rest_adapter",
                               //console.error(json);
                           }
 
-                          console.error("GOT JSONOBJ OF : " + json);
-                          console.error(json);
+                         //console.error("GOT JSONOBJ OF : " + json);
+                         //console.error(json);
 
                     //alert('err here');
                     sdfljsdflsderror();
@@ -2204,7 +2204,7 @@ define("ember-data/lib/adapters/rest_adapter",
 
       },
       ajax: function(url, type, hash) {
-            console.error("IN AJAX");
+           //console.error("IN AJAX");
             //alert("T1 : " + url);
             //alert(type);
 
@@ -2216,8 +2216,8 @@ define("ember-data/lib/adapters/rest_adapter",
                     url = this.get('host') + "/" + url;
                 }
                 } catch (ee) {
-                    console.error("ERRR HERE : ");
-                    console.error(ee.stack);
+                   //console.error("ERRR HERE : ");
+                   //console.error(ee.stack);
                 }
                 //alert('b : ' +url);
             }
@@ -2279,17 +2279,17 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                     var ll = url.substring(idxOf, url.length);
 
 
-                    console.error(url + " - " + type + " hash " + hash);
-                    console.error(" LL IS : " + ll);
+                   //console.error(url + " - " + type + " hash " + hash);
+                   //console.error(" LL IS : " + ll);
                     var slashIdx = ll.indexOf("/");
                     var objName = ll;
 
                     var overrideLookup = null;
 
                     //OVERRIDE WHISHGIFTS...AND EVENTGIFTS
-                    console.error("OVERRIDE???");
-                    console.error(ll);
-                    console.error(url);
+                   //console.error("OVERRIDE???");
+                   //console.error(ll);
+                   //console.error(url);
                     if (ll.toLowerCase().indexOf("vents") >= 1) {
                         if (ll.toLowerCase().indexOf("gift") >= 1) {
                             ll = "eventgifts";
@@ -2307,7 +2307,7 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                     }
                     //OVERRIDE END
 
-                    console.error("LL OVERRIDED IS : " + ll);
+                   //console.error("LL OVERRIDED IS : " + ll);
 
                     slashIdx = ll.indexOf("/");
                     objName = ll;
@@ -2323,10 +2323,10 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
 
 
                         for (var v in window.localStorage) {
-                            console.error(v);
+                           //console.error(v);
                             try {
                             if (v.startsWith("App.")) {
-                                console.error(v.toLowerCase() + " vs " + "." + ll.substring(0, ll.length-1));
+                               //console.error(v.toLowerCase() + " vs " + "." + ll.substring(0, ll.length-1));
                                 //alert(ll);
                                 if (ll.endsWith("ies")) {
                                     ll = ll.substring(0, ll.length-3) + "y";
@@ -2342,8 +2342,8 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                                     ll = ll.replace("s/","/");
                                 }
 
-                                console.error("LOOKING FOR : " + ("" + v).toLowerCase() + " contains " + "." + ll + "_") ;
-                                console.error("LOOKING RES : " + (("" + v).toLowerCase().indexOf("." + ll + "_")));
+                               //console.error("LOOKING FOR : " + ("" + v).toLowerCase() + " contains " + "." + ll + "_") ;
+                               //console.error("LOOKING RES : " + (("" + v).toLowerCase().indexOf("." + ll + "_")));
                                 //LOOKING FOR : couponlistdata/42 vs app.couponlistdata_42
                                 if (("" + v).toLowerCase().indexOf("." + ll + "_") >= 1) {
                                     //console.log("FOUND: " + v);
@@ -2354,7 +2354,7 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                                         if (tmpObj["cache"] != null) {
                                             var tmp = tmpObj["cache"];
                                             if (tmp > lastObjCache) {
-                                                console.error("FOUND");
+                                               //console.error("FOUND");
                                                 lastObjCache = tmp;
                                             }
                                         }
@@ -2374,7 +2374,7 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
 
                                 } else {
                                     if (ll.indexOf("/") >=2) {
-                                        console.error("IESS : " + v + " vs " + ll.replace("/","_"));
+                                       //console.error("IESS : " + v + " vs " + ll.replace("/","_"));
                                         if (("" + v).toLowerCase().indexOf("." + ll.replace("/","_")) >= 1) {
                                             ////console.log("FOUND: " + v);
                                             //console.error( window.localStorage[v] );
@@ -2385,7 +2385,7 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                                                 if (tmpObj["cache"] != null) {
                                                     var tmp = tmpObj["cache"];
                                                     if (tmp > lastObjCache) {
-                                                        console.error("FOUND AA");
+                                                       //console.error("FOUND AA");
                                                         lastObjCache = tmp;
                                                     }
                                                 }
@@ -2420,8 +2420,8 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                         //console.error(json);
                     }
 
-                    console.error("GOT JSONOBJ OF : " + json);
-                    console.error(json);
+                   //console.error("GOT JSONOBJ OF : " + json);
+                   //console.error(json);
 
 
           var currDT = new Date()/1000;
@@ -2483,8 +2483,8 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
 
                   hash.success = function(json) {
                             try {
-                            console.error("RECEIVED");
-                            console.error(json);
+                           //console.error("RECEIVED");
+                           //console.error(json);
                             internetSaved = true;
                             for (v in json) {
                                 try {
@@ -2529,11 +2529,11 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                                                 }*/
 
                                             } catch (zz) {
-                                                console.error(zz.stack);
+                                               //console.error(zz.stack);
                                             }
                                         }
                                         }catch (ew) {
-                                            console.error(ew);
+                                           //console.error(ew);
                                         }
                                 //}
 
@@ -2554,13 +2554,13 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                   }
                   /*
                   hash.success = function(json) {
-                    console.error("RECEIVED");
-                    console.error(json);
+                   //console.error("RECEIVED");
+                   //console.error(json);
                     try {
                         var data = json;
 
                         if ((data.status != undefined) && (data.status == 900)) {
-                            console.error("WOULD LOGOUT?");
+                           //console.error("WOULD LOGOUT?");
                             if(isCordovaApp) {
                                //alert('logout55.html');
                                 window.location.href="logout.html";
@@ -2569,15 +2569,15 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                             }
                         } else {
                             if ((data.status != undefined) && (data.status >= 300)) {
-                                console.error("STATUS WAS OVER 300");
+                               //console.error("STATUS WAS OVER 300");
                                 Ember.run(null, reject, json);
                             } else {
                                 Ember.run(null, resolve, json);
                             }
                         }
                     } catch (e) {
-                        console.error("ERRROR 3");
-                        console.error(e.stack);
+                       //console.error("ERRROR 3");
+                       //console.error(e.stack);
                         Ember.run(null, resolve, json);
                     }
 
@@ -2651,9 +2651,9 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                                 } else {
 
                                     if (type != "POST") {
-                                        console.error("PUT/DELETE CALLED...");
-                                        console.error("GOT : JSON");
-                                        console.error(json);
+                                       //console.error("PUT/DELETE CALLED...");
+                                       //console.error("GOT : JSON");
+                                       //console.error(json);
                                          for (v in json) {
                                              try {
                                                  if (json[v]["cache"] != undefined) {
@@ -2685,14 +2685,14 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
 
                   /*hash.complete = function(json) {
                      //alert('complete');
-                      console.error("GOT JSON");
-                      console.error(json);
+                     //console.error("GOT JSON");
+                     //console.error(json);
                       Ember.run(null, resolve, json);
                   };*/
 
 
                  //alert('ajax called url calling ajax.. of hash ');
-                 console.error('ajax hash');
+                //console.error('ajax hash');
                  //hash.dataType = 'jsonp';
                  /*
                  hash['success'] = function(response) {
@@ -2703,7 +2703,7 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                                  })
                               };
                 */
-                console.error(hash);
+               ////console.error(hash);
                  Ember.$.ajax(hash);
 
           } else {
@@ -2733,9 +2733,9 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
             } else {
 
                 if (type != "POST") {
-                    console.error("PUT/DELETE CALLED...");
-                    console.error("GOT : JSON");
-                    console.error(json);
+                   //console.error("PUT/DELETE CALLED...");
+                   //console.error("GOT : JSON");
+                   //console.error(json);
                     //UNTOUCH CACHE WE ARE OFFLINE..
                     /*
                     for (v in json) {
@@ -7178,12 +7178,12 @@ define("ember-data/lib/system/model/model",
         // always having direct references to state objects
 
 
-        console.error(this);
-        console.error(this.get('isDeleted'));
-        console.error(preventSave);
+       //console.error(this);
+       //console.error(this.get('isDeleted'));
+       //console.error(preventSave);
         try {
         //alert("TRANSITION TO : " + name + " and : " + this.get('currentState.stateName') + " w / " + preventSave);
-        console.error("ID IS : " + this.get('id'));
+       //console.error("ID IS : " + this.get('id'));
         if (this.get('id') != undefined) {
 
             if (!ignoreSave && (name.endsWith("inFlight")) && (haveNoInternet())) {
@@ -7191,15 +7191,15 @@ define("ember-data/lib/system/model/model",
                 deferSave = true;
 
 
-                console.error(this);
-                console.error('ok transitionned to : ' + name + " and : " + this.get('currentState.stateName'));
+               //console.error(this);
+               //console.error('ok transitionned to : ' + name + " and : " + this.get('currentState.stateName'));
 
                 //console.error(JSONE.stringify(App.get('store').typeMaps));
                 var construc = this.get('constructor');
                 var id = this.get('id');
 
                     var data = {};
-                    console.error("AZZZZ");
+                   //console.error("AZZZZ");
                     for (var v in this._data) {
                         try {
                             if (this._data[v] == "function") {
@@ -7212,73 +7212,73 @@ define("ember-data/lib/system/model/model",
                                             if (this.get(v + ".constructor") != undefined) {
                                                 //alert(this._data[v].get('constructor'));
                                                 //data[v+"_" + this._data[v].get('constructor')] = this._data[v].get('id');
-                                                console.error("WILL LOOK FOR: " + this.get(v));
+                                               //console.error("WILL LOOK FOR: " + this.get(v));
                                                 if (Object.prototype.toString.call(this.get(v)) === "[object Array]") {
-                                                    console.error(" IT IS AN ARRAY");
-                                                    console.error(this.get(v));
-                                                    console.error("ARRAY 1");
+                                                   //console.error(" IT IS AN ARRAY");
+                                                   //console.error(this.get(v));
+                                                   //console.error("ARRAY 1");
                                                     var tmpArr = [];
-                                                    console.error("ARRAY 2");
+                                                   //console.error("ARRAY 2");
 
                                                     var ar = this.get(v);
                                                     var len = ar.length;
 
-                                                    console.error("ARRAY 2 -- " + len);
+                                                   //console.error("ARRAY 2 -- " + len);
                                                     for (var i = 0; i < len; i++) {
-                                                        console.error("ARRAY 3 -- " + i);
-                                                        console.error('arr');
+                                                       //console.error("ARRAY 3 -- " + i);
+                                                       //console.error('arr');
                                                         var item = ar[i];
-                                                        console.error(item);
-                                                        console.error(item.get('id'));
+                                                       //console.error(item);
+                                                       //console.error(item.get('id'));
                                                         tmpArr.push(item.get('id'))
                                                     }
-                                                    console.error("ARRAY 6 --");
+                                                   //console.error("ARRAY 6 --");
                                                     data[v] = tmpArr;
                                                 } else {
-                                                    console.error(" ERRRRR : SET " + v + " to " + this.get('id'))
+                                                   //console.error(" ERRRRR : SET " + v + " to " + this.get('id'))
                                                     data[v] = this.get(v).get('id');
                                                 }
                                             } else {
                                                 data[v] = this.get(v);
                                             }
                                         } catch (e) {
-                                             console.error(" ERRRRR : EXCEP?");
-                                             console.error(e.stack);
+                                            //console.error(" ERRRRR : EXCEP?");
+                                            //console.error(e.stack);
                                              data[v] = this.get(v);
                                          }
                                     }
                                 }
                             }
                         } catch (e) {
-                            console.error(e.stack);
+                           //console.error(e.stack);
                         }
                     }
                     if (id != null) {
-                            console.error(this);
-                            console.error(this.get('constructor'));
+                           //console.error(this);
+                           //console.error(this.get('constructor'));
                             var c = "" + this.get('constructor');
-                            console.error("WINDOWLOCALSTORAGE REMOVE IN SET DEFER ....." + construc+"_"+id);
+                           //console.error("WINDOWLOCALSTORAGE REMOVE IN SET DEFER ....." + construc+"_"+id);
                             window.localStorage.setItem(c.replace("App.","Defer.") +"_"+id, JSON.stringify(data));
-                            console.error("TEST USED : " + this.get('used'));
+                           //console.error("TEST USED : " + this.get('used'));
                             if (c == "App.Coupondetail") {
                                 //couponOriId//ddd
                             }
-                            console.error(JSON.stringify(data));
-                            console.error("WINDOWLOCALSTORAGE REMOVE IN SET AAA ....." + construc+"_"+id);
+                           //console.error(JSON.stringify(data));
+                           //console.error("WINDOWLOCALSTORAGE REMOVE IN SET AAA ....." + construc+"_"+id);
                             window.localStorage.setItem(c +"_"+id, JSON.stringify(data));
 
 
                         if (this.get('currentState.stateName').indexOf("delete") >= 1) {
-                            console.error("IN DELETE.....");
+                           //console.error("IN DELETE.....");
                             try {
-                                console.error("IN DELETE....." + construc+"_"+id);
+                               //console.error("IN DELETE....." + construc+"_"+id);
 
 
 
                                 var obj = JSON.parse(window.localStorage.getItem(construc+"_"+id));
                                 obj['disableDate']="DELETED";
 
-                                console.error("WINDOWLOCALSTORAGE setItem BB....." + construc+"_"+id);
+                               //console.error("WINDOWLOCALSTORAGE setItem BB....." + construc+"_"+id);
 
                                 window.localStorage.setItem(construc+"_"+id, JSON.stringify(obj));
                             }catch(z) {}
@@ -7290,7 +7290,7 @@ define("ember-data/lib/system/model/model",
                             //sdfsdf
                             try {
                                 var c = "" + this.get('constructor');
-                                console.error("WINDOWLOCALSTORAGE REMOVE 1 ....." + construc+"_"+id);
+                               //console.error("WINDOWLOCALSTORAGE REMOVE 1 ....." + construc+"_"+id);
                                 window.localStorage.removeItem(c+"_"+this.get('id'));
                             } catch (ee) {
                             }
@@ -7299,10 +7299,10 @@ define("ember-data/lib/system/model/model",
                    }
 
             } else if ((name.endsWith("saved")) && (!preventSave)) {
-                    console.error(this);
-                    console.error("IN SAVE");
-                    console.error(this);
-                    console.error('ok transitionned to : ' + name + " and : " + this.get('currentState.stateName'));
+                   //console.error(this);
+                   //console.error("IN SAVE");
+                   //console.error(this);
+                   //console.error('ok transitionned to : ' + name + " and : " + this.get('currentState.stateName'));
 
                     //console.error(JSONE.stringify(App.get('store').typeMaps));
                     var construc = this.get('constructor');
@@ -7314,7 +7314,7 @@ define("ember-data/lib/system/model/model",
     //                    }catch(z) {}
     //                } else {
                         var data = {};
-                        console.error("AZZZZ");
+                       //console.error("AZZZZ");
                         for (var v in this._data) {
                             try {
                                 if (this._data[v] == "function") {
@@ -7324,31 +7324,31 @@ define("ember-data/lib/system/model/model",
                                             try {
                                                 //console.error("AZZZZBBB " + this._data[v].get('constructor'));
 
-                                                console.error(v);
-                                                console.error(this._data);
-                                                console.error("abb");
+                                               //console.error(v);
+                                               //console.error(this._data);
+                                               //console.error("abb");
 
                                                 if (this._data[v].get('constructor') != undefined) {
                                                     //alert(this._data[v].get('constructor'));
                                                     //data[v+"_" + this._data[v].get('constructor')] = this._data[v].get('id');
-                                                    console.error("WILL LOOK FOR: " + this._data[v]);
+                                                   //console.error("WILL LOOK FOR: " + this._data[v]);
                                                     if (Object.prototype.toString.call(this._data[v]) === "[object Array]") {
-                                                        console.error(" IT IS AN ARRAY");
-                                                        console.error(this._data[v]);
-                                                        console.error("ARRAY 1");
+                                                       //console.error(" IT IS AN ARRAY");
+                                                       //console.error(this._data[v]);
+                                                       //console.error("ARRAY 1");
                                                         var tmpArr = [];
-                                                        console.error("ARRAY 2");
+                                                       //console.error("ARRAY 2");
                                                         var len = this._data[v].length
-                                                        console.error("ARRAY 2 -- " + len);
+                                                       //console.error("ARRAY 2 -- " + len);
                                                         for (var i = 0; i < len; i++) {
-                                                            console.error("ARRAY 3 -- " + i);
-                                                            console.error('arr');
+                                                           //console.error("ARRAY 3 -- " + i);
+                                                           //console.error('arr');
                                                             var item = this._data[v][i];
-                                                            console.error(item);
-                                                            console.error(item.get('id'));
+                                                           //console.error(item);
+                                                           //console.error(item.get('id'));
                                                             tmpArr.push(item.get('id'))
                                                         }
-                                                        console.error("ARRAY 6 --");
+                                                       //console.error("ARRAY 6 --");
                                                         data[v] = tmpArr;
                                                     } else {
                                                         data[v] = this._data[v].get('id');
@@ -7360,22 +7360,22 @@ define("ember-data/lib/system/model/model",
                                                  //console.error(e.stack);
 
                                                  if (Object.prototype.toString.call(this._data[v]) === "[object Array]") {
-                                                     console.error(" IT IS AN ARRAY");
-                                                     console.error(this._data[v]);
-                                                     console.error("ARRAY 1");
+                                                    //console.error(" IT IS AN ARRAY");
+                                                    //console.error(this._data[v]);
+                                                    //console.error("ARRAY 1");
                                                      var tmpArr = [];
-                                                     console.error("ARRAY 2");
+                                                    //console.error("ARRAY 2");
                                                      var len = this._data[v].length
-                                                     console.error("ARRAY 2 -- " + len);
+                                                    //console.error("ARRAY 2 -- " + len);
                                                      for (var i = 0; i < len; i++) {
-                                                         console.error("ARRAY 3 -- " + i);
-                                                         console.error('arr');
+                                                        //console.error("ARRAY 3 -- " + i);
+                                                        //console.error('arr');
                                                          var item = this._data[v][i];
-                                                         console.error(item);
-                                                         console.error(item.get('id'));
+                                                        //console.error(item);
+                                                        //console.error(item.get('id'));
                                                          tmpArr.push(item.get('id'))
                                                      }
-                                                     console.error("ARRAY 6 --");
+                                                    //console.error("ARRAY 6 --");
                                                      data[v] = tmpArr;
                                                  } else {
                                                      data[v] = this._data[v];
@@ -7387,7 +7387,7 @@ define("ember-data/lib/system/model/model",
                                     }
                                 }
                             } catch (e) {
-                                console.error(e.stack);
+                               //console.error(e.stack);
                             }
                         }
 
@@ -7397,21 +7397,21 @@ define("ember-data/lib/system/model/model",
                                 deletedId = null;
                             }
                         }
-                        console.error("GOT DATA OF ZZZ : " + id);
-                        console.error(data);
+                       //console.error("GOT DATA OF ZZZ : " + id);
+                       //console.error(data);
                         if (id != null) {
                            //alert('saving of ' + construc+"_"+id);
 
                             //alert(data.get('constructor') + " - " + data.get('disableDate'));
 
-                            console.error("WINDOWLOCALSTORAGE REMOVE IN SET ZA ....." + construc+"_"+id);
+                           //console.error("WINDOWLOCALSTORAGE REMOVE IN SET ZA ....." + construc+"_"+id);
                             window.localStorage.setItem(construc+"_"+id, JSON.stringify(data));
 
                             if (this.get('currentState.stateName').indexOf("delete") >= 1) {
-                                console.error("IN DELETE.....");
+                               //console.error("IN DELETE.....");
                                 try {
                                    //alert('will remove : ' + construc+"_"+id);
-                                    console.error("WINDOWLOCALSTORAGE REMOVE IN DELETE....." + construc+"_"+id);
+                                   //console.error("WINDOWLOCALSTORAGE REMOVE IN DELETE....." + construc+"_"+id);
                                     window.localStorage.removeItem(construc+"_"+id);
                                 }catch(z) {}
                             }
@@ -11670,13 +11670,9 @@ define("ember-data/lib/system/store",
 
 
         if (typeof key === 'string') {
-          console.error("KEY IS : " + key);
+          //console.error("KEY IS : " + key);
           if (key == "new") {
-            try {
-            sdflkjsdfls();
-            } catch (ee) {
-                console.error(ee);
-            }
+
           }
           //THEACE WEIRD
           if (key.indexOf("tum") >= 1) {
@@ -12281,8 +12277,8 @@ define("ember-data/lib/system/store",
       return Promise.cast(promise, label).then(function(adapterPayload) {
         Ember.assert("You made a request for a " + type.typeKey + " with id " + id + ", but the adapter's response did not have any data", adapterPayload);
         var payload = serializer.extract(store, type, adapterPayload, id, 'find');
-        console.error(type);
-        console.error(payload);
+       ////console.error(type);
+       ////console.error(payload);
         return store.push(type, payload);
       }, function(error) {
         var record = store.getById(type, id);

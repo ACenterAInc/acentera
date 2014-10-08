@@ -24,6 +24,7 @@ SOFTWARE.
 
 package controllers.acentera;
 
+//import com.newrelic.api.agent.NewRelic;
 import models.db.*;
 import models.db.Project;
 import models.db.acentera.impl.UserImpl;
@@ -417,6 +418,8 @@ public class SecurityController extends AnonymousSecurityController {
 
         Logger.debug(" [ SecurityController ] - Start with user of : " + getSubject().getPrincipal());
         try {
+            //ctx.args.put("subject", currentUser);
+            //NewRelic.setTransactionName(null, "/" + ctx.request().path());
             F.Promise<Result> z = delegate.call(ctx);
             Http.Response response = ctx.response();
             response.setHeader("Access-Control-Allow-Origin", "*");       // Need to add the correct domain in here!!

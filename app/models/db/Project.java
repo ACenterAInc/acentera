@@ -104,7 +104,7 @@ public class Project extends AutoIncrementId {
     }
 
 
-    public boolean isEquals(MetaData obj) {
+    public boolean isEquals(Object obj) {
         Project uObj = (Project) obj;
         if (this.getId() != uObj.getId())
             return false;

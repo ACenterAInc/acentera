@@ -65,9 +65,13 @@ public class ProjectProviders extends AutoIncrementId implements TagArrayBasePer
 
     @Expose public @Getter @Setter String name;
 
+    @Column(columnDefinition="TEXT")
     @Expose public @Getter @Setter String apikey;
 
+    @Expose public @Getter @Setter Integer candelete;
+
     @JsonIgnore
+    @Column(columnDefinition="TEXT")
     public @Getter @Setter String secretkey;
 
     @Expose public @Getter @Setter String type;
@@ -143,13 +147,18 @@ public class ProjectProviders extends AutoIncrementId implements TagArrayBasePer
         this.regions.add(ppr);
     }
 
-
     @Transient
     @JsonIdentityReference(alwaysAsId = true)
     @JsonProperty("regions")
     public Set<ProjectRegions> lstRegions() {
         return ProjectProvidersImpl.getRegionsAvailables(this.getRegions());
     }
+
+    @Transient
+    @JsonIdentityReference(alwaysAsId = true)
+    @JsonProperty("available_regions")
+    public Set<ProjectRegions> getAvailableRegions() {return ProjectProvidersImpl.getRegionsAvailables(this.getRegions());}
+
 
     @Transient
     @JsonIdentityReference(alwaysAsId = true)
@@ -174,7 +183,7 @@ public class ProjectProviders extends AutoIncrementId implements TagArrayBasePer
 
     private static final long serialVersionUID = -87392980223422L;
 
-    public boolean isEquals(MetaData obj) {
+    public boolean isEquals(Object obj) {
         ProjectProviders uObj = (ProjectProviders) obj;
 
         if ( ! (getProject().equals(uObj.getProject()) ) )          return false;

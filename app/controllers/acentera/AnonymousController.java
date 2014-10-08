@@ -82,6 +82,29 @@ public abstract class AnonymousController extends Controller {
         return created(jsoRes.toString()).as("application/json");
     }
 
+
+
+    public static Result DeletedObject(Long id, String  type) {
+
+        JSONObject deletedJson = new JSONObject();
+        deletedJson.put("id", id);
+        deletedJson.put("disable_date", "NOT_EXISTANT");
+
+        try {
+            throw new Exception("ew");
+        } catch (Exception ee) {
+            ee.printStackTrace();
+        }
+
+        JSONObject res = new JSONObject();
+        res.put(type, deletedJson);
+
+        if (ctx().request().getQueryString("callback") != null) {
+            return created(ctx().request().getQueryString("callback") + "(" + res.toString() + ")").as("application/json");
+        }
+        return ok(res.toString()).as("application/json");
+    }
+
     public static Result OkCreatedJsonResult(String  res) {
 
         response().setHeader("Access-Control-Allow-Origin","*");
@@ -130,6 +153,7 @@ public abstract class AnonymousController extends Controller {
 
     public static Result InternalServerError(String msg) { return SecurityController.InternalServerError(msg);}
     public static Result FailedMessage(String msg) { return SecurityController.FailedMessage(msg);}
+    public static Result FailedMessage(Exception e) { e.printStackTrace();return SecurityController.FailedMessage("Got internal exception");}
     public static Result FailedMessage(String msg, Exception e) { return SecurityController.FailedMessage(msg);}
 
 

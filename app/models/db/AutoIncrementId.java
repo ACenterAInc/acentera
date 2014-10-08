@@ -43,7 +43,7 @@ public abstract class AutoIncrementId extends MetaData {
 
 
     @Override
-    public boolean isEquals(MetaData obj) {
+    public boolean isEquals(Object obj) {
         AutoIncrementId uObj = (AutoIncrementId) obj;
         if (this.getId() != uObj.getId())
             return false;

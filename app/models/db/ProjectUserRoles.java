@@ -88,7 +88,7 @@ public class ProjectUserRoles extends AutoIncrementId {
 
     private static final long serialVersionUID = -87392980223422L;
 
-    public boolean isEquals(MetaData obj) {
+    public boolean isEquals(Object obj) {
         ProjectUserTags uObj = (ProjectUserTags) obj;
 
         //if ( ! (getId().equals(uObj.getId()) ) )          return false;

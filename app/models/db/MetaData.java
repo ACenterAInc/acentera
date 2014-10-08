@@ -51,7 +51,7 @@ public abstract class MetaData implements Lifecycle, Serializable, Cloneable, Co
         return null;
     }
 
-    public boolean equals(MetaData obj) {
+    public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
 
@@ -62,7 +62,7 @@ public abstract class MetaData implements Lifecycle, Serializable, Cloneable, Co
         return false;
     }
 
-    public abstract boolean isEquals(MetaData obj);
+    public abstract boolean isEquals(Object obj);
 
     public boolean isEquals(String obj) {
            return (this.toString().compareTo(obj) == 0);

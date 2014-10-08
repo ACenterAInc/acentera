@@ -6,8 +6,8 @@ App.ProviderTable = App.SimpleTable.extend({
       return {
             id : obj.get('id'),
             name : obj.get('name'),
-            type: obj.get('type'),
-            apikey: obj.get('apikey')
+            type: obj.get('type')
+            //apikey: obj.get('apikey')
       };
     },
     getTableDefinition: function() {
@@ -26,7 +26,7 @@ App.ProviderTable = App.SimpleTable.extend({
                       "bVisible": false
                     },
                     { "mData": "name" },
-                    { "mData": "apikey" },
+                    //{ "mData": "apikey" },
                     { "mData": "type" },
                     {
                         "mData": "emberobject",

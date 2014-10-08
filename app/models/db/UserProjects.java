@@ -160,7 +160,7 @@ public class UserProjects extends MetaData {
 
     private static final long serialVersionUID = -87392980223422L;
 
-    public boolean isEquals(MetaData obj) {
+    public boolean isEquals(Object obj) {
         UserProjects uObj = (UserProjects) obj;
         //return (project.equals(uObj.getProject()) && user.equals(uObj.getUser()));
         return true;

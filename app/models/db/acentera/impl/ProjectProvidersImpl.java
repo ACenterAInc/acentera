@@ -38,6 +38,8 @@ import java.util.*;
 public class ProjectProvidersImpl extends DAO {
 
 
+    private static List<ProjectProviders> providers;
+
     public ProjectProvidersImpl() {
         super();
     }
@@ -168,4 +170,27 @@ public class ProjectProvidersImpl extends DAO {
 
     }
 
+
+    public static ProjectProviders getProviderByName(String name, Long projectId) {
+
+        Session session = (Session) HibernateSessionFactory.getSession();
+        Criteria criteria = session.createCriteria(ProjectProviders.class);
+        return (ProjectProviders) criteria.add(Restrictions.and(
+                        Restrictions.eq("name", name),
+                        Restrictions.eq("project.id", projectId),
+                        Restrictions.isNull("disableDate")
+                )
+        ).uniqueResult();
+
+    }
+
+    public static List<ProjectProviders> getProviders(Long projectId) {
+        Session session = (Session) HibernateSessionFactory.getSession();
+        Criteria criteria = session.createCriteria(ProjectProviders.class);
+        return (List<ProjectProviders>) criteria.add(Restrictions.and(
+                        Restrictions.eq("project.id", projectId),
+                        Restrictions.isNull("disableDate")
+                )
+        ).list();
+    }
 }
