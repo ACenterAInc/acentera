@@ -5,6 +5,7 @@ var maxUserWaitTime = 12000;
 
 
 
+var hostUrl = "";
 
 if (String.prototype.replaceAll == undefined) {
     String.prototype.replaceAll=function(s1, s2) {return this.split(s1).join(s2)}
@@ -44,12 +45,14 @@ if (window.prefix === undefined) {
 
 
 //isCordovaApp = true;
-if (("" + window.location).startsWith("file://")) {
-    customHost = "http://192.168.3.135:9000";
-} else if (("" + window.location).indexOf(":900") > 1) {
-    customHost = "http://192.168.3.135:9000";
-} else {
-    customHost = "https://portal.acentera.com";
+if (isCordovaApp) {
+    if (("" + window.location).startsWith("file://")) {
+        customHost = "http://192.168.3.135:9000";
+    } else if (("" + window.location).indexOf(":900") > 1) {
+        customHost = "http://192.168.3.135:9000";
+    } else {
+        customHost = "https://portal.acentera.com";
+    }
 }
 
 
@@ -79,6 +82,10 @@ if (window.location.href.indexOf("/test") <= 0) {
         return true;
     };
 }*/
+
+if (customHost == null) {
+    customHost = "";
+}
 
 hostUrl = customHost + prefix;
 //Remove of console errors
@@ -4465,10 +4472,10 @@ App.ApplicationController = Ember.Controller.extend({
 });
 //////alert('a0');
 var customHost = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '') + prefix
-if (prefix == "/") {
+/*if (prefix == "/") {
         customHost = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')
 }
-
+*/
 
 var CustomRESTAdapter = DS.RESTAdapter.extend({
                                     host: customHost,

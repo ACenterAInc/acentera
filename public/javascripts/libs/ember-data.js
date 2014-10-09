@@ -2221,8 +2221,11 @@ define("ember-data/lib/adapters/rest_adapter",
                 }
                 //alert('b : ' +url);
             }
-            if (url.indexOf("//")>0) {
-                url = url.replaceAll("//","/");
+            if (url.indexOf("api//")>0) {
+                url = url.replaceAll("api//","api/");
+            }
+            if (url.indexOf("//api")>0) {
+                url = url.replaceAll("//api","/api");
             }
 
         try {
