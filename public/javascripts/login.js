@@ -213,12 +213,11 @@ function isEmailExist(obj, async) {
     } else {
        as = false;
     }
-    alert("PREFIX IS : " + prefix);
     //TODO: We should remove the ajax call and just use a email validator using javascript..
     var resp = false;
     if (isValidEmailAddress(val)) {
           $.ajax({
-          url: prefix + "validate/email/" + val,
+          url: customHost + "validate/email/" + val,
           async:   as,
           context: document.body,
           success: successMustExistFn,

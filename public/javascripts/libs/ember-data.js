@@ -2221,6 +2221,9 @@ define("ember-data/lib/adapters/rest_adapter",
                 }
                 //alert('b : ' +url);
             }
+            if (url.indexOf("//")>0) {
+                url = url.replaceAll("//","/");
+            }
 
         try {
                 if ((this.get('headers.dtid') == undefined || (this.get('headers.dtid') == "" ))) {

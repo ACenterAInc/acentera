@@ -60,9 +60,10 @@ if (("" + window.location).startsWith("file://")) {
 
 var modalHeight = 0;
 
-if (window.location.href.indexOf("/test") >= 0) {
-    customHost = "https://portal.acentera.com/test/";
-    /*window.onerror = function(message, file, lineNumber, colno, error) {
+/*
+if (window.location.href.indexOf("/test") <= 0) {
+    //customHost = "https://portal.acentera.com/test/";
+    window.onerror = function(message, file, lineNumber, colno, error) {
        //alert('errrrz');
        //alert(message);
        //alert(file);
@@ -76,8 +77,8 @@ if (window.location.href.indexOf("/test") >= 0) {
            //alert(ezz.stack);
         }
         return true;
-    };*/
-}
+    };
+}*/
 
 hostUrl = customHost + prefix;
 //Remove of console errors
