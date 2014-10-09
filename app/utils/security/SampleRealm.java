@@ -229,8 +229,10 @@ public class SampleRealm extends AuthorizingRealm {
 
       String cacheKey = "user-" + user.getId() + "-permissions";
       Set<String> cachedPerm = (Set<String>)Cache.get(cacheKey);
+      Logger.debug("CACHED PERM IS : " );
+      Logger.debug("" + cachedPerm);
 
-      if (cachedPerm == null) {
+      if (cachedPerm == null || (cachedPerm != null && cachedPerm.size()<=0)) {
           Logger.debug("PERFMISSION DONE");
           Set<String> s = null;
           try {
