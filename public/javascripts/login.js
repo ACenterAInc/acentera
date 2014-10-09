@@ -54,9 +54,9 @@ if (prefix == undefined) {
 }
 
 var customHost = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '') + prefix
-if (prefix == "/") {
+/*if (prefix == "/") {
         customHost = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')
-}
+}*/
 
 
 
@@ -213,7 +213,7 @@ function isEmailExist(obj, async) {
     } else {
        as = false;
     }
-
+    alert("PREFIX IS : " + prefix);
     //TODO: We should remove the ajax call and just use a email validator using javascript..
     var resp = false;
     if (isValidEmailAddress(val)) {
@@ -259,7 +259,7 @@ function isEmailNotExist(obj, async) {
     var resp = false;
     if (isValidEmailAddress(val)) {
           $.ajax({
-          url: prefix + "validate/email/" + val,
+          url: customHost + "validate/email/" + val,
           async:   as,
           context: document.body,
           success: successFn,
@@ -319,7 +319,7 @@ function isEmailNotExist(obj, async) {
                         captcha: $('#recaptcha_response_field')[0].value
                     }
 
-                    $.post(customHost + prefix + 'validateCaptcha/', data, function(response) {
+                    $.post(customHost + 'validateCaptcha/', data, function(response) {
                             if (response.success) {
                                 $("#recaptcha_response_field").addClass("success").removeClass("error");
                                 $("#recaptcha_response_field").prop('disabled', true);
@@ -394,7 +394,7 @@ function isEmailNotExist(obj, async) {
                 }
 
 
-                $.post(customHost + prefix + 'authenticate', data, function(response) {
+                $.post(customHost + 'authenticate', data, function(response) {
                     // Do something with the request
                     //createCookie("TEST","VAL",11);
                     //console.log(response);
@@ -492,7 +492,7 @@ function isEmailNotExist(obj, async) {
                         captcha: captcharesp.value
                       }
 
-                $.post(customHost + prefix + 'createAccount/' + regemail.value + '', data, function(response) {
+                $.post(customHost + 'createAccount/' + regemail.value + '', data, function(response) {
                     // Do something with the request
 
                     if (response.success) {
@@ -505,7 +505,7 @@ function isEmailNotExist(obj, async) {
                         $('#register-alert-box').addClass('alert-success');
 
 				        setTimeout(function() {
-                                  $.post(customHost + prefix + 'authenticate', data, function(response) {
+                                  $.post(customHost + 'authenticate', data, function(response) {
                                     // Do something with the request
 
                                     if (response.success) {
@@ -700,7 +700,7 @@ var fbAuth = function(iter, resp) {
     var reload= $('#login-reload');
     var quitapp= $('#login-quit');
 
-    $.ajax(customHost + prefix + 'fbauth/', {
+    $.ajax(customHost + 'fbauth/', {
                                type: 'POST',
                                data: JSON.stringify(resp),
                                xhrFields: {
@@ -1019,7 +1019,7 @@ var hostUrl=prefix;
 ////alert('a3');
 var customHost = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '') + prefix
 if (prefix == "/") {
-        customHost = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')
+        customHost = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '') + "/"
 }
 
 if (isCordovaApp) {
