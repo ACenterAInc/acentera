@@ -227,7 +227,7 @@ public class SampleRealm extends AuthorizingRealm {
   private Set<String> permissionsOf(User user) {
       //for now
 
-      String cacheKey = "user-" + user.getId() + "-permissions";
+      /*String cacheKey = "user-" + user.getId() + "-permissions";
       Set<String> cachedPerm = (Set<String>)Cache.get(cacheKey);
       Logger.debug("CACHED PERM IS : " );
       Logger.debug("" + cachedPerm);
@@ -246,6 +246,17 @@ public class SampleRealm extends AuthorizingRealm {
           Cache.set(cacheKey, cachedPerm, 300);
       }
       return cachedPerm;
+      */
+
+      Set<String> s = null;
+      try {
+          s = UserImpl.getUserPermissions(user);
+      } catch (SQLException e) {
+          e.printStackTrace();
+          s = new HashSet<String>();
+      }
+      Logger.debug("PERMISSIONS ARE : " + s);
+      return s;
 
   }
 
