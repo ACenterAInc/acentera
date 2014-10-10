@@ -35,7 +35,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Droplet {
 
-	private Integer id;
+	private String id;
 
 	private String name;
 
@@ -46,7 +46,7 @@ public class Droplet {
 	private Integer regionId;
 
 	@SerializedName("size_id")
-	private Integer sizeId;
+	private String sizeId;
 
 	@SerializedName("backups_active")
 	private boolean backupsActive;
@@ -76,7 +76,7 @@ public class Droplet {
 	/**
 	 * @return the id
 	 */
-	public Integer getId() {
+	public String getId() {
 		return id;
 	}
 
@@ -84,7 +84,7 @@ public class Droplet {
 	 * @param id
 	 *            the id to set
 	 */
-	public void setId(Integer id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -136,7 +136,7 @@ public class Droplet {
 	/**
 	 * @return the sizeId
 	 */
-	public Integer getSizeId() {
+	public String getSizeId() {
 		return sizeId;
 	}
 
@@ -144,7 +144,7 @@ public class Droplet {
 	 * @param sizeId
 	 *            the sizeId to set
 	 */
-	public void setSizeId(Integer sizeId) {
+	public void setSizeId(String sizeId) {
 		this.sizeId = sizeId;
 	}
 

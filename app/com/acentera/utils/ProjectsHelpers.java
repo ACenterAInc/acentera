@@ -155,7 +155,7 @@ public class ProjectsHelpers {
                         while (dsize == null && itrSize.hasNext()) {
                             DropletSize size = itrSize.next();
                             Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSizeId());
-                            if (size.getId().intValue() ==  droplet.getSizeId().intValue()) {
+                            if (size.getId().compareToIgnoreCase(droplet.getSizeId()) == 0) {
                                 Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSizeId() + " FOUND");
                                 dsize = size;
                             }
@@ -301,7 +301,7 @@ public class ProjectsHelpers {
                             while (dsize == null && itrSize.hasNext()) {
                                 DropletSize size = itrSize.next();
                                 Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSizeId());
-                                if (size.getId().intValue() ==  droplet.getSizeId().intValue()) {
+                                if (size.getId().compareToIgnoreCase(droplet.getSizeId()) == 0) {
                                     Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSizeId() + " FOUND");
                                     dsize = size;
                                 }
@@ -427,7 +427,7 @@ public class ProjectsHelpers {
                             while (dsize == null && itrSize.hasNext()) {
                                 DropletSize size = itrSize.next();
                                 Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSizeId());
-                                if (size.getId().intValue() ==  droplet.getSizeId().intValue()) {
+                                if (size.getId().compareToIgnoreCase(droplet.getSizeId()) == 0) {
                                     Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSizeId() + " FOUND");
                                     dsize = size;
                                 }
@@ -1049,7 +1049,7 @@ public class ProjectsHelpers {
 
 
 
-        d.setSizeId(jsonData.getInt("size_id"));
+        d.setSizeId(jsonData.getString("size_id"));
 
 
         /*

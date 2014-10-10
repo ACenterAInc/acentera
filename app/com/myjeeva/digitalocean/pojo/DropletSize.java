@@ -34,7 +34,7 @@ import lombok.Setter;
  */
 public class DropletSize {
 
-	private Integer id;
+	private String id;
 
 	private String name;
 
@@ -43,7 +43,7 @@ public class DropletSize {
 	/**
 	 * @return the id
 	 */
-	public Integer getId() {
+	public String getId() {
 		return id;
 	}
 
@@ -51,7 +51,7 @@ public class DropletSize {
 	 * @param id
 	 *            the id to set
 	 */
-	public void setId(Integer id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
