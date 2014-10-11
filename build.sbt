@@ -84,5 +84,8 @@ libraryDependencies ++= Seq(
     "org.apache.httpcomponents" % "httpcore" % "4.3.2",
     "com.amazonaws" % "aws-java-sdk" % "1.7.9",
     "com.github.mumoshu" % "play2-memcached_2.10" % "0.5.0-RC1",
+    "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.3",
+    "com.fasterxml.jackson.core" % "jackson-core" % "2.4.3",
+    "com.fasterxml.jackson.core" % "jackson-annotations" % "2.4.3",
     "oauth.signpost" % "signpost-commonshttp4" % "1.2"
 )
