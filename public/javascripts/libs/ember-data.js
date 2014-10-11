@@ -2086,75 +2086,86 @@ define("ember-data/lib/adapters/rest_adapter",
                               for (var v in window.localStorage) {
                                  //console.error(v);
                                   try {
-                                  if (v.startsWith("App.")) {
-                                     //console.error(v.toLowerCase() + " vs " + "." + ll.substring(0, ll.length-1));
+                                   if (v.startsWith("App.")) {
+                                     v = v.replace("App.","");
+                                     var firstOnly = true;
+                                     console.error(v.toLowerCase() + " vs " + "." + ll.substring(0, ll.length-1));
                                       //alert(ll);
                                       if (ll.endsWith("ies")) {
                                           ll = ll.substring(0, ll.length-3) + "y";
+                                          firstOnly = false;
+                                      } else  if (ll.endsWith("ves")) {
+                                         ll = ll.substring(0,ll.length-3) + "f";
+                                         firstOnly = false;
                                       } else  if (ll.endsWith("s")) {
                                           ll = ll.substring(0,ll.length-1);
+                                          firstOnly = false;
                                       } else if (ll.indexOf("tum/") >= 1) {
                                           ll = ll.replace("tum/","a/");
+                                          firstOnly = true;
                                       } else if (ll.indexOf("ies/") >= 1) {
                                           ll = ll.replace("ies/","y/");
+                                          firstOnly = false;
                                       } else if (ll.indexOf("s/") >= 1) {
                                           ll = ll.replace("s/","/");
+                                          ll1 = ll1.substring(0,ll.length-1);
+                                          firstOnly = false;
+                                      } else {
+                                          firstOnly = true;
                                       }
 
-                                     //console.error("LOOKING FOR : " + ("" + v).toLowerCase() + " contains " + "." + ll + "_") ;
-                                     //console.error("LOOKING RES : " + (("" + v).toLowerCase().indexOf("." + ll + "_")));
-                                      //LOOKING FOR : couponlistdata/42 vs app.couponlistdata_42
-                                      if (("" + v).toLowerCase().indexOf("." + ll + "_") >= 1) {
+                                     ll = ll.replaceAll("/","_");
+
+                                     if (ll1 != null) {
+                                        ll1 = ll1.replaceAll("/","_");
+                                     }
+                                     console.error("LOOKING FOR : " + ll + " contains " + ("" + v).toLowerCase()) ;
+                                     console.error("LOOKING RES : " +(ll.indexOf(("" + v).toLowerCase())));
+      //                               LOOKING FOR : couponlistdata/42 vs app.couponlistdata_42
+                                      if ( (ll.indexOf(("" + v).toLowerCase()) >= 1) ) {
                                           console.log("FOUND: " + v);
+                                          console.error("FOUNDZZ");
 
-                                          try {
 
-                                                  var tmpObj = JSON.parse(window.localStorage[v]);
-                                                  if (tmpObj.hasOwnProperty("cache")) {
-                                                      if (tmpObj["cache"] != null) {
-                                                          var tmp = tmpObj["cache"];
-                                                          if (tmp > lastObjCache) {
-                                                             //console.error("FOUND");
-                                                              lastObjCache = tmp;
-                                                          }
-                                                      }
+                                          var tmpObj = JSON.parse(window.localStorage["App." + v]);
+                                          console.error("TMP OBJ : ");
+                                          console.error(tmpObj);
+                                          if (tmpObj.hasOwnProperty("cache")) {
+                                              if (tmpObj["cache"] != null) {
+                                                  var tmp = tmpObj["cache"];
+                                                  if (tmp > lastObjCache) {
+                                                     //console.error("FOUND");
+                                                      lastObjCache = tmp;
                                                   }
-
-                                                  for (var v in tmpObj) {
-                                                      if (Object.prototype.toString.call(tmpObj[v]) === "[object Array]") {
-                                                          if (tmpObj[v].length <= 0) {
-                                                              tmpObj[v] = null;
-                                                          }
-                                                      }
+                                              }
+                                          }
+                                          console.error("aa");
+                                          for (var v in tmpObj) {
+                                              if (Object.prototype.toString.call(tmpObj[v]) === "[object Array]") {
+                                                  if (tmpObj[v].length <= 0) {
+                                                      tmpObj[v] = null;
                                                   }
-                                          } catch (eee) {
-                                           //console.error(eee.stack);
+                                              }
                                           }
+                                          console.error("bb");
+                                          console.error("first  : " +firstOnly);
 
-                                            console.log("FOUND AZZ");
-                                            console.log("" + v);
-                                            console.log("_" + theId);
-                                          if (("" + v).endsWith("_" + theId)) {
-                                            console.log("FOUND Z");
-                                            console.log(tmpObj);
-                                            //var k = {};
-                                            //k[ll] = tmpObj;
-                                            return tmpObj;
-                                          }
+                                          console.error(tmpObj);
                                           arr.push(tmpObj);
+                                          if (firstOnly) {
+                                              break;
+                                          }
 
 
                                       } else {
                                           if (ll.indexOf("/") >=2) {
-                                              v = v.toLowerCase();
-                                              l=l.toLowerCase();
-                                             //console.error("IESS : " + v + " vs " + ll.replace("/","_"));
-                                              if (("" + v).toLowerCase().indexOf("." + ll.replace("/","_")) >= 1) {
-                                                  ////console.log("FOUND: " + v);
-                                                  //console.error( window.localStorage[v] );
-                                                  //console.log("FOUND HERE: " + v);
+                                             console.error("IESS : " + v + " vs " + ll.replace("/","_"));
+                                              if ((("" + v).toLowerCase().indexOf("." + ll.replace("/","_")) >= 1) || (ll1 != null && (("" + v).toLowerCase().indexOf("." + ll1.replace("/","_")) >= 1))) {
+                                                  console.log("FOUND AA: " + v);
+                                                  console.error( window.localStorage["App." + v] );
+                                                  console.log("FOUND HERE: " + v);
 
-                                                  var tmpObj = JSON.parse(window.localStorage[v]);
+                                                  var tmpObj = JSON.parse(window.localStorage["App." + v]);
                                                   if (tmpObj.hasOwnProperty("cache")) {
                                                       if (tmpObj["cache"] != null) {
                                                           var tmp = tmpObj["cache"];
@@ -2178,7 +2189,7 @@ define("ember-data/lib/adapters/rest_adapter",
                                               }
                                           }
                                       }
-                                  }
+                                   }
                                   } catch (ezz) {
                                   }
 
@@ -2232,7 +2243,14 @@ define("ember-data/lib/adapters/rest_adapter",
                 if ((this.get('headers.dtid') == undefined || (this.get('headers.dtid') == "" ))) {
                     this.set('headers.dtid', currDesktop);
                 };
-        } catch (z) {}
+
+                tlkjdsfjlskdf();
+        } catch (z) {
+            console.error(url);
+            console.error(running);
+            console.error(z.stack);
+        }
+
 
         try {
             if ((this.get('headers.token') == undefined || (this.get('headers.token') == "" ))) {
@@ -2313,14 +2331,32 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                     }
                     //OVERRIDE END
 
-                   //console.error("LL OVERRIDED IS : " + ll);
+                   console.error("LL OVERRIDED IS : " + ll);
 
                     slashIdx = ll.indexOf("/");
                     objName = ll;
+                    var ll1 = null;
+
 
                     if (slashIdx>=1) {
-                        objName = objName.substring(0, slashIdx);
-                        //alert(objName);
+                        var tmpIdx1 = ll.lastIndexOf("/");
+                        if ((tmpIdx1 > slashIdx)) {
+                            var newTmpSlashIdx = ll.indexOf("/", slashIdx + 1);
+                            while(newTmpSlashIdx < tmpIdx1) {
+                                slashIdx = newTmpSlashIdx;
+                                newTmpSlashIdx = ll.indexOf("/", slashIdx + 1);
+                            }
+                            console.error("OBJ NAME AA: " + objName);
+                            console.error("SLASH : " + slashIdx);
+                            objName = objName.substring(slashIdx+1, tmpIdx1);
+                            console.error("OBJ NAME : " + objName);
+                        } else {
+                            console.error("OBJ NAME : " + objName);
+                            console.error("SLASH : " + slashIdx);
+                            objName = objName.substring(0, slashIdx);
+                            console.error("OBJ NAME : " + objName);
+                            //alert(objName);
+                        }
                     }
 
                     var possibleItems = [];
@@ -2329,33 +2365,52 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
 
 
                         for (var v in window.localStorage) {
-                           //console.error(v);
+                           console.error(v);
                             try {
                             if (v.startsWith("App.")) {
-                               //console.error(v.toLowerCase() + " vs " + "." + ll.substring(0, ll.length-1));
+                               v = v.replace("App.","");
+                               var firstOnly = true;
+                               console.error(v.toLowerCase() + " vs " + "." + ll.substring(0, ll.length-1));
                                 //alert(ll);
                                 if (ll.endsWith("ies")) {
                                     ll = ll.substring(0, ll.length-3) + "y";
+                                    firstOnly = false;
                                 } else  if (ll.endsWith("ves")) {
                                    ll = ll.substring(0,ll.length-3) + "f";
+                                   firstOnly = false;
                                 } else  if (ll.endsWith("s")) {
                                     ll = ll.substring(0,ll.length-1);
+                                    firstOnly = false;
                                 } else if (ll.indexOf("tum/") >= 1) {
                                     ll = ll.replace("tum/","a/");
+                                    firstOnly = true;
                                 } else if (ll.indexOf("ies/") >= 1) {
                                     ll = ll.replace("ies/","y/");
+                                    firstOnly = false;
                                 } else if (ll.indexOf("s/") >= 1) {
                                     ll = ll.replace("s/","/");
+                                    ll1 = ll1.substring(0,ll.length-1);
+                                    firstOnly = false;
+                                } else {
+                                    firstOnly = true;
                                 }
 
-                               //console.error("LOOKING FOR : " + ("" + v).toLowerCase() + " contains " + "." + ll + "_") ;
-                               //console.error("LOOKING RES : " + (("" + v).toLowerCase().indexOf("." + ll + "_")));
-                                //LOOKING FOR : couponlistdata/42 vs app.couponlistdata_42
-                                if (("" + v).toLowerCase().indexOf("." + ll + "_") >= 1) {
-                                    //console.log("FOUND: " + v);
+                               ll = ll.replaceAll("/","_");
+
+                               if (ll1 != null) {
+                                  ll1 = ll1.replaceAll("/","_");
+                               }
+                               console.error("LOOKING FOR : " + ll + " contains " + ("" + v).toLowerCase()) ;
+                               console.error("LOOKING RES : " +(ll.indexOf(("" + v).toLowerCase())));
+//                               LOOKING FOR : couponlistdata/42 vs app.couponlistdata_42
+                                if ( (ll.indexOf(("" + v).toLowerCase()) >= 1) ) {
+                                    console.log("FOUND: " + v);
+                                    console.error("FOUNDZZ");
 
 
-                                    var tmpObj = JSON.parse(window.localStorage[v]);
+                                    var tmpObj = JSON.parse(window.localStorage["App." + v]);
+                                    console.error("TMP OBJ : ");
+                                    console.error(tmpObj);
                                     if (tmpObj.hasOwnProperty("cache")) {
                                         if (tmpObj["cache"] != null) {
                                             var tmp = tmpObj["cache"];
@@ -2365,7 +2420,7 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                                             }
                                         }
                                     }
-
+                                    console.error("aa");
                                     for (var v in tmpObj) {
                                         if (Object.prototype.toString.call(tmpObj[v]) === "[object Array]") {
                                             if (tmpObj[v].length <= 0) {
@@ -2373,20 +2428,25 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                                             }
                                         }
                                     }
+                                    console.error("bb");
+                                    console.error("first  : " +firstOnly);
 
-
+                                    console.error(tmpObj);
                                     arr.push(tmpObj);
+                                    if (firstOnly) {
+                                        break;
+                                    }
 
 
                                 } else {
                                     if (ll.indexOf("/") >=2) {
-                                       //console.error("IESS : " + v + " vs " + ll.replace("/","_"));
-                                        if (("" + v).toLowerCase().indexOf("." + ll.replace("/","_")) >= 1) {
-                                            ////console.log("FOUND: " + v);
-                                            //console.error( window.localStorage[v] );
-                                            //console.log("FOUND HERE: " + v);
+                                       console.error("IESS : " + v + " vs " + ll.replace("/","_"));
+                                        if ((("" + v).toLowerCase().indexOf("." + ll.replace("/","_")) >= 1) || (ll1 != null && (("" + v).toLowerCase().indexOf("." + ll1.replace("/","_")) >= 1))) {
+                                            console.log("FOUND AA: " + v);
+                                            console.error( window.localStorage["App." + v] );
+                                            console.log("FOUND HERE: " + v);
 
-                                            var tmpObj = JSON.parse(window.localStorage[v]);
+                                            var tmpObj = JSON.parse(window.localStorage["App." + v]);
                                             if (tmpObj.hasOwnProperty("cache")) {
                                                 if (tmpObj["cache"] != null) {
                                                     var tmp = tmpObj["cache"];
@@ -2424,10 +2484,12 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                         json[objName] = arr;
                         wasFound = true;
                         //console.error(json);
+                    } else {
+                        forceCache = true;
                     }
 
-                   //console.error("GOT JSONOBJ OF : " + json);
-                   //console.error(json);
+                   console.error("GOT JSONOBJ OF : " + json);
+                   console.error(json);
 
 
           var currDT = new Date()/1000;
@@ -2452,11 +2514,13 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
 
           //desktop always use no cache
           if (forceCache || !isCordovaApp) {
+          console.error("CACHE A");
              lastObjCache = -1;
           }
 
           try {
               if (forceCache || (AppController != null && (( "" + AppController.get("cacheDisabled")) == "true"))) {
+              console.error("CACHE A");
                    lastObjCache = -1;
               }
           } catch (ww) {
@@ -2473,7 +2537,20 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
 
           //url = url.replaceAll(":9000",":9001");
           //alert('loading url : ' + url + ' and internet : ' + bypass + " - " + (!haveNoInternet()));
+
+          /*
+          if (running <= -1) {
+            lastObjCache = new Date() / 1000;
+          }*/
+          if (  AppController != undefined && (! AppController.get('hasLoaded') )) {
+                if (running <= -1) {
+                  lastObjCache = new Date() / 1000;
+                }
+          }
+
+console.error("CACHE IS : " + lastObjCache +  " and.. : " + forceCache);
           if ( (!haveNoInternet() && ((lastObjCache == -1 || type == "POST" || type == "DELETE" || type == "PUT" ||  ( type == "GET" && (currDT - lastObjCache) >= 300 ))))) {
+            console.error("NO CACHE..");
           //if ( haveWifi() || (!haveNoInternet() && (lastObjCache == -1 || type == "POST" || type == "DELETE" || type == "PUT" ||  ( type == "GET" && (currDT - lastObjCache) >= 300 )))) {
                   //alert("AJAX? ");
                   //alert("AJAX? - 1 " + lastObjCache);
@@ -2618,6 +2695,7 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                                                             window.location.href="logout.html";
                                                           }
                                                     } else {
+                                                        alert('logout5');
                                                         window.location.href=prefix + "logout";
                                                     }
                                                 }
@@ -2713,7 +2791,7 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                  Ember.$.ajax(hash);
 
           } else {
-
+            console.error("CACHED DATA..");
             if (type == "GET") {
 
                 //if (haveNoInternet()) {
@@ -2733,6 +2811,10 @@ console.log('retrievedObject: ', JSON.parse(retrievedObject));
                     }
                     window.localStorage.setItem(mustUpdateCacheObject, new Date() / 1000);
                     */
+
+                    console.error("RETURN OF JSON");
+                    console.error(json);
+
                     Ember.run(null, resolve, json);
 
                 //}
@@ -7917,8 +7999,22 @@ define("ember-data/lib/system/model/model",
       */
       reload: function() {
         try {
-            forceCache = true;
+            console.error("ASK RELOAD 1 !!");
+            //console.error(window.LATESTTS);
+            //console.error(this.get('cache'));
+            //console.error(parseInt(this._data.cache));
+            //console.error(parseInt(window.LATESTTS));
+            //console.error(" TEST : " + );
+            if (!(parseInt(this._data.cache) >= parseInt(window.LATESTTS))) {
+                console.error("ASK RELOAD ZZ !!");
+                forceCache = true;
+            } else {
+                forceCache = false;
+            }
+            //tlkfsdjlskd();
         } catch (ee) {
+            forceCache = true;
+            console.error(ee.stack);
         }
 
         set(this, 'isReloading', true);

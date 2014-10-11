@@ -6,10 +6,15 @@
 
 
         <div class="text-center">
-            <h3>Select the API Key</h3>
+            {{#if view.disabled}}
+                <h3>API Key</h3>
+            {{else}}
+                <h3>Select the API Key</h3>
+            {{/if}}
+
             <div class="col-lg-4"></div>
             <div class="col-lg-4">
-                {{view App.SelectTextField class="form-control col-lg-6" contentBinding="providers" valueBinding="selected_provider" optionValuePath="content" optionLabelPath="content.name" elementId="selected_provider"}}
+                {{view App.SelectTextField class="form-control col-lg-6" contentBinding="providers" valueBinding="selected_provider" optionValuePath="content" optionLabelPath="content.name" elementId="selected_provider" disabledBinding="view.disabled"}}
             </div>
             <div class="col-lg-4"></div>
         </div>

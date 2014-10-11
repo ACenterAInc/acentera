@@ -78,9 +78,11 @@ App.TaskStatusView = Ember.View.extend({
 
                     var m = this.get('redirect_model');
                     if ( m != undefined ) {
+                        console.error("RELOAD !1");
                         try { m.reload(); } catch (ee) {}
                     } else {
                         m = this.get('ctrl').get('controllers.project.content');
+                        console.error("RELOAD !2");
                         try { m.reload(); } catch (ee) {}
                     }
 
@@ -109,9 +111,12 @@ App.TaskStatusView = Ember.View.extend({
 
                 var m = this.get('redirect_model');
                 if ( m != undefined ) {
+                    console.error("RELOAD !3");
                     try { m.reload(); } catch (ee) {}
                 } else {
                     m = this.get('ctrl').get('controllers.project.content');
+                    console.error("RELOAD !4");
+
                     try { m.reload(); } catch (ee) {}
                 }
 
@@ -135,9 +140,12 @@ App.TaskStatusView = Ember.View.extend({
 
                     var m = this.get('redirect_model');
                     if ( m != undefined ) {
+                    console.error("RELOAD !5");
+
                         try { m.reload(); } catch (ee) {}
                     } else {
                         m = this.get('ctrl').get('controllers.project.content');
+                        console.error("RELOAD !6");
                         try { m.reload(); } catch (ee) {}
                     }
 
@@ -168,6 +176,7 @@ App.TaskStatusView = Ember.View.extend({
         }
 
         if (reload) {
+            console.error("RELOAD !7");
             this.get('ctrl').get('content').reload();
 
             var prct = this.get('ctrl').get('content.percentage');
@@ -193,6 +202,7 @@ App.TaskStatusView = Ember.View.extend({
 
 
                    //do something in here that will run in 5 seconds
+                   console.error("RELOAD !88");
                    self.reloadTaskStatus(true);
 
 

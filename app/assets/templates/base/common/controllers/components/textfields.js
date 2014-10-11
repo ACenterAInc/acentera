@@ -1115,7 +1115,7 @@ Ember.Handlebars.helper('MustBe-CheckedField', App.MustBeCheckedField);
 
 
 App.SelectTextField = Ember.Select.extend({
-    attributeBindings: ['class','value'],
+    attributeBindings: ['class','value','disabled'],
     title: function() {
         return App.getI18NValue('must_select_value');
     }.property(),

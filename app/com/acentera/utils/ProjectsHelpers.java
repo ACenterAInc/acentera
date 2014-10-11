@@ -417,7 +417,7 @@ public class ProjectsHelpers {
                             Iterator<Region> itrRegions = lstRegions.iterator();
                             while (dregion == null && itrRegions.hasNext()) {
                                 Region region  = itrRegions.next();
-                                if (region.getId().intValue() ==  droplet.getRegionId().intValue()) {
+                                if ((region.getId().intValue() == droplet.getRegionId().intValue())) {
                                     dregion = region;
                                 }
                             }
@@ -1087,6 +1087,7 @@ public class ProjectsHelpers {
         List<Region> lstRegions = apiClient.getAvailableRegions();
         Iterator<Region> itrRegion = lstRegions.iterator();
         Integer regionId = null;
+        String reg = null;
         while(itrRegion.hasNext() && regionId == null) {
             Region r = itrRegion.next();
             if (r.getSlug().compareToIgnoreCase(pr.getSlug()) == 0) {

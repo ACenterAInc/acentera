@@ -35089,6 +35089,8 @@ Ember.Router = Ember.Object.extend(Ember.Evented, {
       }
 
       try {
+        console.error(" ROUTE WILL TRANSITION TO STARTED?");
+         window.LATESTTS=new Date()/1000;
          if (AppController != undefined) {
                  if (AppController.get('currentPath') == '') {
                      console.log('set start loading');
@@ -35097,6 +35099,7 @@ Ember.Router = Ember.Object.extend(Ember.Evented, {
                      //AppController.setEndLoading();
                      console.log('set start loading');
                      AppController.setStartLoading();
+                     //running++;
                  }
          }
       } catch (e) {
@@ -38965,6 +38968,7 @@ Ember.ControllerMixin.reopen({
     // target may be either another controller or a router
     //ACenterA Added...
     try {
+
       if (AppController != undefined) {
            AppController.setStartLoading();
       }

@@ -2388,6 +2388,7 @@ var createDesktopReady = function(iter) {
     } catch (eff) {
 
        createDesktop();
+       alert('logout1');
        window.location.href=prefix + "logout";
     }
 
@@ -2683,6 +2684,7 @@ function loadFromStore() {
 
     //Do not save
     preventSave = false;
+    forceCache = false;
 
 }
 
@@ -3673,9 +3675,15 @@ App.BaseRoute = Ember.Route.extend({
 
       running--;
       //console.error("SET RUNNING WWW --" + running);
-     //console.log("ROUTE WILL CALL markAsLoaded of " + controller.get('constructor'));
+      console.log("ROUTE WILL CALL markAsLoaded of " + controller.get('constructor'));
+      console.log(running);
+      console.log(controller);
+
       var s = this;
       Ember.run.later(function() {
+            /*try {controller.get('content').reload();}catch (eee){
+                console.error(eee.stack);
+            }*/
             s.markAsLoaded(controller,model);
       }, 80);
 
@@ -3725,13 +3733,20 @@ App.BaseView = Ember.View.extend({
 
         //Temporary
         try {
+        console.error("RELOAD Z?");
             if (this.get('controller.reload_model')) {
+            console.error("RELOAD Z? 2");
                 if (this.get('controller').get('content.id') != undefined) {
+                console.error("RELOAD Z? B11");
+                    console.error(this.get('controller'));
                     this.get('controller').get('content').reload();
+                    console.error("RELOAD Z? C");
                 }
             }
+            console.error("RELOAD Z? D");
             currModel = this.get('controller').get('content');
         } catch (itsok) {
+        console.error("RELOAD Z? F");
         }
 
         var self = this;
@@ -3756,14 +3771,35 @@ App.BaseView = Ember.View.extend({
       if (!!this.$()) {
          var self = this;
          this.set('isRendered', true);
-         Ember.run.next(this, this.didRender);
+
+         Ember.run.next(this, self.didRender);
+
+         //Just in case delay in browsers...
+         Ember.run.later(this, function() {
+             try {
+                self.didRender();
+            } catch (ee) {
+            }
+        }, 500);
+
+        Ember.run.later(this, function() {
+                     try {
+                        self.didRender();
+                        console.error(self);
+                                console.error("AAA99");
+                    } catch (e) {
+                        console.error(e.stack);
+                    }
+        }, 1500);
+        console.error(self);
+        console.error("AAA88");
       } else {
         if (!this.get('isRendered')) {
             if (this.isDestroyed || this.isDestroying) {
             } else {
-                Ember.run.next(this, function() {
+                Ember.run.later(this, function() {
                         this.setIsRendered();
-                });
+                }, 100);
             }
         }
       }
@@ -3895,7 +3931,10 @@ App.ApplicationRoute = Ember.Route.extend({
                 controller.set('account', e.get('content')[0]);
                ////console.log('SET RUNNING TO A1-' + running);
                 running--;
+                console.error(model);
+                console.error(model.account);
                 if (controller.get('account.id') == undefined) {
+                    alert('logout2');
                     window.location.href=prefix + "logout";
                 };
             });
@@ -3910,6 +3949,7 @@ App.ApplicationRoute = Ember.Route.extend({
        model: function(params) {
              var store = this.get("store");
 
+             forceCache = true;
              var multimodel = {
                 account: store.find('account'),
                 projects: store.findAll('projects')
@@ -4438,6 +4478,7 @@ App.ApplicationController = Ember.Controller.extend({
          },
          logout: function() {
             window.localStorage.clear();
+            alert('logout3');
             window.location.href=prefix+"logout"
          },
          goto: function (e, w, parentModel) {
@@ -4717,6 +4758,12 @@ App.Router.reopen({
         currRoute = AppController.get('currentPath');
         lastModel = currModel;
         //currModel = AppController.get('currentModel');
+        //console.error("CURR MODEL");
+        //console.error(running);
+        //console.error(AppController.get('currentController'));
+
+        //console.error(AppController.get('currentController').get('content'));
+
 
         AppController.set('previousUrl', AppController.get('currentUrl'));
         AppController.set('currentUrl', this.get('url'));
@@ -4752,13 +4799,21 @@ App.Router.reopen({
 
           //} else {
           //}
+          running--;
           return true;
       } catch (ee) {
                 console.error(ee.stack);
       }
+      //running--;
       return true;
-  }.on('didTransition')
+  }.on('didTransition'),
+  dsfdsf: function(ee) {
+    console.error("ROUTE WILL TRANSITION");
+  }.on('willTransition')
+
 });
+
+window.LATESTTS = new Date()/1000;
 
 
 } catch (acenteraerror) {
