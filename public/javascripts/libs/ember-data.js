@@ -11675,8 +11675,8 @@ define("ember-data/lib/system/store",
         var factory;
 
 
+        console.log(key);
         if (typeof key === 'string') {
-          //console.error("KEY IS : " + key);
           if (key == "new") {
 
           }
