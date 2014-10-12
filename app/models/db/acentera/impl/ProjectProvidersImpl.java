@@ -112,6 +112,7 @@ public class ProjectProvidersImpl extends DAO {
 
     public static HashMap<Long, ArrayList<Long>> getRegionAvailableSizes(Set<ProjectProvidersRegions> regions) {
 
+        Logger.debug("GET REGIONS AVAILALBE SIZE REGIONS : " + regions);
         Session s = (Session) HibernateSessionFactory.getSession();
         HashMap<Long, ArrayList<Long>> hmRegionSize = new HashMap<Long, ArrayList<Long>>();
 
