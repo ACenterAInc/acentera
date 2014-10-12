@@ -5,8 +5,11 @@ App.Servers = DS.Model.extend({
     ipAddress: DS.attr('string'),
     image_name: DS.attr('string'),
     status: DS.attr('string'),
-    size: DS.attr(),
-    region_name: DS.attr('string')
+    region_name: DS.attr('string'),
+    regionId: DS.belongsTo('region'),
+    region: DS.belongsTo('region'),
+    size: DS.belongsTo('product'),
+    sizeId: DS.belongsTo('product')
     /*diskspacefreeratio: DS.attr('number'),
     cpuload: DS.attr('number'),
     ipaddress: DS.attr('string'),

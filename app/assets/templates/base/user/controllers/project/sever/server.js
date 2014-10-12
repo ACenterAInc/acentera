@@ -139,6 +139,7 @@ App.ProjectServerRebootController = Ember.ObjectController.extend({
             powerOn: function() {
 
                     if (! ( Ember.View.views['password'].validate() )) {
+                        self.set("errorMsg", App.getI18NValue("invalid_password"));
                         return;
                     }
                     var d = {
@@ -165,12 +166,12 @@ App.ProjectServerRebootController = Ember.ObjectController.extend({
 
                                      running--;
                                } else {
-                                   self.set("errorMsg", App.getI18NValue("project.error_shutdown_server"));
+                                   self.set("errorMsg", App.getI18NValue("project.error_starting_server"));
                                    running--;
                                }
 
                            }catch (e) {
-                                self.set("errorMsg", App.getI18NValue("project.error_shutdown_server"));
+                                self.set("errorMsg", App.getI18NValue("project.error_starting_server"));
                                 running--;
                            }
                    }, function(data) {
@@ -181,7 +182,7 @@ App.ProjectServerRebootController = Ember.ObjectController.extend({
                                  jq('#' + Ember.View.views['password'].elementId).removeClass('success').addClass('error');
 
                              } else {
-                                 self.set("errorMsg", App.getI18NValue("project.error_destroying_server"));
+                                 self.set("errorMsg", App.getI18NValue("project.error_starting_server"));
                             }
                             }catch (ee) {
                             }
@@ -236,7 +237,7 @@ App.ProjectServerRebootController = Ember.ObjectController.extend({
                               jq('#' + Ember.View.views['password'].elementId).removeClass('success').addClass('error');
 
                           } else {
-                              self.set("errorMsg", App.getI18NValue("project.error_destroying_server"));
+                              self.set("errorMsg", App.getI18NValue("project.error_shutdown_server"));
                          }
                          }catch (ee) {
                          }

@@ -3,17 +3,25 @@ App.ServersTable= App.SimpleTable.extend({
     maxros: 20,
     clickRoute: null,
     getRowObject: function(obj) {
-      return {
-            id : obj.get('id'),
-            acenteraid: obj.get('acenteraid'),
-            image_name : obj.get('image_name'),
-            name : obj.get('name'),
-            ipAddress : obj.get('ipAddress'),
-            status : obj.get('status'),
-            size : obj.get('size').name,
-            disk : obj.get('size').disk + " GB",
-            region : obj.get('region_name')
-      };
+        try {
+        console.error("SERVERS:");
+        console.error(obj);
+              return {
+                    id : obj.get('id'),
+                    acenteraid: obj.get('acenteraid'),
+                    image_name : obj.get('image_name'),
+                    //tood: image be a DS.attr() ...
+                    name : obj.get('name'),
+                    ipAddress : obj.get('ipAddress'),
+                    status : obj.get('status'),
+                    size : ("" + obj.get('size.name')).toUpperCase(),
+                    disk : obj.get('size.disk') + " GB",
+                    region : obj.get('region.name')
+              };
+          } catch (ee) {
+
+            console.error(ee.stack);
+          }
     },
     getTableDefinition: function() {
             return {

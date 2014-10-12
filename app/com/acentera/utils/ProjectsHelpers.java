@@ -145,7 +145,7 @@ public class ProjectsHelpers {
                         Iterator<Region> itrRegions = lstRegions.iterator();
                         while (dregion == null && itrRegions.hasNext()) {
                             Region region  = itrRegions.next();
-                            if (region.getId().intValue() ==  droplet.getRegionId().intValue()) {
+                            if (("" + region.getId()).compareTo("" + droplet.getRegion()) == 0) {
                                 dregion = region;
                             }
                         }
@@ -154,9 +154,9 @@ public class ProjectsHelpers {
                         Iterator<DropletSize> itrSize = lstSize.iterator();
                         while (dsize == null && itrSize.hasNext()) {
                             DropletSize size = itrSize.next();
-                            Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSizeId());
-                            if (size.getId().compareToIgnoreCase(droplet.getSizeId()) == 0) {
-                                Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSizeId() + " FOUND");
+                            Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSize());
+                            if (("" + size.getId()).compareToIgnoreCase(droplet.getSize()) == 0) {
+                                Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSize() + " FOUND");
                                 dsize = size;
                             }
                         }
@@ -190,7 +190,7 @@ public class ProjectsHelpers {
                         while(itrRegionsProviders.hasNext() && selectedRegion == null) {
                             ProjectProvidersRegions ppr = itrRegionsProviders.next();
                             if (ppr.getExtId() != null) {
-                                if (ppr.getExtId().compareTo("" + droplet.getRegionId()) == 0) {
+                                if (ppr.getExtId().compareTo("" + droplet.getRegion()) == 0) {
                                     selectedRegion = ppr;
                                 }
                             }
@@ -200,7 +200,7 @@ public class ProjectsHelpers {
                         }
 
 
-                        //droplet.getRegionId()
+                        //droplet.getRegion()
 
 
                         //TODO: Can we edit ?
@@ -291,7 +291,7 @@ public class ProjectsHelpers {
                             Iterator<Region> itrRegions = lstRegions.iterator();
                             while (dregion == null && itrRegions.hasNext()) {
                                 Region region  = itrRegions.next();
-                                if (region.getId().intValue() ==  droplet.getRegionId().intValue()) {
+                                if (region.getId().intValue() ==  droplet.getRegion().intValue()) {
                                     dregion = region;
                                 }
                             }
@@ -300,9 +300,9 @@ public class ProjectsHelpers {
                             Iterator<DropletSize> itrSize = lstSize.iterator();
                             while (dsize == null && itrSize.hasNext()) {
                                 DropletSize size = itrSize.next();
-                                Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSizeId());
-                                if (size.getId().compareToIgnoreCase(droplet.getSizeId()) == 0) {
-                                    Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSizeId() + " FOUND");
+                                Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSize());
+                                if (size.getId().compareToIgnoreCase(droplet.getSize()) == 0) {
+                                    Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSize() + " FOUND");
                                     dsize = size;
                                 }
                             }
@@ -417,7 +417,7 @@ public class ProjectsHelpers {
                             Iterator<Region> itrRegions = lstRegions.iterator();
                             while (dregion == null && itrRegions.hasNext()) {
                                 Region region  = itrRegions.next();
-                                if ((region.getId().intValue() == droplet.getRegionId().intValue())) {
+                                if ((region.getId().intValue() == droplet.getRegion().intValue())) {
                                     dregion = region;
                                 }
                             }
@@ -426,9 +426,9 @@ public class ProjectsHelpers {
                             Iterator<DropletSize> itrSize = lstSize.iterator();
                             while (dsize == null && itrSize.hasNext()) {
                                 DropletSize size = itrSize.next();
-                                Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSizeId());
-                                if (size.getId().compareToIgnoreCase(droplet.getSizeId()) == 0) {
-                                    Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSizeId() + " FOUND");
+                                Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSize());
+                                if (size.getId().compareToIgnoreCase(droplet.getSize()) == 0) {
+                                    Logger.debug("COMPARE SIZE OF : " + size.getId() + " VS " + droplet.getSize() + " FOUND");
                                     dsize = size;
                                 }
                             }
@@ -1049,7 +1049,7 @@ public class ProjectsHelpers {
 
 
 
-        d.setSizeId(jsonData.getString("size_id"));
+        d.setSize(jsonData.getString("size_id"));
 
 
         /*
@@ -1094,7 +1094,7 @@ public class ProjectsHelpers {
                 regionId = r.getId();
             }
         }
-        d.setRegionId(regionId);
+        d.setRegion(regionId);
 
 
         if (jsonData.has("sshkeys_id")) {

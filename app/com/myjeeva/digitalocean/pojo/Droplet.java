@@ -26,7 +26,10 @@ package com.myjeeva.digitalocean.pojo;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Represents Droplet attributes of DigitalOcean
@@ -37,16 +40,21 @@ public class Droplet {
 
 	private String id;
 
+    @JsonProperty("type")
+    @Getter @Setter String type;
 	private String name;
 
 	@SerializedName("image_id")
 	private Integer imageId;
 
-	@SerializedName("region_id")
-	private Integer regionId;
+    @SerializedName("image_name")
+    public @Getter @Setter   String image_name;
 
-	@SerializedName("size_id")
-	private String sizeId;
+    @JsonProperty("region")
+	private Integer region;
+
+	@SerializedName("size")
+	private String size;
 
 	@SerializedName("backups_active")
 	private boolean backupsActive;
@@ -72,8 +80,9 @@ public class Droplet {
 
 	@SerializedName("event_id")
 	private Long eventId;
+    private char[] sizeId;
 
-	/**
+    /**
 	 * @return the id
 	 */
 	public String getId() {
@@ -121,31 +130,27 @@ public class Droplet {
 	/**
 	 * @return the regionId
 	 */
-	public Integer getRegionId() {
-		return regionId;
+	public Integer getRegion() {
+		return region;
 	}
 
 	/**
 	 * @param regionId
 	 *            the regionId to set
 	 */
-	public void setRegionId(Integer regionId) {
-		this.regionId = regionId;
+	public void setRegion(Integer regionId) {
+		this.region = regionId;
 	}
 
 	/**
 	 * @return the sizeId
 	 */
-	public String getSizeId() {
-		return sizeId;
+	public String getSize() {
+		return size;
 	}
 
-	/**
-	 * @param sizeId
-	 *            the sizeId to set
-	 */
-	public void setSizeId(String sizeId) {
-		this.sizeId = sizeId;
+	public void setSize(String size) {
+		this.size = size;
 	}
 
 	/**
@@ -285,4 +290,19 @@ public class Droplet {
 		this.eventId = eventId;
 	}
 
+    public String getSizeId() {
+        return this.size;
+    }
+
+    @JsonIgnore
+    public String getRegionId() {
+        return "" + this.region;
+    }
+
+    public void setRegionId( Integer regionId) {
+        this.region = region;
+    }
+    public void setSizeId(Integer size) {
+        this.size = "" + size;
+    }
 }

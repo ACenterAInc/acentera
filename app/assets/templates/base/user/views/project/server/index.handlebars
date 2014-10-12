@@ -37,7 +37,7 @@
 
                     <div class="col-lg-8">
                         <label class="form-control">
-                            <input type="text" class="noborder col-lg-12" width="100%" {{bind-attr value="content.size.name"}} readonly/>
+                            <input type="text" class="noborder col-lg-12" width="100%" {{bind-attr value="content.size.ramsize"}} readonly/>
                         </label>
                     </div>
 
@@ -88,7 +88,7 @@
 
 
                     <div class="col-lg-8">
-                        {{regiontextbox-view slugBinding="content.region_slug" region_nameBinding="content.region_name"}}
+                        {{regiontextbox-view slugBinding="content.region.slug" region_nameBinding="content.region.name"}}
                     </div>
 
                     <!-- TODO: add group Tags ... -->
