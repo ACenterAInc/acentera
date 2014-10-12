@@ -231,6 +231,32 @@ Array.prototype.pushIfNotExist = function(element, comparer) {
     }
 };
 
+function getArrayItem(item_or_emberobj, pos, key) {
+        var arr = item_or_emberobj;
+        if (item_or_emberobj.hasOwnProperty("content")) {
+            arr = item_or_emberobj.get('content');
+            return arr[pos].get(key);
+        }
+
+        return arr[pos][key];
+}
+
+function getArrayLen(item_or_emberobj) {
+    try {
+        var len = item_or_emberobj.length
+
+        if (len == undefined) {
+            var tmp = item_or_emberobj.get('content');
+            if (tmp != undefined) {
+                len = tmp.length
+            }
+        }
+        return len;
+    } catch (e) {
+    }
+    return 0;
+}
+
 Array.prototype.remove = function() {
     var what, a = arguments, L = a.length, ax;
     while (L && this.length) {
@@ -3855,21 +3881,27 @@ App.InArrayComponent = Ember.Component.extend({
     var paramToValidate = this.get('param1');
     var bFound = false;
     for (var i = 2; i <= 10; i++) {
-        var arr = this.get('param' + i);
+        var arrTmp = this.get('param' + i);
+        var arr = null;
+        try {
+            arr = arrTmp.get('content')
+            if (arr == null) {
+                arr = arrTmp;
+            }
+        } catch (e) {
+            arr = arrTmp;
+        }
+
         if ((arr != null) && !bFound) {
            //console.error(arr);
             var l = arr.length;
             for (var z = 0; z < arr.length; z++) {
                 if (arr[z].get('id') == paramToValidate.get('id')) {
-                   //console.error(paramToValidate);
-                   //console.error("FOUND IT");
                     return true;
                 }
             }
         }
     }
-   //console.error(paramToValidate);
-   //console.error("DIDNT FOUND IT=");
     return false;
   }.property('param1', 'param2','param3','param4','param5','param6','param7','param8','param9','param10','param11')
 });
