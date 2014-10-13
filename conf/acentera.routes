@@ -70,6 +70,8 @@ GET      /api/project/:project_id/task/:task_id                                 
 
 
 #Server stop start resize..
+GET      /api/project/:project_id/server/:provider_name/:server_id                          controllers.acentera.Project.getProjectServerDetails(project_id: Long, provider_name: String, server_id: Long)
+GET      /api/project/:project_id/server/:server_id                                         controllers.acentera.Project.getProjectServerInfo(project_id: Long, server_id: Long)
 POST     /api/project/:project_id/server/:server_id/shutdown                                                  controllers.acentera.Server.shutdownServer(project_id: Long, server_id: Long)
 POST     /api/project/:project_id/server/:server_id/poweron                                                   controllers.acentera.Server.poweronServer(project_id: Long, server_id: Long)
 POST     /api/project/:project_id/server/:server_id/restart                                                   controllers.acentera.Server.restartServer(project_id: Long, server_id: Long)
