@@ -2695,7 +2695,7 @@ console.error("CACHE IS : " + lastObjCache +  " and.. : " + forceCache);
                                                             window.location.href="logout.html";
                                                           }
                                                     } else {
-                                                        alert('logout5');
+                                                        //alert('logout5');
                                                         window.location.href=prefix + "logout";
                                                     }
                                                 }

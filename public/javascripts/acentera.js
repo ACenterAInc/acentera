@@ -2414,7 +2414,7 @@ var createDesktopReady = function(iter) {
     } catch (eff) {
 
        createDesktop();
-       alert('logout1');
+      //alert('logout1');
        window.location.href=prefix + "logout";
     }
 
@@ -3966,7 +3966,7 @@ App.ApplicationRoute = Ember.Route.extend({
                 console.error(model);
                 console.error(model.account);
                 if (controller.get('account.id') == undefined) {
-                    alert('logout2');
+                    //alert('logout2');
                     window.location.href=prefix + "logout";
                 };
             });
@@ -4510,7 +4510,6 @@ App.ApplicationController = Ember.Controller.extend({
          },
          logout: function() {
             window.localStorage.clear();
-            alert('logout3');
             window.location.href=prefix+"logout"
          },
          goto: function (e, w, parentModel) {
